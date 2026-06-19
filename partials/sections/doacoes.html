@@ -1,0 +1,355 @@
+<!-- ================= SEÇÃO DE DOAÇÕES & PEDIDOS ================= -->
+<section id="donations-section" class="app-section section-padding container">
+    <div class="section-header">
+        <h2 id="title-donations-portal">Portal de Solidariedade</h2>
+        <p id="desc-donations-portal">Ajude famílias em vulnerabilidade doando insumos, contribuindo com campanhas coletivas ou acompanhando a entrega de suas doações.</p>
+    </div>
+    <!-- Navegação por Abas Principal -->
+    <div class="donations-tabs">
+        <button class="tab-btn active" data-tab="active-requests-tab" id="tab-requests">Necessidades & Pedidos</button>
+        <button class="tab-btn" data-tab="active-campaigns-tab" id="tab-campaigns">Campanhas Financeiras</button>
+        <button class="tab-btn" data-tab="donate-items-tab" id="tab-items">Doar Itens (Insumos)</button>
+        <button class="tab-btn" data-tab="donate-money-tab" id="tab-money">Doar Dinheiro (PIX/Cartão)</button>
+        <button class="tab-btn" data-tab="track-donation-tab" id="tab-track-donation">Acompanhar Entrega</button>
+        <button class="tab-btn" data-tab="request-help-tab" id="tab-request-form">Solicitar Ajuda</button>
+    </div>
+    <!-- ABA 1: Necessidades & Pedidos -->
+    <div id="active-requests-tab" class="tab-content active">
+        
+        <!-- Bloco de Necessidades Urgentes (Itens Críticos de Arrecadação Coletiva) -->
+        <div class="urgent-needs-section" style="margin-bottom: 50px;">
+            <h3 style="font-size: 1.35rem; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; font-family: var(--font-heading);">
+                <i data-lucide="alert-circle" style="color: var(--color-accent-pink);"></i> Itens Urgentes Coletivos
+            </h3>
+            <div class="products-grid" id="urgent-items-grid">
+                <!-- Renderizado dinamicamente via JS -->
+            </div>
+        </div>
+        <!-- Barra de Filtros e Busca de Solicitações Familiares -->
+        <div class="filter-bar">
+            <div class="search-box">
+                <i data-lucide="search"></i>
+                <input type="text" id="request-search" placeholder="Buscar pedidos por palavra-chave, cidade ou bairro...">
+            </div>
+            <div class="filter-options">
+                <select id="filter-type">
+                    <option value="all">Todas as Categorias</option>
+                    <option value="Alimentos">Alimentos</option>
+                    <option value="Higiene">Produtos de Higiene</option>
+                    <option value="Roupas">Roupas e Cobertores</option>
+                    <option value="Móveis">Móveis e Eletro</option>
+                </select>
+                <button class="btn btn-secondary btn-icon" id="open-map-btn">
+                    <i data-lucide="map"></i> <span id="txt-view-map">Ver no Mapa</span>
+                </button>
+            </div>
+        </div>
+        <!-- Simulador de Mapa (Com Filtros e Marcadores Profissionais) -->
+        <div id="map-simulation-container" class="map-simulation-container hidden">
+            <div class="map-header">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <i data-lucide="map-pin" style="color: var(--color-primary);"></i>
+                    <h4 style="font-weight: 700; margin:0;">Insumos e Famílias Próximas</h4>
+                </div>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <label for="map-filter-category" style="font-size: 0.8rem; font-weight: 600;">Filtrar:</label>
+                    <select id="map-filter-category" style="padding: 6px 12px; border-radius: var(--radius-sm); border: 1px solid var(--color-border); font-size: 0.8rem; background: var(--color-bg-card); color: var(--color-text-main);">
+                        <option value="all">Ver Todos</option>
+                        <option value="Alimentos">Alimentos</option>
+                        <option value="Roupas">Roupas</option>
+                        <option value="Móveis">Móveis</option>
+                    </select>
+                    <button class="close-btn" id="close-map-btn" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--color-text-muted);">&times;</button>
+                </div>
+            </div>
+            
+            <div class="map-mock-wrapper">
+                <div class="map-mock">
+                    <!-- Marcadores Personalizados -->
+                    <div class="map-pin pin-alimentos" style="top: 25%; left: 35%;" data-id="1" data-title="Família Silva" data-cat="Alimentos" data-need="Cesta Básica Completa">
+                        <i data-lucide="apple"></i>
+                        <span class="pin-tooltip">Família Silva: Alimentos</span>
+                    </div>
+                    <div class="map-pin pin-roupas" style="top: 55%; left: 65%;" data-id="2" data-title="ONG Amor ao Próximo" data-cat="Roupas" data-need="Campanha de Cobertores de Lã">
+                        <i data-lucide="shirt"></i>
+                        <span class="pin-tooltip">ONG Amor ao Próximo: Cobertores</span>
+                    </div>
+                    <div class="map-pin pin-moveis" style="top: 70%; left: 20%;" data-id="3" data-title="Família Medeiros" data-cat="Móveis" data-need="Móveis (Berço Infantil)">
+                        <i data-lucide="home"></i>
+                        <span class="pin-tooltip">Família Medeiros: Móveis</span>
+                    </div>
+                    
+                    <div class="map-grid-bg"></div>
+                    
+                    <!-- Painel de Informações acoplado -->
+                    <div class="map-info-card" id="map-info-card">
+                        <h5 id="map-info-title">Selecione um ponto no mapa</h5>
+                        <p id="map-info-desc">Clique nos pins para verificar as demandas e enviar mensagens diretas.</p>
+                        <button class="btn btn-primary btn-sm full-width hidden" id="map-info-action">Contatar via Chat</button>
+                    </div>
+                </div>
+                
+                <!-- Legenda do Mapa -->
+                <div class="map-legend">
+                    <span class="legend-item"><span class="legend-dot dot-alimentos"></span> Alimentos</span>
+                    <span class="legend-item"><span class="legend-dot dot-roupas"></span> Roupas / Cobertores</span>
+                    <span class="legend-item"><span class="legend-dot dot-moveis"></span> Móveis</span>
+                </div>
+            </div>
+        </div>
+        <!-- Grelha de Pedidos Individuais -->
+        <h3 style="font-size: 1.35rem; margin-bottom: 20px; font-family: var(--font-heading);">Famílias Cadastradas Solicitando Apoio</h3>
+        <div class="requests-grid" id="requests-grid">
+            <!-- Renderizado dinamicamente via JS -->
+        </div>
+    </div>
+    <!-- ABA 2: Campanhas Financeiras -->
+    <div id="active-campaigns-tab" class="tab-content">
+        <div class="campaigns-grid" id="campaigns-grid">
+            <!-- Renderizado dinamicamente via JS -->
+        </div>
+    </div>
+    <!-- ABA 3: Doar Dinheiro -->
+    <div id="donate-money-tab" class="tab-content">
+        <div class="money-donation-card">
+            <div class="money-donation-info">
+                <h3>Apoio Financeiro Solidário</h3>
+                <p>Nossos fundos são auditados de ponta a ponta e destinados à compra direta de cestas básicas nas áreas de maior vulnerabilidade.</p>
+                
+                <div class="payment-methods">
+                    <button class="pay-method-btn active" data-method="pix">
+                        <i data-lucide="qr-code"></i> PIX
+                    </button>
+                    <button class="pay-method-btn" data-method="card">
+                        <i data-lucide="credit-card"></i> Cartão de Crédito
+                    </button>
+                </div>
+                <!-- PIX Flow -->
+                <div id="pix-payment-flow" class="payment-flow">
+                    <div class="donation-value-selector">
+                        <button class="val-btn" data-val="20">R$ 20</button>
+                        <button class="val-btn active" data-val="50">R$ 50</button>
+                        <button class="val-btn" data-val="100">R$ 100</button>
+                        <input type="number" id="custom-donation-val" placeholder="Outro valor (R$)">
+                    </div>
+                    <button class="btn btn-primary btn-lg full-width" id="generate-pix-btn">Gerar Chave PIX</button>
+                    
+                    <div id="pix-qr-container" class="pix-qr-container hidden">
+                        <div class="qr-code-box">
+                            <div class="qr-placeholder">
+                                <i data-lucide="qr-code" style="width: 100px; height:100px; color: var(--color-primary);"></i>
+                            </div>
+                        </div>
+                        <p class="text-sm text-center">Escaneie o código ou utilize a chave PIX copia e cola:</p>
+                        <div class="pix-key-copy">
+                            <input type="text" id="pix-key" readonly value="00020101021226870014br.gov.bcb.pix2565ponte-solidaria-pix-key-mock">
+                            <button class="btn btn-secondary btn-sm" id="copy-pix-key"><i data-lucide="copy"></i> Copiar</button>
+                        </div>
+                        <button class="btn btn-success full-width" id="confirm-pix-btn" style="margin-top:15px;">Já efetuei o pagamento</button>
+                    </div>
+                </div>
+                <!-- Crédito Flow -->
+                <div id="card-payment-flow" class="payment-flow hidden">
+                    <form id="card-donation-form" class="form-grid">
+                        <div class="form-group col-12">
+                            <label for="card-value">Valor da Doação (R$)</label>
+                            <input type="number" id="card-value" required min="5" value="50">
+                        </div>
+                        <div class="form-group col-12">
+                            <label for="card-holder">Nome no Cartão</label>
+                            <input type="text" id="card-holder" required placeholder="Ex: ROBERTO DE SOUZA">
+                        </div>
+                        <div class="form-group col-12">
+                            <label for="card-number">Número do Cartão</label>
+                            <input type="text" id="card-number" required placeholder="0000 0000 0000 0000" maxlength="19">
+                        </div>
+                        <div class="form-group col-6">
+                            <label for="card-expiry">Expiração</label>
+                            <input type="text" id="card-expiry" required placeholder="MM/AA" maxlength="5">
+                        </div>
+                        <div class="form-group col-6">
+                            <label for="card-cvv">CVV</label>
+                            <input type="password" id="card-cvv" required placeholder="123" maxlength="4">
+                        </div>
+                        <div class="col-12" style="margin-top: 10px;">
+                            <div class="safety-badge" style="display:flex; align-items:center; gap:8px; font-size:0.8rem; color: var(--color-success); margin-bottom: 12px;">
+                                <i data-lucide="lock" style="width: 14px; height: 14px;"></i>
+                                <span>Ambiente seguro criptografado SSL de ponta a ponta</span>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-lg full-width">Realizar Doação Segura</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="money-transparency-card">
+                <h4>Destinação de Recursos</h4>
+                <p>Nossas contas são públicas. Veja o rateio médio de arrecadação financeira do último mês:</p>
+                <div class="transparency-mini-chart">
+                    <div class="chart-item">
+                        <span class="chart-bar" style="height: 75%;">75%</span>
+                        <span class="chart-label">Cestas</span>
+                    </div>
+                    <div class="chart-item">
+                        <span class="chart-bar" style="height: 15%;">15%</span>
+                        <span class="chart-label">Higiene</span>
+                    </div>
+                    <div class="chart-item">
+                        <span class="chart-bar" style="height: 10%;">10%</span>
+                        <span class="chart-label">Logística</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ABA 4: Acompanhar Doação (Rastreamento / Timeline) -->
+    <div id="track-donation-tab" class="tab-content">
+        <div class="company-card-box" style="max-width: 700px; margin: 0 auto;">
+            <h3 style="font-size: 1.35rem; margin-bottom: 15px; font-family: var(--font-heading); text-align: center;">Acompanhe sua Doação em Tempo Real</h3>
+            <p class="text-center text-sm text-muted" style="margin-bottom: 30px;">Consulte o andamento da sua doação física ou excedente alimentício corporativo informando o seu código identificador.</p>
+            
+            <form id="donation-track-form" style="display: flex; gap: 12px; margin-bottom: 40px;">
+                <input type="text" id="donation-track-search" placeholder="Ex: DOA-1 ou CORP-1" style="flex-grow: 1; padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid var(--color-border); background: var(--color-bg-card); color: var(--color-text-main);" required>
+                <button type="submit" class="btn btn-primary"><i data-lucide="search"></i> Buscar</button>
+            </form>
+            <!-- Local para renderizar a timeline de resposta -->
+            <div id="tracking-result-box" class="tracking-result-box hidden" style="border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 30px; background: var(--color-bg-card);">
+                <!-- Preenchido dinamicamente via JS -->
+            </div>
+        </div>
+    </div>
+    <!-- ABA 5: Doar Itens (Físicos) -->
+    <div id="donate-items-tab" class="tab-content">
+        <div class="company-layout-grid">
+            <div class="company-card-box">
+                <h4><i data-lucide="plus-circle"></i> Registrar Doação de Insumos</h4>
+                <p class="mb-3 text-sm text-muted">Apoie com móveis, alimentos não-perecíveis, roupas ou cobertores. As ONGs buscarão em seu endereço.</p>
+                
+                <div class="not-logged-prompt" id="donor-item-auth-prompt">
+                    <i data-lucide="lock" size="32"></i>
+                    <p>Faça login em sua conta de **Doador** para registrar insumos no sistema.</p>
+                    <button class="btn btn-primary btn-sm" id="donor-item-login-btn">Fazer Login</button>
+                </div>
+                
+                <form id="donor-item-form" class="form-grid hidden">
+                    <div class="form-group col-12">
+                        <label for="donor-item-name">O que você vai doar?</label>
+                        <input type="text" id="donor-item-name" required placeholder="Ex: 5 Cobertores novos, Geladeira funcionando, 10kg arroz">
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="donor-item-category">Categoria</label>
+                        <select id="donor-item-category" required>
+                            <option value="Alimentos">Alimentos</option>
+                            <option value="Roupas">Roupas e Cobertores</option>
+                            <option value="Higiene">Higiene Pessoal</option>
+                            <option value="Móveis">Móveis e Eletro</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="donor-item-qty">Quantidade</label>
+                        <input type="text" id="donor-item-qty" required placeholder="Ex: 5 unidades, 10 kg">
+                    </div>
+                    <div class="form-group col-12">
+                        <label for="donor-item-address">Endereço para Retirada (Se diferente do cadastro)</label>
+                        <input type="text" id="donor-item-address" placeholder="Rua, Número, Bairro, Cidade - Estado">
+                    </div>
+                    <div class="form-group col-12">
+                        <label for="donor-item-desc">Conservação e Instruções</label>
+                        <textarea id="donor-item-desc" required rows="3" placeholder="Descreva as condições dos itens e melhores horários para a coleta voluntária..."></textarea>
+                    </div>
+                    <div class="col-12 mt-2">
+                        <button type="submit" class="btn btn-primary full-width">Registrar Doação de Itens</button>
+                    </div>
+                </form>
+            </div>
+            <!-- Histórico de Doações do Doador -->
+            <div class="company-card-box">
+                <h4><i data-lucide="history"></i> Minhas Doações</h4>
+                <p class="mb-3 text-sm text-muted">Acompanhe e copie os códigos identificadores de suas doações para rastrear.</p>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Item / ID</th>
+                                <th>Quantidade</th>
+                                <th>Categoria</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="donor-donations-tbody">
+                            <!-- Preenchido dinamicamente via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ABA 6: Solicitar Ajuda (Beneficiários) -->
+    <div id="request-help-tab" class="tab-content">
+        <div class="help-request-card" style="max-width: 700px; margin: 0 auto;">
+            <div class="help-request-header" style="text-align: center; margin-bottom: 30px;">
+                <h3>Solicitação de Cesta ou Auxílio</h3>
+                <p>O cadastro de pedidos é exclusivo para famílias registradas e validadas por ONGs locais.</p>
+            </div>
+            <div class="not-logged-prompt" id="help-request-auth-prompt">
+                <i data-lucide="lock" size="48"></i>
+                <p>Você precisa estar autenticado como **Beneficiário** para solicitar cestas de alimentos ou móveis.</p>
+                <button class="btn btn-primary" id="prompt-login-btn">Entrar na Conta</button>
+            </div>
+            <form id="help-request-form" class="form-grid hidden">
+                <div class="form-group col-12">
+                    <label for="req-family-type">Insumo Necessário Principal</label>
+                    <select id="req-family-type" required>
+                        <option value="Alimentos">Cesta Básica Alimentar</option>
+                        <option value="Higiene">Kits de Higiene e Limpeza</option>
+                        <option value="Roupas">Agasalhos e Cobertores</option>
+                        <option value="Móveis">Móveis / Eletrodomésticos Básicos</option>
+                    </select>
+                </div>
+                
+                <div class="form-group col-4">
+                    <label for="req-family-members">Tamanho da Família</label>
+                    <input type="number" id="req-family-members" required min="1" value="1">
+                </div>
+                <div class="form-group col-4">
+                    <label for="req-family-kids">Menores (Até 12 anos)</label>
+                    <input type="number" id="req-family-kids" min="0" value="0">
+                </div>
+                <div class="form-group col-4">
+                    <label for="req-family-elderly">Idosos (60+ anos)</label>
+                    <input type="number" id="req-family-elderly" min="0" value="0">
+                </div>
+                <!-- Sugestão automática -->
+                <div class="form-group col-12 suggestion-preview" id="suggestion-preview-box" style="display:flex; gap:12px; padding:15px; border-radius:var(--radius-sm); border:1px solid var(--color-border); background: var(--color-primary-light);">
+                    <i data-lucide="info" style="color:var(--color-primary); flex-shrink:0; margin-top:3px;"></i>
+                    <div>
+                        <h5 id="suggestion-title" style="font-weight:700; margin-bottom: 4px;">Sugestão: Cesta Pequena</h5>
+                        <p id="suggestion-desc" style="font-size:0.82rem; color:var(--color-text-muted); margin:0;">Ideal para 1-2 pessoas. Contém alimentos básicos essenciais para 15 dias.</p>
+                    </div>
+                </div>
+                <div class="form-group col-12">
+                    <label for="req-family-special">Restrições / Necessidades Especiais (Alergias, fraldas infantis, cadeirante, etc.)</label>
+                    <textarea id="req-family-special" rows="2" placeholder="Descreva particularidades da família que a ONG deve atentar..."></textarea>
+                </div>
+                
+                <div class="form-group col-12">
+                    <label for="req-family-frequency">Frequência de Apoio Desejada</label>
+                    <select id="req-family-frequency" required>
+                        <option value="Pontual">Necessidade Única (Pontual)</option>
+                        <option value="Mensal">Mensalmente</option>
+                        <option value="Quinzenal">Quinzenalmente</option>
+                    </select>
+                </div>
+                
+                <div class="form-group col-12">
+                    <label for="req-family-desc">Escreva um breve relato sobre sua situação atual</label>
+                    <textarea id="req-family-desc" required rows="4" placeholder="Descreva brevemente as dificuldades vivenciadas para agilizar a triagem da ONG..."></textarea>
+                </div>
+                
+                <div class="col-12 mt-2">
+                    <button type="submit" class="btn btn-primary btn-lg full-width">Enviar Solicitação de Ajuda</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>

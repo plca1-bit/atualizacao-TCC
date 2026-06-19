@@ -1,0 +1,192 @@
+<!-- ================= MODAL DE LOGIN ================= -->
+<div class="modal-backdrop hidden" id="login-modal">
+    <div class="modal-card">
+        <button class="modal-close-btn" id="close-login-modal-btn" aria-label="Fechar login">&times;</button>
+        <div class="modal-header">
+            <h3>Bem-vindo de Volta</h3>
+            <p>Acesse sua conta para continuar fazendo a diferença.</p>
+        </div>
+        
+        <form id="login-form">
+            <div class="form-group" style="margin-bottom: 16px;">
+                <label for="login-email">Endereço de E-mail</label>
+                <input type="email" id="login-email" required placeholder="Ex: roberto@email.com">
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 20px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <label for="login-password">Senha de Acesso</label>
+                    <a href="#" class="forgot-pass-link" style="font-size:0.8rem; color:var(--color-primary);">Esqueceu a senha?</a>
+                </div>
+                <input type="password" id="login-password" required placeholder="Digite sua senha">
+            </div>
+            
+            <div class="form-group row-inline" style="margin-bottom: 24px; display:flex; align-items:center;">
+                <label class="checkbox-container">
+                    <input type="checkbox" id="login-remember">
+                    <span>Manter-me conectado</span>
+                </label>
+            </div>
+            
+            <button type="submit" class="btn btn-primary full-width btn-lg">Entrar na Plataforma</button>
+            
+            <div class="auth-divider"><span>ou acesse rápido</span></div>
+            
+            <button type="button" class="btn btn-secondary full-width" id="admin-quick-login">
+                <i data-lucide="shield-alert" style="width: 16px; height: 16px;"></i> Modo Administrador (Demonstração)
+            </button>
+            
+            <p class="auth-switch-text">Ainda não tem conta? <a href="#" id="switch-to-register">Cadastre-se hoje</a></p>
+        </form>
+    </div>
+</div>
+<!-- ================= MODAL DE CADASTRO (WIZARD ETAPAS) ================= -->
+<div class="modal-backdrop hidden" id="register-modal">
+    <div class="modal-card modal-large">
+        <button class="modal-close-btn" id="close-register-modal-btn" aria-label="Fechar cadastro">&times;</button>
+        
+        <div class="modal-header">
+            <h3>Criar Nova Conta</h3>
+            <p>Junte-se à nossa rede de solidariedade em 4 passos simples.</p>
+        </div>
+        <!-- Indicador de Progresso do Wizard -->
+        <div class="wizard-progress">
+            <div class="wizard-progress-bar-fill" id="wizard-progress-fill"></div>
+            <div class="wizard-node active" data-step="1" title="Perfil">1</div>
+            <div class="wizard-node" data-step="2" title="Dados">2</div>
+            <div class="wizard-node" data-step="3" title="Contato">3</div>
+            <div class="wizard-node" data-step="4" title="Senha">4</div>
+        </div>
+        <!-- ETAPA 1: Seleção de Perfil (Persona) -->
+        <div class="wizard-step active" id="wizard-step-1">
+            <h4 class="text-center" style="font-size: 1.05rem; margin-bottom: 20px; font-weight:600;">Selecione como deseja utilizar a plataforma:</h4>
+            <div class="role-selector-grid" style="display:grid; grid-template-columns: repeat(2, 1fr); gap:16px; margin-bottom: 24px;">
+                <button class="role-tab active" data-role="common_donor" type="button" style="display:flex; flex-direction:column; align-items:center; gap:8px; padding:20px; border-radius:var(--radius-md); height:auto;">
+                    <i data-lucide="heart" style="width: 24px; height: 24px; color: var(--color-accent-pink);"></i>
+                    <span style="font-weight:700; font-size:0.95rem;">Doador Comum</span>
+                    <span style="font-size:0.75rem; font-weight:normal; text-align:center; color:var(--color-text-muted);">Quero doar alimentos, roupas, móveis.</span>
+                </button>
+                <button class="role-tab" data-role="beneficiary" type="button" style="display:flex; flex-direction:column; align-items:center; gap:8px; padding:20px; border-radius:var(--radius-md); height:auto;">
+                    <i data-lucide="user" style="width: 24px; height: 24px; color: var(--color-primary);"></i>
+                    <span style="font-weight:700; font-size:0.95rem;">Beneficiário</span>
+                    <span style="font-size:0.75rem; font-weight:normal; text-align:center; color:var(--color-text-muted);">Preciso solicitar ajuda para minha família.</span>
+                </button>
+                <button class="role-tab" data-role="company" type="button" style="display:flex; flex-direction:column; align-items:center; gap:8px; padding:20px; border-radius:var(--radius-md); height:auto;">
+                    <i data-lucide="shopping-bag" style="width: 24px; height: 24px; color: var(--color-success);"></i>
+                    <span style="font-weight:700; font-size:0.95rem;">Empresa Parceira</span>
+                    <span style="font-size:0.75rem; font-weight:normal; text-align:center; color:var(--color-text-muted);">Supermercados/Redes que doam excedentes.</span>
+                </button>
+                <button class="role-tab" data-role="ong" type="button" style="display:flex; flex-direction:column; align-items:center; gap:8px; padding:20px; border-radius:var(--radius-md); height:auto;">
+                    <i data-lucide="building-2" style="width: 24px; height: 24px; color: var(--color-warning);"></i>
+                    <span style="font-weight:700; font-size:0.95rem;">ONG / Instituição</span>
+                    <span style="font-size:0.75rem; font-weight:normal; text-align:center; color:var(--color-text-muted);">Realizamos coletas e triagem de insumos.</span>
+                </button>
+            </div>
+            <p class="text-center text-sm text-muted" id="role-wizard-hint" style="min-height: 40px; padding: 12px; background:var(--color-bg-main); border-radius:var(--radius-sm);">
+                Doador Comum: Destinado a pessoas físicas que querem apoiar a comunidade.
+            </p>
+        </div>
+        <!-- ETAPA 2: Dados Básicos -->
+        <div class="wizard-step" id="wizard-step-2">
+            <h4 style="font-size: 1.05rem; margin-bottom: 20px; font-weight:600;">Dados de Identificação</h4>
+            <div class="form-grid">
+                <div class="form-group col-12" id="field-name-group">
+                    <label for="reg-wizard-name" id="label-wizard-name">Nome Completo</label>
+                    <input type="text" id="reg-wizard-name" required placeholder="Ex: Roberto Souza">
+                </div>
+                
+                <div class="form-group col-12" id="field-document-group">
+                    <label for="reg-wizard-doc" id="label-wizard-doc">CPF</label>
+                    <input type="text" id="reg-wizard-doc" required placeholder="000.000.000-00">
+                </div>
+                <!-- Campos Exclusivos da ONG -->
+                <div class="form-group col-6 hidden" id="field-ong-resp-name">
+                    <label for="reg-wizard-ong-resp-name">Responsável Legal (Nome)</label>
+                    <input type="text" id="reg-wizard-ong-resp-name" placeholder="Ex: Ana Maria Silva">
+                </div>
+                <div class="form-group col-6 hidden" id="field-ong-resp-doc">
+                    <label for="reg-wizard-ong-resp-cpf">CPF do Responsável</label>
+                    <input type="text" id="reg-wizard-ong-resp-cpf" placeholder="000.000.000-00">
+                </div>
+            </div>
+        </div>
+        <!-- ETAPA 3: Contato, Endereço e Composição -->
+        <div class="wizard-step" id="wizard-step-3">
+            <h4 style="font-size: 1.05rem; margin-bottom: 20px; font-weight:600;">Contato e Informações Complementares</h4>
+            <div class="form-grid">
+                <div class="form-group col-6">
+                    <label for="reg-wizard-email">E-mail para Contato</label>
+                    <input type="email" id="reg-wizard-email" required placeholder="contato@email.com">
+                </div>
+                <div class="form-group col-6">
+                    <label for="reg-wizard-phone">Celular / WhatsApp</label>
+                    <input type="text" id="reg-wizard-phone" required placeholder="(11) 99999-9999">
+                </div>
+                <div class="form-group col-12">
+                    <label for="reg-wizard-address">Endereço Completo</label>
+                    <input type="text" id="reg-wizard-address" required placeholder="Rua, Número, Bairro, Cidade - Estado">
+                </div>
+                
+                <!-- Campos Exclusivos de Beneficiários (Composição Familiar) -->
+                <div class="form-group col-12 hidden" id="fields-beneficiary-composition">
+                    <label style="margin-bottom: 5px;">Composição do Núcleo Familiar</label>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+                        <div class="form-group">
+                            <label for="reg-wizard-size" style="font-size: 0.8rem;">Pessoas</label>
+                            <input type="number" id="reg-wizard-size" min="1" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-wizard-kids" style="font-size: 0.8rem;">Crianças (0-12)</label>
+                            <input type="number" id="reg-wizard-kids" min="0" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-wizard-elderly" style="font-size: 0.8rem;">Idosos (60+)</label>
+                            <input type="number" id="reg-wizard-elderly" min="0" value="0">
+                        </div>
+                    </div>
+                </div>
+                <!-- Campo Exclusivo de Upload de Comprovante de ONGs -->
+                <div class="form-group col-12 hidden" id="field-ong-doc-group">
+                    <label for="reg-wizard-ong-doc">Documento de Comprovação da ONG (PDF, CNPJ Ativo ou Estatuto)</label>
+                    <div class="file-upload-wrapper" style="border: 2px dashed var(--color-border); border-radius: var(--radius-md); padding: 20px; text-align: center; cursor: pointer; position: relative;">
+                        <i data-lucide="upload-cloud" style="width:36px; height:36px; color:var(--color-primary); margin-bottom:8px;"></i>
+                        <p id="wizard-file-name" style="font-size: 0.85rem; color: var(--color-text-muted); margin:0;">Clique para anexar arquivo</p>
+                        <input type="file" id="reg-wizard-ong-doc" accept=".pdf,image/*" style="position: absolute; top:0; left:0; width:100%; height:100%; opacity:0; cursor:pointer;">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ETAPA 4: Senha e Confirmação -->
+        <div class="wizard-step" id="wizard-step-4">
+            <h4 style="font-size: 1.05rem; margin-bottom: 20px; font-weight:600;">Segurança e Políticas</h4>
+            <div class="form-grid">
+                <div class="form-group col-6">
+                    <label for="reg-wizard-pass">Crie sua Senha</label>
+                    <input type="password" id="reg-wizard-pass" required placeholder="No mínimo 6 caracteres">
+                </div>
+                <div class="form-group col-6">
+                    <label for="reg-wizard-pass-confirm">Confirme sua Senha</label>
+                    <input type="password" id="reg-wizard-pass-confirm" required placeholder="Repita a senha">
+                </div>
+                
+                <div class="col-12" style="margin-top: 15px;">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="reg-wizard-terms" required>
+                        <span>Declaro que li e concordo com as Políticas de Privacidade e Termos de Uso.</span>
+                    </label>
+                </div>
+                
+                <!-- Alerta exclusivo para ONGs cadastrando -->
+                <div class="col-12 info-badge warning hidden" id="wizard-ong-warning" style="display:flex; gap:10px; padding:15px; background: rgba(245,158,11,0.08); border: 1px solid var(--color-warning); border-radius: var(--radius-sm); margin-top: 15px;">
+                    <i data-lucide="alert-triangle" style="color:var(--color-warning); flex-shrink:0;"></i>
+                    <span style="font-size: 0.8rem; color:var(--color-text-main);"><strong>Importante:</strong> Para liberação completa do painel, nossa moderação revisará os comprovantes anexados em até 48h.</span>
+                </div>
+            </div>
+        </div>
+        <!-- Rodapé de Botões de Navegação -->
+        <div class="wizard-footer-buttons">
+            <button class="btn btn-secondary" id="wizard-prev-btn" disabled type="button">Voltar</button>
+            <button class="btn btn-primary" id="wizard-next-btn" type="button">Avançar</button>
+        </div>
+    </div>
+</div>

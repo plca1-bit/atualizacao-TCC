@@ -1,0 +1,61 @@
+<section id="brecho-section" class="app-section section-padding container">
+    <div class="section-header">
+        <h2>Brechó Solidário</h2>
+        <p>Compre produtos e ajude a financiar nossas campanhas. Cada compra gera renda para as ONGs parceiras.</p>
+    </div>
+    <div class="filter-bar">
+        <div class="search-box">
+            <i data-lucide="search"></i>
+            <input type="text" id="brecho-search" placeholder="Pesquisar produtos no brechó...">
+        </div>
+        <div class="filter-options">
+            <select id="brecho-filter-category">
+                <option value="all">Todas as Categorias</option>
+                <option value="clothing">Roupas</option>
+                <option value="shoes">Calçados</option>
+                <option value="accessories">Acessórios</option>
+                <option value="others">Outros</option>
+            </select>
+        </div>
+    </div>
+    <div class="brecho-layout">
+        <div class="products-grid" id="brecho-products-grid"></div>
+        <aside class="cart-sidebar">
+            <div class="cart-header">
+                <h3>Sua Sacola</h3>
+                <span id="cart-count" class="badge">0 itens</span>
+            </div>
+            <hr>
+            <div id="cart-items-container" class="cart-items"></div>
+            <hr>
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cart-total-value">R$ 0,00</span>
+            </div>
+            <button id="checkout-cart-btn" class="btn btn-primary add-cart-btn" style="margin-top: 15px;" disabled>
+                Finalizar Compra
+            </button>
+        </aside>
+    </div>
+    <div id="brecho-checkout-modal" class="modal-backdrop hidden">
+        <div class="modal-card">
+            <button class="modal-close-btn" id="close-brecho-checkout-btn" aria-label="Fechar checkout">&times;</button>
+            <div class="modal-header">
+                <h3>Finalizar Compra</h3>
+                <p>Contribua com o Brechó Solidário efetuando o pagamento simbólico via PIX.</p>
+            </div>
+            <div class="checkout-summary-box" style="background: var(--color-primary-light); padding: 16px; border-radius: var(--radius-sm); margin-bottom: 20px; text-align: center; border: 1px solid var(--color-border);">
+                <p style="margin: 0; font-size: 0.95rem; color: var(--color-text-main);">Total a pagar: <strong id="checkout-total-price" style="font-size: 1.35rem; color: var(--color-primary);">R$ 0,00</strong></p>
+            </div>
+            <div class="qr-code-box" style="display:flex; justify-content:center; margin-bottom: 15px;">
+                <div class="qr-placeholder" style="border: 1px solid var(--color-border); padding: 12px; border-radius: var(--radius-md); background: white;">
+                    <i data-lucide="qr-code" style="width: 110px; height: 110px; color: var(--color-primary);"></i>
+                </div>
+            </div>
+            <div class="pix-key-copy" style="display:flex; gap:8px; margin-bottom: 20px;">
+                <input type="text" value="chave-pix-tcc-brecho-simulado@ponte.org" readonly style="flex-grow:1; padding:10px 12px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-size: 0.8rem; background: var(--color-bg-main); color: var(--color-text-main); outline:none;">
+            </div>
+            <button id="confirm-brecho-pix-payment" class="btn btn-success full-width btn-lg">Confirmar Pagamento</button>
+        </div>
+    </div>
+</section>

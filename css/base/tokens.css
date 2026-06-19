@@ -1,0 +1,94 @@
+/* ==========================================
+   PONTE SOLIDÁRIA - DESIGN SYSTEM TOKENS
+   ========================================== */
+:root {
+    /* Color Palette - Light Mode (Nubank & Airbnb inspired) */
+    --color-primary: hsl(265, 80%, 45%);        /* Nubank soft purple */
+    --color-primary-hover: hsl(265, 80%, 35%);
+    --color-primary-light: hsl(265, 80%, 96%);  /* Light purple background fill */
+    
+    --color-secondary-pink: hsl(330, 85%, 97%); /* Welcoming tone */
+    --color-accent-pink: hsl(330, 80%, 55%);     /* Soft rose highlight */
+    --color-accent-pink-hover: hsl(330, 80%, 45%);
+    --color-accent-purple-light: hsl(265, 30%, 85%);
+    --color-bg-main: hsl(0, 0%, 98%);           /* Clean off-white background */
+    --color-bg-card: hsl(0, 0%, 100%);          /* White card base */
+    --color-bg-nav: rgba(255, 255, 255, 0.88);  /* Blurred transparent header */
+    
+    --color-text-main: hsl(265, 30%, 12%);      /* Dark gray with purple undertone */
+    --color-text-muted: hsl(265, 10%, 45%);     /* Soft readable gray */
+    --color-text-on-primary: hsl(0, 0%, 100%);
+    
+    --color-border: hsl(265, 20%, 92%);         /* Very light gray border */
+    --color-success: hsl(145, 63%, 38%);        /* Standard green success */
+    --color-warning: hsl(38, 92%, 48%);         /* Alert gold */
+    --color-danger: hsl(354, 70%, 54%);         /* Alert red */
+    /* Typography scale */
+    --font-heading: 'Outfit', 'Inter', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-base-size: 16px;
+    /* Shadow layers */
+    --shadow-sm: 0 2px 10px rgba(131, 24, 255, 0.04);
+    --shadow-md: 0 10px 30px rgba(131, 24, 255, 0.06);
+    --shadow-lg: 0 20px 50px rgba(131, 24, 255, 0.1);
+    
+    /* Radius */
+    --radius-sm: 8px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-round: 50%;
+    
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --container-width: 1140px;
+}
+/* Base Dark Mode variables */
+body.dark-mode {
+    --color-bg-main: hsl(265, 20%, 6%);
+    --color-bg-card: hsl(265, 15%, 10%);
+    --color-bg-nav: rgba(18, 12, 28, 0.88);
+    
+    --color-primary: hsl(265, 90%, 68%);
+    --color-primary-hover: hsl(265, 90%, 75%);
+    --color-primary-light: hsl(265, 40%, 14%);
+    
+    --color-secondary-pink: hsl(330, 40%, 12%);
+    --color-accent-pink: hsl(330, 80%, 64%);
+    --color-accent-pink-hover: hsl(330, 80%, 72%);
+    --color-accent-purple-light: hsl(265, 30%, 25%);
+    --color-text-main: hsl(265, 10%, 94%);
+    --color-text-muted: hsl(265, 5%, 72%);
+    --color-text-on-primary: hsl(265, 20%, 6%);
+    
+    --color-border: hsl(265, 15%, 18%);
+    
+    --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+/* Accessibility - High Contrast Mode overrides */
+body.high-contrast {
+    --color-bg-main: #000000 !important;
+    --color-bg-card: #000000 !important;
+    --color-bg-nav: #000000 !important;
+    
+    --color-primary: #ffff00 !important;       /* Bright yellow links/buttons */
+    --color-primary-hover: #ffffff !important;
+    --color-primary-light: #1c1c1c !important;
+    
+    --color-secondary-pink: #1c1c1c !important;
+    --color-accent-pink: #00ffff !important;     /* Cyan highlights */
+    --color-accent-pink-hover: #ffffff !important;
+    --color-accent-purple-light: #333333 !important;
+    --color-text-main: #ffffff !important;
+    --color-text-muted: #e0e0e0 !important;
+    --color-text-on-primary: #000000 !important;
+    
+    --color-border: #ffffff !important;
+    --color-success: #00ff00 !important;
+    --color-warning: #ffff00 !important;
+    --color-danger: #ff0000 !important;
+    
+    --shadow-sm: none !important;
+    --shadow-md: none !important;
+    --shadow-lg: none !important;
+}

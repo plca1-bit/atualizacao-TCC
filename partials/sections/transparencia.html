@@ -1,0 +1,90 @@
+<section id="transparency-section" class="app-section section-padding container">
+    <div class="section-header">
+        <h2 id="title-transparency">Portal de Transparência</h2>
+        <p id="desc-transparency">Acreditamos que a confiança é construída com clareza. Acompanhe a destinação de todos os recursos arrecadados e o progresso das nossas campanhas.</p>
+    </div>
+
+    <div class="transparency-grid">
+        <div class="transparency-card">
+            <h3>Destinação de Recursos Financeiros</h3>
+            <p class="card-desc">Como dividimos os valores doados para as compras logísticas e de insumos.</p>
+            
+            <div class="chart-container">
+                <div class="custom-pie-chart">
+                    <div class="pie-slice" style="--start: 0; --end: 270; --color: var(--color-primary, #3b82f6);">75% Alimentos</div>
+                    <div class="pie-slice" style="--start: 270; --end: 324; --color: var(--color-accent-pink, #ec4899);">15% Higiene</div>
+                    <div class="pie-slice" style="--start: 324; --end: 360; --color: var(--color-accent-purple-light, #a855f7);">10% Logística</div>
+                    <div class="pie-center-hole"></div>
+                </div>
+            </div>
+
+            <ul class="chart-legend">
+                <li><span class="legend-color" style="background-color: var(--color-primary, #3b82f6);"></span> <strong>75%</strong> Compra de Cestas de Alimentos</li>
+                <li><span class="legend-color" style="background-color: var(--color-accent-pink, #ec4899);"></span> <strong>15%</strong> Compra de Produtos de Higiene</li>
+                <li><span class="legend-color" style="background-color: var(--color-accent-purple-light, #a855f7);"></span> <strong>10%</strong> Custos Logísticos e de Entrega</li>
+            </ul>
+        </div>
+
+        <div class="transparency-card text-card">
+            <h3>Auditoria e Segurança contra Golpes</h3>
+            <p class="audit-intro">Para mitigar contas falsas e fraudes, a Ponte Solidária implementa:</p>
+            <ul class="audit-list">
+                <li>
+                    <div class="audit-icon-wrapper">
+                        <i data-lucide="shield-check" class="text-success"></i>
+                    </div>
+                    <div>
+                        <strong>Validação Rigorosa de ONGs:</strong> 
+                        <span class="audit-text">Cada ONG cadastrada precisa enviar documentos (estatuto social, CNPJ ativo, comprovante de sede) antes de poder resgatar doações.</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="audit-icon-wrapper">
+                        <i data-lucide="shield-check" class="text-success"></i>
+                    </div>
+                    <div>
+                        <strong>Monitoramento de Denúncias:</strong> 
+                        <span class="audit-text">Doadores e beneficiários podem reportar atividades suspeitas. Nossa equipe de moderação responde a denúncias em até 24 horas.</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="audit-icon-wrapper">
+                        <i data-lucide="shield-check" class="text-success"></i>
+                    </div>
+                    <div>
+                        <strong>Limitação de Pedidos por CPF:</strong> 
+                        <span class="audit-text">Famílias beneficiárias têm limite de solicitações de cestas básicas frequentes para evitar o acúmulo de insumos em detrimento de outros necessitados.</span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="delivery-history-container">
+        <h3>Histórico de Entregas Recentes</h3>
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Doador</th>
+                        <th>Tipo</th>
+                        <th>Descrição</th>
+                        <th>Valor</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="delivery-history-tbody">
+                    <tr>
+                        <td>18/06/2026</td>
+                        <td>Carlos Silva</td>
+                        <td>Financeiro</td>
+                        <td>Doação via Pix</td>
+                        <td>R$ 150,00</td>
+                        <td><span class="status-badge success">Concluído</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

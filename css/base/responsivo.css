@@ -1,0 +1,185 @@
+/* ========================================================
+   PONTE SOLIDÁRIA - RESPONSIVENESS & CONSOLIDATED QUERIES
+   ======================================================== */
+/* Notebooks & Tablets grandes (max-width: 992px) */
+@media (max-width: 992px) {
+    .hero-container {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 50px;
+    }
+    .hero-description {
+        margin: 0 auto 30px auto;
+    }
+    .hero-ctas {
+        justify-content: center;
+    }
+    .hero-visual {
+        margin-top: 20px;
+    }
+    .hero-photo-card {
+        max-width: 340px;
+        height: 380px;
+    }
+    .badge-float-1 {
+        left: -20px;
+    }
+    .badge-float-2 {
+        right: -10px;
+    }
+    .impact-gallery {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .steps-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+    }
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    .testimonials-slider {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+    }
+    
+    .admin-grid {
+        grid-template-columns: 1fr;
+    }
+    .company-layout-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    
+    .col-span-2, .col-span-3 {
+        grid-column: span 1;
+    }
+}
+/* Celulares & Tablets normais (max-width: 768px) */
+@media (max-width: 768px) {
+    .main-header {
+        height: 70px;
+    }
+    
+    /* Menu Sanduíche Drawer */
+    .mobile-nav-toggle {
+        display: block !important;
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--color-text-main);
+        padding: 8px;
+        border-radius: var(--radius-sm);
+        transition: var(--transition);
+    }
+    .mobile-nav-toggle:hover {
+        background-color: var(--color-primary-light);
+    }
+    
+    .main-nav {
+        position: fixed;
+        top: 70px;
+        left: -100%;
+        width: 100%;
+        height: calc(100vh - 70px);
+        background-color: var(--color-bg-card);
+        z-index: 4400;
+        transition: left 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        padding: 40px 30px;
+        border-top: 1px solid var(--color-border);
+        display: block;
+    }
+    .main-nav.active {
+        left: 0;
+    }
+    
+    .nav-list {
+        flex-direction: column;
+        gap: 24px;
+        align-items: center;
+        width: 100%;
+    }
+    .nav-link {
+        font-size: 1.25rem;
+        padding: 8px 20px;
+    }
+    
+    .connection-status {
+        display: none !important; /* Oculta indicador demo em telas pequenas */
+    }
+    .hero-title {
+        font-size: 2.3rem;
+    }
+    .hero-description {
+        font-size: 0.95rem;
+    }
+    .impact-gallery {
+        grid-template-columns: 1fr;
+    }
+    .steps-grid {
+        grid-template-columns: 1fr;
+    }
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    .testimonials-slider {
+        grid-template-columns: 1fr;
+    }
+    .form-grid {
+        gap: 12px;
+    }
+    .col-6, .col-4 {
+        grid-column: span 12;
+    }
+    
+    /* Margens e Espaçamentos Mobile */
+    .section-padding {
+        padding: 40px 0;
+    }
+    
+    .donations-tabs {
+        gap: 8px;
+    }
+    .tab-btn {
+        padding: 8px 16px;
+        font-size: 0.88rem;
+    }
+    
+    /* Janela de Chat no Mobile */
+    .chat-window {
+        width: 92vw;
+        height: 80vh;
+        bottom: 70px;
+    }
+    .chat-sidebar-contacts {
+        width: 80px; /* Reduz sidebar de contatos para focar apenas nos avatares no mobile */
+    }
+    .contact-details {
+        display: none !important; /* Oculta nomes longos no menu lateral no mobile */
+    }
+    .contact-item {
+        justify-content: center;
+        padding: 12px 0;
+    }
+    
+    .logistics-timeline-visual {
+        flex-direction: column;
+        gap: 20px;
+        padding-left: 20px;
+    }
+    .logistics-timeline-visual .timeline-step {
+        flex-direction: row;
+        text-align: left;
+        align-items: center;
+        gap: 16px;
+    }
+    .logistics-timeline-visual .step-num {
+        margin-bottom: 0;
+    }
+    .logistics-timeline-visual .step-desc {
+        max-width: 100%;
+    }
+    .timeline-line {
+        display: none; /* Oculta linhas no fluxograma vertical mobile */
+    }
+}
