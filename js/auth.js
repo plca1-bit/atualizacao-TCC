@@ -1,5 +1,5 @@
 /* ==========================================
-   PONTE SOLIDÁRIA - ENGINE JAVASCRIPT (APP)
+   PONTE SOLIDÁRIA - ENGINE JAVASCRIPT (AUTH & APP)
    ========================================== */
 
 // 1. DICTIONARY FOR TRANSLATION (PT-BR / EN)
@@ -187,9 +187,8 @@ class AppState {
 const state = new AppState();
 
 // 4. UI CONTROLLER AND EVENT LISTENERS
-document.addEventListener("DOMContentLoaded", () => {
-    // Initialize Lucide Icons
-    lucide.createIcons();
+document.addEventListener("includesLoaded", () => {
+    if (window.lucide) lucide.createIcons();
 
     // Elements Selectors
     const body = document.body;
@@ -268,8 +267,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const adminPendingOngsTbody = document.getElementById("admin-pending-ongs-tbody");
     const adminCampaignsTbody = document.getElementById("admin-campaigns-tbody");
     const adminComplaintsList = document.getElementById("admin-complaints-list");
-
-    // Transparency
     const deliveryHistoryTbody = document.getElementById("delivery-history-tbody");
 
     // Certificate
@@ -293,25 +290,32 @@ document.addEventListener("DOMContentLoaded", () => {
     const chatActiveAvatar = document.getElementById("chat-active-avatar");
     const chatNotifBadge = document.getElementById("chat-notif-badge");
 
-    // Developer Images
-    document.getElementById("dev-photo-1").src = "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=300&q=80";
-    document.getElementById("dev-photo-2").src = "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80";
-    document.getElementById("dev-photo-3").src = "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80";
+    // Developer Images (Protegido contra elementos ausentes)
+    const devPhoto1 = document.getElementById("dev-photo-1");
+    if (devPhoto1) {
+        devPhoto1.src = "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=300&q=80";
+        const devPhoto2 = document.getElementById("dev-photo-2");
+        if (devPhoto2) devPhoto2.src = "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80";
+        const devPhoto3 = document.getElementById("dev-photo-3");
+        if (devPhoto3) devPhoto3.src = "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80";
+    }
 
     let activeChatRecipient = null;
 
     // --- APPLICATION STARTUP ---
     applyTheme();
     applyLanguage();
-    updateUserAuthUI();
-    renderRequests();
-    renderCampaigns();
-    renderDeliveryHistory();
-    renderNotifications();
+    if (typeof updateUserAuthUI === "function") updateUserAuthUI();
+    if (typeof renderRequests === "function") renderRequests();
+    if (typeof renderCampaigns === "function") renderCampaigns();
+    if (typeof renderDeliveryHistory === "function") renderDeliveryHistory();
+    if (typeof renderNotifications === "function") renderNotifications();
 
     // --- TOAST NOTIFICATIONS ---
     function showToast(message, type = "success") {
         const container = document.getElementById("toast-container");
+        if (!container) return;
+        
         const toast = document.createElement("div");
         toast.className = `toast ${type}`;
         
@@ -324,7 +328,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <span>${message}</span>
         `;
         container.appendChild(toast);
-        lucide.createIcons();
+        if (window.lucide) lucide.createIcons();
         
         setTimeout(() => {
             toast.style.opacity = '0';
@@ -335,26 +339,38 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- SYSTEM THEME ---
     function applyTheme() {
+        if (!body) return;
         body.className = state.theme;
-        if (state.theme === "dark-mode") {
-            themeBtn.querySelector(".dark-icon").classList.add("hidden");
-            themeBtn.querySelector(".light-icon").classList.remove("hidden");
-        } else {
-            themeBtn.querySelector(".dark-icon").classList.remove("hidden");
-            themeBtn.querySelector(".light-icon").classList.add("hidden");
+        
+        if (themeBtn) {
+            const darkIcon = themeBtn.querySelector(".dark-icon");
+            const lightIcon = themeBtn.querySelector(".light-icon");
+            
+            if (state.theme === "dark-mode") {
+                if (darkIcon) darkIcon.classList.add("hidden");
+                if (lightIcon) lightIcon.classList.remove("hidden");
+            } else {
+                if (darkIcon) darkIcon.classList.remove("hidden");
+                if (lightIcon) lightIcon.classList.add("hidden");
+            }
         }
     }
 
-    themeBtn.addEventListener("click", () => {
-        state.theme = state.theme === "light-mode" ? "dark-mode" : "light-mode";
-        localStorage.setItem("ps_theme", state.theme);
-        applyTheme();
-    });
+    if (themeBtn) {
+        themeBtn.addEventListener("click", () => {
+            state.theme = state.theme === "light-mode" ? "dark-mode" : "light-mode";
+            localStorage.setItem("ps_theme", state.theme);
+            applyTheme();
+        });
+    }
 
     // --- LANGUAGE SYSTEM ---
     function applyLanguage() {
-        currentLangCode.innerText = state.lang === "pt-BR" ? "PT" : "EN";
+        if (currentLangCode) {
+            currentLangCode.innerText = state.lang === "pt-BR" ? "PT" : "EN";
+        }
         const dictionary = translations[state.lang];
+        if (!dictionary) return;
         
         for (const [key, value] of Object.entries(dictionary)) {
             const el = document.getElementById(key);
@@ -368,24 +384,26 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    langBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        langMenu.classList.toggle("hidden");
-    });
+    if (langBtn) {
+        langBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (langMenu) langMenu.classList.toggle("hidden");
+        });
+    }
 
     document.querySelectorAll(".lang-option").forEach(opt => {
         opt.addEventListener("click", () => {
             state.lang = opt.getAttribute("data-lang");
             localStorage.setItem("ps_lang", state.lang);
             applyLanguage();
-            langMenu.classList.add("hidden");
+            if (langMenu) langMenu.classList.add("hidden");
             showToast(state.lang === "pt-BR" ? "Idioma alterado para Português!" : "Language switched to English!");
         });
     });
 
     document.addEventListener("click", () => {
-        langMenu.classList.add("hidden");
-        notifMenu.classList.add("hidden");
+        if (langMenu) langMenu.classList.add("hidden");
+        if (notifMenu) notifMenu.classList.add("hidden");
     });
 
     // --- ROUTING / SWITCH VIEW ---
@@ -398,32 +416,50 @@ document.addEventListener("DOMContentLoaded", () => {
             navLinks.forEach(nl => nl.classList.remove("active"));
             link.classList.add("active");
             
-            // Close mobile menu
-            document.querySelector(".main-nav").classList.remove("active");
+            const mainNav = document.querySelector(".main-nav");
+            if (mainNav) mainNav.classList.remove("active");
+            
             const mobileToggle = document.querySelector(".mobile-nav-toggle");
-            mobileToggle.querySelector(".menu-icon").classList.remove("hidden");
-            mobileToggle.querySelector(".close-icon").classList.add("hidden");
+            if (mobileToggle) {
+                const menuIcon = mobileToggle.querySelector(".menu-icon");
+                const closeIcon = mobileToggle.querySelector(".close-icon");
+                if (menuIcon) menuIcon.classList.remove("hidden");
+                if (closeIcon) closeIcon.classList.add("hidden");
+            }
         });
     });
 
-    // Header buttons & Hero buttons routing
-    document.getElementById("logo-btn").addEventListener("click", (e) => {
-        e.preventDefault();
-        switchSection("home-section");
-        document.getElementById("nav-home").click();
-    });
+    const logoBtn = document.getElementById("logo-btn");
+    if (logoBtn) {
+        logoBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            switchSection("home-section");
+            const navHome = document.getElementById("nav-home");
+            if (navHome) navHome.click();
+        });
+    }
 
-    document.getElementById("hero-donate-btn").addEventListener("click", () => {
-        switchSection("donations-section");
-        document.getElementById("nav-donations").click();
-        document.getElementById("tab-requests").click();
-    });
+    const heroDonateBtn = document.getElementById("hero-donate-btn");
+    if (heroDonateBtn) {
+        heroDonateBtn.addEventListener("click", () => {
+            switchSection("donations-section");
+            const navDonations = document.getElementById("nav-donations");
+            const tabRequests = document.getElementById("tab-requests");
+            if (navDonations) navDonations.click();
+            if (tabRequests) tabRequests.click();
+        });
+    }
 
-    document.getElementById("hero-help-btn").addEventListener("click", () => {
-        switchSection("donations-section");
-        document.getElementById("nav-donations").click();
-        document.getElementById("tab-request-form").click();
-    });
+    const heroHelpBtn = document.getElementById("hero-help-btn");
+    if (heroHelpBtn) {
+        heroHelpBtn.addEventListener("click", () => {
+            switchSection("donations-section");
+            const navDonations = document.getElementById("nav-donations");
+            const tabRequestForm = document.getElementById("tab-request-form");
+            if (navDonations) navDonations.click();
+            if (tabRequestForm) tabRequestForm.click();
+        });
+    }
 
     function switchSection(targetId) {
         sections.forEach(sec => {
@@ -438,27 +474,35 @@ document.addEventListener("DOMContentLoaded", () => {
         window.scrollTo(0, 0);
     }
 
-    // Mobile nav toggle
     const mobileToggle = document.querySelector(".mobile-nav-toggle");
-    mobileToggle.addEventListener("click", () => {
-        const nav = document.querySelector(".main-nav");
-        const isOpen = nav.classList.toggle("active");
-        
-        mobileToggle.querySelector(".menu-icon").classList.toggle("hidden", isOpen);
-        mobileToggle.querySelector(".close-icon").classList.toggle("hidden", !isOpen);
-    });
+    if (mobileToggle) {
+        mobileToggle.addEventListener("click", () => {
+            const nav = document.querySelector(".main-nav");
+            if (!nav) return;
+            const isOpen = nav.classList.toggle("active");
+            
+            const menuIcon = mobileToggle.querySelector(".menu-icon");
+            const closeIcon = mobileToggle.querySelector(".close-icon");
+            if (menuIcon) menuIcon.classList.toggle("hidden", isOpen);
+            if (closeIcon) closeIcon.classList.toggle("hidden", !isOpen);
+        });
+    }
 
     // --- NOTIFICATION SYSTEM ---
-    notifBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        notifMenu.classList.toggle("hidden");
-    });
+    if (notifBtn) {
+        notifBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (notifMenu) notifMenu.classList.toggle("hidden");
+        });
+    }
 
-    clearNotifBtn.addEventListener("click", () => {
-        state.setNotifications([]);
-        renderNotifications();
-        showToast("Notificações limpas.");
-    });
+    if (clearNotifBtn) {
+        clearNotifBtn.addEventListener("click", () => {
+            state.setNotifications([]);
+            renderNotifications();
+            showToast("Notificações limpas.");
+        });
+    }
 
     function addNotification(text) {
         const notifs = state.getNotifications();
@@ -468,14 +512,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function renderNotifications() {
+        if (!notificationList) return;
         const notifs = state.getNotifications();
         const unreadCount = notifs.filter(n => !n.read).length;
         
-        if (unreadCount > 0) {
-            notifBadge.innerText = unreadCount;
-            notifBadge.classList.remove("hidden");
-        } else {
-            notifBadge.classList.add("hidden");
+        if (notifBadge) {
+            if (unreadCount > 0) {
+                notifBadge.innerText = unreadCount;
+                notifBadge.classList.remove("hidden");
+            } else {
+                notifBadge.classList.add("hidden");
+            }
         }
         
         notificationList.innerHTML = "";
@@ -501,21 +548,25 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // --- AUTH MODALS & USER CONTROLLER ---
-    openLoginBtn.addEventListener("click", () => loginModal.classList.remove("hidden"));
-    openRegisterBtn.addEventListener("click", () => registerModal.classList.remove("hidden"));
-    closeLoginBtn.addEventListener("click", () => loginModal.classList.add("hidden"));
-    closeRegisterBtn.addEventListener("click", () => registerModal.classList.add("hidden"));
-    switchToRegister.addEventListener("click", (e) => {
-        e.preventDefault();
-        loginModal.classList.add("hidden");
-        registerModal.classList.remove("hidden");
-    });
+    if (openLoginBtn) openLoginBtn.addEventListener("click", () => loginModal && loginModal.classList.remove("hidden"));
+    if (openRegisterBtn) openRegisterBtn.addEventListener("click", () => registerModal && registerModal.classList.remove("hidden"));
+    if (closeLoginBtn) closeLoginBtn.addEventListener("click", () => loginModal && loginModal.classList.add("hidden"));
+    if (closeRegisterBtn) closeRegisterBtn.addEventListener("click", () => registerModal && registerModal.classList.add("hidden"));
+    
+    if (switchToRegister) {
+        switchToRegister.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (loginModal) loginModal.classList.add("hidden");
+            if (registerModal) registerModal.classList.remove("hidden");
+        });
+    }
 
-    promptLoginBtn.addEventListener("click", () => {
-        loginModal.classList.remove("hidden");
-    });
+    if (promptLoginBtn) {
+        promptLoginBtn.addEventListener("click", () => {
+            if (loginModal) loginModal.classList.remove("hidden");
+        });
+    }
 
-    // Switch between Common Person and ONG register form tabs
     roleTabs.forEach(tab => {
         tab.addEventListener("click", () => {
             roleTabs.forEach(t => t.classList.remove("active"));
@@ -523,134 +574,159 @@ document.addEventListener("DOMContentLoaded", () => {
             
             const role = tab.getAttribute("data-role");
             if (role === "common") {
-                registerCommonForm.classList.remove("hidden");
-                registerOngForm.classList.add("hidden");
+                if (registerCommonForm) registerCommonForm.classList.remove("hidden");
+                if (registerOngForm) registerOngForm.classList.add("hidden");
             } else {
-                registerCommonForm.classList.add("hidden");
-                registerOngForm.classList.remove("hidden");
+                if (registerCommonForm) registerCommonForm.classList.add("hidden");
+                if (registerOngForm) registerOngForm.classList.remove("hidden");
             }
         });
     });
 
-    // Simulate Document selection name display
     const fileInput = document.getElementById("reg-ong-doc");
     const fileNameSpan = document.getElementById("file-upload-name");
-    fileInput.addEventListener("change", (e) => {
-        if (e.target.files.length > 0) {
-            fileNameSpan.innerText = `Arquivo carregado: ${e.target.files[0].name}`;
-            fileNameSpan.style.color = 'var(--color-primary)';
-        }
-    });
+    if (fileInput && fileNameSpan) {
+        fileInput.addEventListener("change", (e) => {
+            if (e.target.files.length > 0) {
+                fileNameSpan.innerText = `Arquivo carregado: ${e.target.files[0].name}`;
+                fileNameSpan.style.color = 'var(--color-primary)';
+            }
+        });
+    }
 
-    // Common register submission
-    registerCommonForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const users = state.getUsers();
-        
-        const email = document.getElementById("reg-common-email").value;
-        if (users.find(u => u.email === email)) {
-            showToast("Erro: E-mail já cadastrado.", "danger");
-            return;
-        }
+    if (registerCommonForm) {
+        registerCommonForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const users = state.getUsers();
+            
+            const emailEl = document.getElementById("reg-common-email");
+            const email = emailEl ? emailEl.value : "";
+            if (users.find(u => u.email === email)) {
+                showToast("Erro: E-mail já cadastrado.", "danger");
+                return;
+            }
 
-        const pass = document.getElementById("reg-common-pass").value;
-        const passConfirm = document.getElementById("reg-common-pass-confirm").value;
-        if (pass !== passConfirm) {
-            showToast("Erro: Senhas não conferem.", "danger");
-            return;
-        }
+            const passEl = document.getElementById("reg-common-pass");
+            const passConfirmEl = document.getElementById("reg-common-pass-confirm");
+            const pass = passEl ? passEl.value : "";
+            const passConfirm = passConfirmEl ? passConfirmEl.value : "";
+            if (pass !== passConfirm) {
+                showToast("Erro: Senhas não conferem.", "danger");
+                return;
+            }
 
-        const newUser = {
-            id: `u-${Date.now()}`,
-            name: document.getElementById("reg-common-name").value,
-            cpf: document.getElementById("reg-common-cpf").value,
-            email: email,
-            phone: document.getElementById("reg-common-phone").value,
-            address: document.getElementById("reg-common-address").value,
-            password: pass,
-            role: "common"
-        };
+            const nameEl = document.getElementById("reg-common-name");
+            const cpfEl = document.getElementById("reg-common-cpf");
+            const phoneEl = document.getElementById("reg-common-phone");
+            const addressEl = document.getElementById("reg-common-address");
 
-        users.push(newUser);
-        state.setUsers(users);
-        
-        showToast("Conta criada com sucesso! Faça login para continuar.");
-        registerModal.classList.add("hidden");
-        loginModal.classList.remove("hidden");
-    });
+            const newUser = {
+                id: `u-${Date.now()}`,
+                name: nameEl ? nameEl.value : "",
+                cpf: cpfEl ? cpfEl.value : "",
+                email: email,
+                phone: phoneEl ? phoneEl.value : "",
+                address: addressEl ? addressEl.value : "",
+                password: pass,
+                role: "common"
+            };
 
-    // ONG register submission
-    registerOngForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const users = state.getUsers();
-        
-        const email = document.getElementById("reg-ong-email").value;
-        if (users.find(u => u.email === email)) {
-            showToast("Erro: E-mail institucional já cadastrado.", "danger");
-            return;
-        }
+            users.push(newUser);
+            state.setUsers(users);
+            
+            showToast("Conta criada com sucesso! Faça login para continuar.");
+            if (registerModal) registerModal.classList.add("hidden");
+            if (loginModal) loginModal.classList.remove("hidden");
+        });
+    }
 
-        const pass = document.getElementById("reg-ong-pass").value;
-        const passConfirm = document.getElementById("reg-ong-pass-confirm").value;
-        if (pass !== passConfirm) {
-            showToast("Erro: Senhas não conferem.", "danger");
-            return;
-        }
+    if (registerOngForm) {
+        registerOngForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const users = state.getUsers();
+            
+            const emailEl = document.getElementById("reg-ong-email");
+            const email = emailEl ? emailEl.value : "";
+            if (users.find(u => u.email === email)) {
+                showToast("Erro: E-mail institucional já cadastrado.", "danger");
+                return;
+            }
 
-        const docFile = fileInput.files[0];
-        const newOng = {
-            id: `u-${Date.now()}`,
-            name: document.getElementById("reg-ong-name").value,
-            cnpj: document.getElementById("reg-ong-cnpj").value,
-            email: email,
-            phone: document.getElementById("reg-ong-phone").value,
-            respName: document.getElementById("reg-ong-resp-name").value,
-            respCpf: document.getElementById("reg-ong-resp-cpf").value,
-            address: document.getElementById("reg-ong-address").value,
-            password: pass,
-            role: "ong",
-            docName: docFile ? docFile.name : "documento_verificacao.pdf",
-            status: "pending", // Always pending admin validation
-            verified: false
-        };
+            const passEl = document.getElementById("reg-ong-pass");
+            const passConfirmEl = document.getElementById("reg-ong-pass-confirm");
+            const pass = passEl ? passEl.value : "";
+            const passConfirm = passConfirmEl ? passConfirmEl.value : "";
+            if (pass !== passConfirm) {
+                showToast("Erro: Senhas não conferem.", "danger");
+                return;
+            }
 
-        users.push(newOng);
-        state.setUsers(users);
-        
-        showToast("Solicitação de cadastro da ONG enviada! A equipe de segurança analisará os documentos.", "warning");
-        addNotification(`Novo cadastro de ONG pendente: ${newOng.name}`);
-        registerModal.classList.add("hidden");
-        
-        renderAdminPanel();
-    });
+            const nameEl = document.getElementById("reg-ong-name");
+            const cnpjEl = document.getElementById("reg-ong-cnpj");
+            const phoneEl = document.getElementById("reg-ong-phone");
+            const respNameEl = document.getElementById("reg-ong-resp-name");
+            const respCpfEl = document.getElementById("reg-ong-resp-cpf");
+            const addressEl = document.getElementById("reg-ong-address");
 
-    // Login Form Submission
-    loginForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const email = document.getElementById("login-email").value;
-        const pass = document.getElementById("login-password").value;
-        
-        const users = state.getUsers();
-        const user = users.find(u => u.email === email && u.password === pass);
+            const docFile = fileInput && fileInput.files ? fileInput.files[0] : null;
+            const newOng = {
+                id: `u-${Date.now()}`,
+                name: nameEl ? nameEl.value : "",
+                cnpj: cnpjEl ? cnpjEl.value : "",
+                email: email,
+                phone: phoneEl ? phoneEl.value : "",
+                respName: respNameEl ? respNameEl.value : "",
+                respCpf: respCpfEl ? respCpfEl.value : "",
+                address: addressEl ? addressEl.value : "",
+                password: pass,
+                role: "ong",
+                docName: docFile ? docFile.name : "documento_verificacao.pdf",
+                status: "pending",
+                verified: false
+            };
 
-        if (!user) {
-            showToast("Erro: Credenciais inválidas.", "danger");
-            return;
-        }
+            users.push(newOng);
+            state.setUsers(users);
+            
+            showToast("Solicitação de cadastro da ONG enviada! A equipe de segurança analisará os documentos.", "warning");
+            addNotification(`Novo cadastro de ONG pendente: ${newOng.name}`);
+            if (registerModal) registerModal.classList.add("hidden");
+            
+            renderAdminPanel();
+        });
+    }
 
-        performLogin(user);
-    });
+    if (loginForm) {
+        loginForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const emailEl = document.getElementById("login-email");
+            const passEl = document.getElementById("login-password");
+            const email = emailEl ? emailEl.value : "";
+            const pass = passEl ? passEl.value : "";
+            
+            const users = state.getUsers();
+            const user = users.find(u => u.email === email && u.password === pass);
 
-    // Quick Admin Login
-    adminQuickLogin.addEventListener("click", () => {
-        const admin = state.getUsers().find(u => u.role === "admin");
-        performLogin(admin);
-    });
+            if (!user) {
+                showToast("Erro: Credenciais inválidas.", "danger");
+                return;
+            }
+
+            performLogin(user);
+        });
+    }
+
+    if (adminQuickLogin) {
+        adminQuickLogin.addEventListener("click", () => {
+            const admin = state.getUsers().find(u => u.role === "admin");
+            performLogin(admin);
+        });
+    }
 
     function performLogin(user) {
         state.setCurrentUser(user);
-        updateUserAuthUI();
-        loginModal.classList.add("hidden");
+        if (typeof updateUserAuthUI === "function") updateUserAuthUI();
+        if (loginModal) loginModal.classList.add("hidden");
         showToast(`Bem-vindo, ${user.name}!`);
         
         if (user.role === "admin") {
@@ -659,252 +735,33 @@ document.addEventListener("DOMContentLoaded", () => {
             document.querySelectorAll(".admin-only").forEach(el => el.classList.add("hidden"));
         }
         
-        // Render panels and forms based on credentials
         renderAdminPanel();
-        updateHelpRequestFormState();
-        renderRequests();
-        chatWidget.classList.remove("hidden");
+        if (typeof updateHelpRequestFormState === "function") updateHelpRequestFormState();
+        if (typeof renderRequests === "function") renderRequests();
+        if (chatWidget) chatWidget.classList.remove("hidden");
     }
 
-    logoutBtn.addEventListener("click", () => {
-        state.setCurrentUser(null);
-        updateUserAuthUI();
-        showToast("Você saiu da sua conta.");
-        document.querySelectorAll(".admin-only").forEach(el => el.classList.add("hidden"));
-        switchSection("home-section");
-        document.getElementById("nav-home").click();
-        updateHelpRequestFormState();
-        renderRequests();
-        chatWidget.classList.add("hidden");
-        chatWindow.classList.add("hidden");
-    });
+    if (window.lucide) lucide.createIcons();
 
-    function updateUserAuthUI() {
-        if (state.currentUser) {
-            userAuthZone.classList.add("hidden");
-            userProfileZone.classList.remove("hidden");
-            userDisplayName.innerText = state.currentUser.name;
-            userAvatarChar.innerText = state.currentUser.name.charAt(0);
-            
-            let roleText = "Doador";
-            if (state.currentUser.role === "admin") roleText = "Administrador";
-            if (state.currentUser.role === "ong") {
-                roleText = state.currentUser.verified ? "ONG Verificada" : "ONG Pendente";
-            }
-            userDisplayRole.innerText = roleText;
-            
-            if (state.currentUser.role === "admin") {
-                document.querySelectorAll(".admin-only").forEach(el => el.classList.remove("hidden"));
-            }
-            chatWidget.classList.remove("hidden");
-        } else {
-            userAuthZone.classList.remove("hidden");
-            userProfileZone.classList.add("hidden");
-            chatWidget.classList.add("hidden");
-        }
-    }
-
-    function updateHelpRequestFormState() {
-        if (state.currentUser && state.currentUser.role === "common") {
-            helpRequestAuthPrompt.classList.add("hidden");
-            helpRequestForm.classList.remove("hidden");
-        } else {
-            helpRequestAuthPrompt.classList.remove("hidden");
-            helpRequestForm.classList.add("hidden");
-        }
-    }
-
-    // --- BASKET AUTOMATIC SUGGESTIONS ---
-    reqFamilyMembers.addEventListener("input", calculateBasketSuggestion);
-    
-    function calculateBasketSuggestion() {
-        const size = parseInt(reqFamilyMembers.value) || 1;
-        
-        let title = "";
-        let desc = "";
-        
-        if (size <= 2) {
-            title = "Sugestão Automática: Cesta Pequena";
-            desc = "Recomendado para residências de 1 a 2 pessoas. Contém alimentos essenciais secos (arroz, feijão, óleo, sal, açúcar) para abastecer a quinzena.";
-        } else if (size >= 3 && size <= 5) {
-            title = "Sugestão Automática: Cesta Média";
-            desc = "Recomendado para residências de 3 a 5 pessoas. Contém porções extras de grãos, macarrão, extrato de tomate, leite em pó e biscoitos, além de sabonete e pasta dental adicionais.";
-        } else {
-            title = "Sugestão Automática: Cesta Grande";
-            desc = "Recomendado para residências de 6 ou mais pessoas. Contém sacos de grãos de 5kg, óleo adicional, enlatados diversos, aveia, achocolatado e um kit higiene reforçado (xampu, desodorante, papel higiênico).";
-        }
-
-        suggestionTitle.innerText = title;
-        suggestionDesc.innerText = desc;
-    }
-
-    // Submit Help Request
-    helpRequestForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        
-        const size = parseInt(reqFamilyMembers.value) || 1;
-        let basketType = "Cesta Pequena";
-        if (size >= 3 && size <= 5) basketType = "Cesta Média";
-        if (size >= 6) basketType = "Cesta Grande";
-
-        const reqs = state.getRequests();
-        const newReq = {
-            id: `req-${Date.now()}`,
-            userId: state.currentUser.id,
-            name: `Família de ${state.currentUser.name}`,
-            type: document.getElementById("req-family-type").value,
-            familySize: size,
-            kids: parseInt(document.getElementById("req-family-kids").value) || 0,
-            elderly: parseInt(document.getElementById("req-family-elderly").value) || 0,
-            special: document.getElementById("req-family-special").value || "Nenhuma",
-            frequency: document.getElementById("req-family-frequency").value,
-            description: document.getElementById("req-family-desc").value,
-            date: new Date().toISOString().split('T')[0],
-            status: "active",
-            basketType: basketType
-        };
-
-        reqs.unshift(newReq);
-        state.setRequests(reqs);
-        
-        showToast("Sua solicitação de ajuda foi enviada com sucesso! As ONGs cadastradas foram notificadas.");
-        addNotification(`Nova solicitação de ajuda publicada por: ${state.currentUser.name}`);
-        
-        // Reset form
-        helpRequestForm.reset();
-        calculateBasketSuggestion();
-        
-        // Switch to requests list
-        document.getElementById("tab-requests").click();
-        renderRequests();
-    });
-
-    // --- TAB SWITCHER FOR PORTAL ---
-    tabBtns.forEach(btn => {
+    document.querySelectorAll(".donate-action-btn").forEach(btn => {
         btn.addEventListener("click", () => {
-            tabBtns.forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-            
-            const tabId = btn.getAttribute("data-tab");
-            tabContents.forEach(content => {
-                content.classList.toggle("active", content.id === tabId);
-            });
+            const rec = btn.getAttribute("data-recipient");
+            activeChatRecipient = rec;
+            openChatWindow();
+            showToast(`Chat de conversa aberto com ${rec}. Combine os termos da doação.`);
         });
     });
 
-    // --- MAP SIMULATION CONTROLS ---
-    openMapBtn.addEventListener("click", () => mapContainer.classList.toggle("hidden"));
-    closeMapBtn.addEventListener("click", () => mapContainer.classList.add("hidden"));
-
-    mapPins.forEach(pin => {
-        pin.addEventListener("click", () => {
-            const title = pin.getAttribute("data-title");
-            const need = pin.getAttribute("data-need");
-            
-            mapInfoTitle.innerText = title;
-            mapInfoDesc.innerText = `Necessidade cadastrada: ${need}. Localização a menos de 3km de você.`;
-            mapInfoAction.classList.remove("hidden");
-            
-            mapInfoAction.onclick = () => {
-                showToast(`Iniciando conexão para ajudar: ${title}`);
-                mapContainer.classList.add("hidden");
-                
-                // Switch to chat with target context
-                activeChatRecipient = title;
-                openChatWindow();
-            };
-        });
-    });
-
-    // --- RENDER PORTAL ITEMS ---
-    function renderRequests() {
-        const reqs = state.getRequests();
-        const users = state.getUsers();
-        
-        requestsGrid.innerHTML = "";
-        
-        const filterVal = filterType.value;
-        const searchVal = reqSearch.value.toLowerCase();
-
-        const filtered = reqs.filter(r => {
-            const matchesType = filterVal === "all" || r.type === filterVal;
-            const matchesSearch = r.name.toLowerCase().includes(searchVal) || 
-                                  r.description.toLowerCase().includes(searchVal) ||
-                                  r.type.toLowerCase().includes(searchVal);
-            return matchesType && matchesSearch;
-        });
-
-        if (filtered.length === 0) {
-            requestsGrid.innerHTML = `<div class="col-12 text-center" style="grid-column: span 3; padding: 40px;"><p>Nenhum pedido de ajuda encontrado correspondente aos filtros.</p></div>`;
-            return;
-        }
-
-        filtered.forEach(r => {
-            const userCard = users.find(u => u.id === r.userId);
-            const verifiedLabel = (userCard && userCard.role === "ong" && userCard.verified) 
-                ? `<div class="verified-badge"><i data-lucide="shield-check"></i> ONG Verificada</div>` 
-                : "";
-
-            const card = document.createElement("div");
-            card.className = "request-card";
-            
-            let iconName = "apple";
-            if (r.type === "Higiene") iconName = "soap";
-            if (r.type === "Roupas") iconName = "shirt";
-            if (r.type === "Móveis") iconName = "sofa";
-            
-            card.innerHTML = `
-                <div class="card-header-img">
-                    <div class="card-header-icon"><i data-lucide="${iconName}"></i></div>
-                    <span class="card-tag">${r.type}</span>
-                </div>
-                <div class="card-body">
-                    <div class="card-details">
-                        <h3>${r.name}</h3>
-                        <div class="card-meta">
-                            <span><i data-lucide="calendar"></i> ${r.date}</span>
-                            <span><i data-lucide="package"></i> ${r.basketType || 'Cesta'}</span>
-                        </div>
-                        <p class="card-desc-text">"${r.description}"</p>
-                        <div class="family-badge-container">
-                            <span class="f-badge">Membros: ${r.familySize}</span>
-                            ${r.kids > 0 ? `<span class="f-badge">Crianças: ${r.kids}</span>` : ""}
-                            ${r.elderly > 0 ? `<span class="f-badge">Idosos: ${r.elderly}</span>` : ""}
-                        </div>
-                        ${verifiedLabel}
-                    </div>
-                    <button class="btn btn-primary full-width mt-3 donate-action-btn" data-recipient="${r.name}">
-                        <i data-lucide="heart-handshake"></i> Quero Ajudar
-                    </button>
-                </div>
-            `;
-            requestsGrid.appendChild(card);
-        });
-
-        // Re-run Lucide to render newly added buttons
-        lucide.createIcons();
-
-        // Bind donate buttons
-        document.querySelectorAll(".donate-action-btn").forEach(btn => {
-            btn.addEventListener("click", () => {
-                const rec = btn.getAttribute("data-recipient");
-                activeChatRecipient = rec;
-                openChatWindow();
-                showToast(`Chat de conversa aberto com ${rec}. Combine os termos da doação.`);
-            });
-        });
-    }
-
-    reqSearch.addEventListener("input", renderRequests);
-    filterType.addEventListener("change", renderRequests);
+    if (reqSearch) reqSearch.addEventListener("input", renderRequests);
+    if (filterType) filterType.addEventListener("change", renderRequests);
 
     function renderCampaigns() {
+        if (!campaignsGrid) return;
         const camps = state.getCampaigns();
         campaignsGrid.innerHTML = "";
         
         camps.forEach(c => {
             const percent = Math.min(Math.round((c.current / c.target) * 100), 100);
-            
             const card = document.createElement("div");
             card.className = "campaign-card";
             
@@ -942,14 +799,13 @@ document.addEventListener("DOMContentLoaded", () => {
             campaignsGrid.appendChild(card);
         });
 
-        lucide.createIcons();
+        if (window.lucide) lucide.createIcons();
 
         document.querySelectorAll(".campaign-donate-btn").forEach(btn => {
             btn.addEventListener("click", () => {
                 const id = btn.getAttribute("data-id");
                 const title = btn.getAttribute("data-title");
                 
-                // Simulate increasing campaign contributions
                 const camps = state.getCampaigns();
                 const camp = camps.find(c => c.id === id);
                 if (camp) {
@@ -972,11 +828,11 @@ document.addEventListener("DOMContentLoaded", () => {
             
             const method = btn.getAttribute("data-method");
             if (method === "pix") {
-                pixPaymentFlow.classList.remove("hidden");
-                cardPaymentFlow.classList.add("hidden");
+                if (pixPaymentFlow) pixPaymentFlow.classList.remove("hidden");
+                if (cardPaymentFlow) cardPaymentFlow.classList.add("hidden");
             } else {
-                pixPaymentFlow.classList.add("hidden");
-                cardPaymentFlow.classList.remove("hidden");
+                if (pixPaymentFlow) pixPaymentFlow.classList.add("hidden");
+                if (cardPaymentFlow) cardPaymentFlow.classList.remove("hidden");
             }
         });
     });
@@ -985,83 +841,94 @@ document.addEventListener("DOMContentLoaded", () => {
         btn.addEventListener("click", () => {
             valBtns.forEach(b => b.classList.remove("active"));
             btn.classList.add("active");
-            customDonationVal.value = "";
+            if (customDonationVal) customDonationVal.value = "";
         });
     });
 
-    customDonationVal.addEventListener("input", () => {
-        valBtns.forEach(b => b.classList.remove("active"));
-    });
-
-    generatePixBtn.addEventListener("click", () => {
-        pixQrContainer.classList.remove("hidden");
-        showToast("QR Code PIX gerado com segurança.");
-    });
-
-    copyPixBtn.addEventListener("click", () => {
-        const input = document.getElementById("pix-key");
-        input.select();
-        document.execCommand("copy");
-        showToast("Chave Pix Copiada!");
-    });
-
-    confirmPixBtn.addEventListener("click", () => {
-        let val = 50;
-        const activeValBtn = document.querySelector(".val-btn.active");
-        if (activeValBtn) {
-            val = activeValBtn.getAttribute("data-val");
-        } else if (customDonationVal.value) {
-            val = customDonationVal.value;
-        }
-
-        showToast(`Doação de R$ ${val} via Pix realizada com sucesso!`);
-        pixQrContainer.classList.add("hidden");
-        addNotification(`Obrigado por doar R$ ${val} para a manutenção da rede!`);
-        
-        // Log in transparency delivery history
-        const hist = state.getHistory();
-        hist.unshift({
-            recipient: "Rede de Alimentos Geral",
-            type: "Dinheiro",
-            details: `Doação Financeira de R$ ${val}`,
-            donor: state.currentUser ? state.currentUser.name : "Anônimo",
-            date: new Date().toISOString().split('T')[0],
-            status: "delivered"
+    if (customDonationVal) {
+        customDonationVal.addEventListener("input", () => {
+            valBtns.forEach(b => b.classList.remove("active"));
         });
-        state.setHistory(hist);
-        renderDeliveryHistory();
-    });
+    }
 
-    cardDonationForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const val = document.getElementById("card-value").value;
-        
-        showToast(`Doação de R$ ${val} via Cartão de Crédito aprovada!`, "success");
-        cardDonationForm.reset();
-        
-        // Log in transparency delivery history
-        const hist = state.getHistory();
-        hist.unshift({
-            recipient: "Rede de Alimentos Geral",
-            type: "Dinheiro",
-            details: `Doação Financeira de R$ ${val}`,
-            donor: state.currentUser ? state.currentUser.name : "Anônimo",
-            date: new Date().toISOString().split('T')[0],
-            status: "delivered"
+    if (generatePixBtn) {
+        generatePixBtn.addEventListener("click", () => {
+            if (pixQrContainer) pixQrContainer.classList.remove("hidden");
+            showToast("QR Code PIX gerado com segurança.");
         });
-        state.setHistory(hist);
-        renderDeliveryHistory();
-        addNotification(`Doação de R$ ${val} via Cartão processada com sucesso.`);
-    });
+    }
+
+    if (copyPixBtn) {
+        copyPixBtn.addEventListener("click", () => {
+            const input = document.getElementById("pix-key");
+            if (input) {
+                input.select();
+                document.execCommand("copy");
+                showToast("Chave Pix Copiada!");
+            }
+        });
+    }
+
+    if (confirmPixBtn) {
+        confirmPixBtn.addEventListener("click", () => {
+            let val = 50;
+            const activeValBtn = document.querySelector(".val-btn.active");
+            if (activeValBtn) {
+                val = activeValBtn.getAttribute("data-val");
+            } else if (customDonationVal && customDonationVal.value) {
+                val = customDonationVal.value;
+            }
+
+            showToast(`Doação de R$ ${val} via Pix realizada com sucesso!`);
+            if (pixQrContainer) pixQrContainer.classList.add("hidden");
+            addNotification(`Obrigado por doar R$ ${val} para a manutenção da rede!`);
+            
+            const hist = state.getHistory();
+            hist.unshift({
+                recipient: "Rede de Alimentos Geral",
+                type: "Dinheiro",
+                details: `Doação Financeira de R$ ${val}`,
+                donor: state.currentUser ? state.currentUser.name : "Anônimo",
+                date: new Date().toISOString().split('T')[0],
+                status: "delivered"
+            });
+            state.setHistory(hist);
+            renderDeliveryHistory();
+        });
+    }
+
+    if (cardDonationForm) {
+        cardDonationForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const cardValueEl = document.getElementById("card-value");
+            const val = cardValueEl ? cardValueEl.value : "0";
+            
+            showToast(`Doação de R$ ${val} via Cartão de Crédito aprovada!`, "success");
+            cardDonationForm.reset();
+            
+            const hist = state.getHistory();
+            hist.unshift({
+                recipient: "Rede de Alimentos Geral",
+                type: "Dinheiro",
+                details: `Doação Financeira de R$ ${val}`,
+                donor: state.currentUser ? state.currentUser.name : "Anônimo",
+                date: new Date().toISOString().split('T')[0],
+                status: "delivered"
+            });
+            state.setHistory(hist);
+            renderDeliveryHistory();
+            addNotification(`Doação de R$ ${val} via Cartão processada com sucesso.`);
+        });
+    }
 
     // --- TRANSPARENCY HISTORY RENDERING ---
     function renderDeliveryHistory() {
+        if (!deliveryHistoryTbody) return;
         const history = state.getHistory();
         deliveryHistoryTbody.innerHTML = "";
         
         history.forEach(item => {
             const tr = document.createElement("tr");
-            
             let statusPill = "";
             if (item.status === "delivered") statusPill = `<span class="status-pill delivered">Entregue</span>`;
             if (item.status === "pending") statusPill = `<span class="status-pill pending">Pendente</span>`;
@@ -1080,37 +947,42 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // --- INTERACTIVE CHAT SYSTEM ---
-    chatToggle.addEventListener("click", () => {
-        chatWindow.classList.toggle("hidden");
-        // Clear message count badge
-        chatNotifBadge.classList.add("hidden");
-        chatNotifBadge.innerText = "0";
-        
-        if (!chatWindow.classList.contains("hidden")) {
-            if (!activeChatRecipient) {
-                activeChatRecipient = "Família Silva"; // Default demo chat
+    if (chatToggle) {
+        chatToggle.addEventListener("click", () => {
+            if (chatWindow) chatWindow.classList.toggle("hidden");
+            if (chatNotifBadge) {
+                chatNotifBadge.classList.add("hidden");
+                chatNotifBadge.innerText = "0";
             }
-            openChatWindow();
-        }
-    });
+            if (chatWindow && !chatWindow.classList.contains("hidden")) {
+                if (!activeChatRecipient) {
+                    activeChatRecipient = "Família Silva";
+                }
+                openChatWindow();
+            }
+        });
+    }
 
-    chatClose.addEventListener("click", () => chatWindow.classList.add("hidden"));
+    if (chatClose) {
+        chatClose.addEventListener("click", () => {
+            if (chatWindow) chatWindow.classList.add("hidden");
+        });
+    }
 
     function openChatWindow() {
-        chatWindow.classList.remove("hidden");
-        chatActiveName.innerText = activeChatRecipient;
-        chatActiveAvatar.innerText = activeChatRecipient.charAt(0);
-        
+        if (chatWindow) chatWindow.classList.remove("hidden");
+        if (chatActiveName) chatActiveName.innerText = activeChatRecipient;
+        if (chatActiveAvatar) chatActiveAvatar.innerText = activeChatRecipient ? activeChatRecipient.charAt(0) : "?";
         renderChatMessages();
     }
 
     function renderChatMessages() {
+        if (!chatBody || !activeChatRecipient) return;
         const chats = state.getChats();
         const userConversation = chats[activeChatRecipient] || [
             { sender: "received", text: `Olá! Vi que você quer ajudar com as doações. Como podemos combinar a entrega?`, time: "18:40" }
         ];
         
-        // Save initial message if new conversation
         if (!chats[activeChatRecipient]) {
             chats[activeChatRecipient] = userConversation;
             state.setChats(chats);
@@ -1123,52 +995,50 @@ document.addEventListener("DOMContentLoaded", () => {
             div.innerHTML = `<p>${msg.text}</p>`;
             chatBody.appendChild(div);
         });
-        
         chatBody.scrollTop = chatBody.scrollHeight;
     }
 
-    chatInputForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const text = chatInputText.value.trim();
-        if (!text) return;
+    if (chatInputForm) {
+        chatInputForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            if (!chatInputText || !activeChatRecipient) return;
+            const text = chatInputText.value.trim();
+            if (!text) return;
 
-        const chats = state.getChats();
-        const conv = chats[activeChatRecipient];
-        
-        const now = new Date();
-        const timeStr = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
-        
-        conv.push({ sender: "sent", text, time: timeStr });
-        chats[activeChatRecipient] = conv;
-        state.setChats(chats);
-        
-        chatInputText.value = "";
-        renderChatMessages();
-
-        // Simulate automatic empathetic reply
-        setTimeout(() => {
-            const replies = [
-                "Que ótimo! Podemos combinar de entregar neste sábado à tarde?",
-                "Sim! Muito obrigado pelo apoio de coração.",
-                "Perfeito. O endereço para entrega é a sede da nossa ONG.",
-                "Deus abençoe sua generosidade. Fico no aguardo!"
-            ];
-            const randomReply = replies[Math.floor(Math.random() * replies.length)];
+            const chats = state.getChats();
+            const conv = chats[activeChatRecipient];
+            const now = new Date();
+            const timeStr = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
             
-            conv.push({ sender: "received", text: randomReply, time: timeStr });
+            conv.push({ sender: "sent", text, time: timeStr });
             chats[activeChatRecipient] = conv;
             state.setChats(chats);
             
+            chatInputText.value = "";
             renderChatMessages();
-            
-            // Show badge if chat is minimized
-            if (chatWindow.classList.contains("hidden")) {
-                chatNotifBadge.innerText = parseInt(chatNotifBadge.innerText || 0) + 1;
-                chatNotifBadge.classList.remove("hidden");
-            }
-            showToast(`Nova mensagem de ${activeChatRecipient}`);
-        }, 2000);
-    });
+
+            setTimeout(() => {
+                const replies = [
+                    "Que ótimo! Podemos combinar de entregar neste sábado à tarde?",
+                    "Sim! Muito obrigado pelo apoio de coração.",
+                    "Perfeito. O endereço para entrega é a sede da nossa ONG.",
+                    "Deus abençoe sua generosidade. Fico no aguardo!"
+                ];
+                const randomReply = replies[Math.floor(Math.random() * replies.length)];
+                
+                conv.push({ sender: "received", text: randomReply, time: timeStr });
+                chats[activeChatRecipient] = conv;
+                state.setChats(chats);
+                renderChatMessages();
+                
+                if (chatWindow && chatWindow.classList.contains("hidden") && chatNotifBadge) {
+                    chatNotifBadge.innerText = parseInt(chatNotifBadge.innerText || 0) + 1;
+                    chatNotifBadge.classList.remove("hidden");
+                }
+                showToast(`Nova mensagem de ${activeChatRecipient}`);
+            }, 2000);
+        });
+    }
 
     // --- ADMIN PANEL CONTROLLER ---
     function renderAdminPanel() {
@@ -1176,69 +1046,70 @@ document.addEventListener("DOMContentLoaded", () => {
         const camps = state.getCampaigns();
         const comps = state.getComplaints();
 
-        // 1. Pending ONGs
-        adminPendingOngsTbody.innerHTML = "";
-        const pendingOngs = users.filter(u => u.role === "ong" && u.status === "pending");
-        
-        if (pendingOngs.length === 0) {
-            adminPendingOngsTbody.innerHTML = `<tr><td colspan="5" class="text-center">Nenhuma ONG aguardando validação documental.</td></tr>`;
-        } else {
-            pendingOngs.forEach(ong => {
+        if (adminPendingOngsTbody) {
+            adminPendingOngsTbody.innerHTML = "";
+            const pendingOngs = users.filter(u => u.role === "ong" && u.status === "pending");
+            if (pendingOngs.length === 0) {
+                adminPendingOngsTbody.innerHTML = `<tr><td colspan="5" class="text-center">Nenhuma ONG aguardando validação documental.</td></tr>`;
+            } else {
+                pendingOngs.forEach(ong => {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                        <td><strong>${ong.name}</strong></td>
+                        <td>${ong.cnpj}</td>
+                        <td>${ong.respName}</td>
+                        <td><a href="#" class="view-doc-btn" data-ong-id="${ong.id}"><i data-lucide="file-text"></i> ${ong.docName}</a></td>
+                        <td>
+                            <button class="btn btn-success btn-sm approve-ong-btn" data-ong-id="${ong.id}">Aprovar</button>
+                            <button class="btn btn-secondary btn-sm reject-ong-btn" style="background-color: var(--color-danger); color: white;" data-ong-id="${ong.id}">Reprovar</button>
+                        </td>
+                    `;
+                    adminPendingOngsTbody.appendChild(tr);
+                });
+            }
+        }
+
+        if (adminCampaignsTbody) {
+            adminCampaignsTbody.innerHTML = "";
+            camps.forEach(c => {
                 const tr = document.createElement("tr");
                 tr.innerHTML = `
-                    <td><strong>${ong.name}</strong></td>
-                    <td>${ong.cnpj}</td>
-                    <td>${ong.respName}</td>
-                    <td><a href="#" class="view-doc-btn" data-ong-id="${ong.id}"><i data-lucide="file-text"></i> ${ong.docName}</a></td>
+                    <td><strong>${c.title}</strong></td>
+                    <td>${c.ongName}</td>
+                    <td>${c.current} / ${c.target}</td>
+                    <td>${Math.round((c.current / c.target) * 100)}%</td>
+                    <td><span class="status-pill delivered">Ativa</span></td>
                     <td>
-                        <button class="btn btn-success btn-sm approve-ong-btn" data-ong-id="${ong.id}">Aprovar</button>
-                        <button class="btn btn-secondary btn-sm reject-ong-btn" style="background-color: var(--color-danger); color: white;" data-ong-id="${ong.id}">Reprovar</button>
+                        <button class="btn btn-secondary btn-sm block-campaign-btn" data-id="${c.id}">Pausar</button>
                     </td>
                 `;
-                adminPendingOngsTbody.appendChild(tr);
+                adminCampaignsTbody.appendChild(tr);
             });
         }
 
-        // 2. Campaigns Admin view
-        adminCampaignsTbody.innerHTML = "";
-        camps.forEach(c => {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-                <td><strong>${c.title}</strong></td>
-                <td>${c.ongName}</td>
-                <td>${c.current} / ${c.target}</td>
-                <td>${Math.round((c.current / c.target) * 100)}%</td>
-                <td><span class="status-pill delivered">Ativa</span></td>
-                <td>
-                    <button class="btn btn-secondary btn-sm block-campaign-btn" data-id="${c.id}">Pausar</button>
-                </td>
-            `;
-            adminCampaignsTbody.appendChild(tr);
-        });
+        if (adminComplaintsList) {
+            adminComplaintsList.innerHTML = "";
+            comps.forEach(c => {
+                const li = document.createElement("li");
+                li.innerHTML = `
+                    <div class="complaint-header">
+                        <span>${c.reportedName}</span>
+                        <span class="complaint-reason">${c.reason}</span>
+                    </div>
+                    <div class="complaint-meta" style="font-size: 0.75rem; color: var(--color-text-muted); display: flex; justify-content: space-between; margin-top: 4px;">
+                        <span>Data: ${c.date}</span>
+                        <span class="status-badge" style="font-weight: 700;">${c.status.toUpperCase()}</span>
+                    </div>
+                `;
+                adminComplaintsList.appendChild(li);
+            });
+        }
 
-        // 3. Fraud / Complaints
-        adminComplaintsList.innerHTML = "";
-        comps.forEach(c => {
-            const li = document.createElement("li");
-            li.innerHTML = `
-                <div class="complaint-header">
-                    <span>${c.reportedName}</span>
-                    <span class="complaint-reason">${c.reason}</span>
-                </div>
-                <div class="complaint-meta" style="font-size: 0.75rem; color: var(--color-text-muted); display: flex; justify-content: space-between; margin-top: 4px;">
-                    <span>Data: ${c.date}</span>
-                    <span class="status-badge" style="font-weight: 700;">${c.status.toUpperCase()}</span>
-                </div>
-            `;
-            adminComplaintsList.appendChild(li);
-        });
-
-        lucide.createIcons();
+        if (window.lucide) lucide.createIcons();
         bindAdminEvents();
     }
 
     function bindAdminEvents() {
-        // Approve ONG
         document.querySelectorAll(".approve-ong-btn").forEach(btn => {
             btn.addEventListener("click", () => {
                 const id = btn.getAttribute("data-ong-id");
@@ -1251,7 +1122,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     showToast(`ONG ${ong.name} foi validada com sucesso! Emitindo selo Verificado.`);
                     addNotification(`ONG '${ong.name}' foi aprovada pela moderação.`);
                     
-                    // Automatically append to history/transparency
                     const hist = state.getHistory();
                     hist.unshift({
                         recipient: ong.name,
@@ -1264,15 +1134,12 @@ document.addEventListener("DOMContentLoaded", () => {
                     state.setHistory(hist);
                     
                     renderAdminPanel();
-                    updateUserAuthUI();
-                    
-                    // Show digital certificate modal for approved ONG
+                    if (typeof updateUserAuthUI === "function") updateUserAuthUI();
                     openCertificateModal(ong);
                 }
             });
         });
 
-        // Reject ONG
         document.querySelectorAll(".reject-ong-btn").forEach(btn => {
             btn.addEventListener("click", () => {
                 const id = btn.getAttribute("data-ong-id");
@@ -1288,7 +1155,6 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
 
-        // View simulated docs
         document.querySelectorAll(".view-doc-btn").forEach(btn => {
             btn.addEventListener("click", (e) => {
                 e.preventDefault();
@@ -1301,10 +1167,8 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
 
-        // Pause campaign
         document.querySelectorAll(".block-campaign-btn").forEach(btn => {
             btn.addEventListener("click", () => {
-                const id = btn.getAttribute("data-id");
                 showToast("Campanha pausada administrativamente para auditoria de segurança.", "warning");
             });
         });
@@ -1312,20 +1176,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- CERTIFICATE MODAL CONTROLS ---
     function openCertificateModal(ong) {
+        if (!certificateModal) return;
         certificateModal.classList.remove("hidden");
-        certOngName.innerText = ong.name.toUpperCase();
-        certOngCnpj.innerText = ong.cnpj;
+        if (certOngName) certOngName.innerText = ong.name.toUpperCase();
+        if (certOngCnpj) certOngCnpj.innerText = ong.cnpj;
         
         const now = new Date();
         const dateStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth()+1).padStart(2, '0')}/${now.getFullYear()}`;
-        certDate.innerText = `Emitido em: ${dateStr}`;
-        certCode.innerText = `Código: PS-${Math.floor(10000 + Math.random() * 90000)}-${ong.cnpj.substring(0, 2)}`;
+        if (certDate) certDate.innerText = `Emitido em: ${dateStr}`;
+        if (certCode) certCode.innerText = `Código: PS-${Math.floor(10000 + Math.random() * 90000)}-${ong.cnpj.substring(0, 2)}`;
     }
 
-    closeCertModalBtn.addEventListener("click", () => certificateModal.classList.add("hidden"));
+    if (closeCertModalBtn) {
+        closeCertModalBtn.addEventListener("click", () => {
+            if (certificateModal) certificateModal.classList.add("hidden");
+        });
+    }
     
-    printCertBtn.addEventListener("click", () => {
-        window.print();
-        showToast("Comprovante de Certificado impresso com sucesso.");
-    });
+    if (printCertBtn) {
+        printCertBtn.addEventListener("click", () => {
+            window.print();
+            showToast("Comprovante de Certificado impresso com sucesso.");
+        });
+    }
 });

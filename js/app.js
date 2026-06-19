@@ -1,10 +1,18 @@
 /* ========================================================
    PONTE SOLIDÁRIA - ADMINISTRATION, MODERATION & SVG CHARTS
    ======================================================== */
+
 // Painel principal de administração
 function renderAdminPanel() {
     const isAdmin = appState.user && (appState.user.role === "admin" || appState.user.role === "ong");
     if (!isAdmin) return;
+
+    // Validação de segurança: previne erros se os componentes estruturais do Admin não existirem na página atual
+    if (!document.getElementById("admin-growth-chart") && !document.getElementById("admin-bars-chart")) {
+        console.warn("Elementos visuais do painel administrativo não encontrados no DOM. Ignorando renderização.");
+        return;
+    }
+
     renderAdminDashboardStats();
     renderAdminCharts();
     renderAdminPendingUsers();
@@ -16,26 +24,31 @@ function renderAdminPanel() {
     renderAdminBrechoProducts();
     populateLogisticsSelect();
 }
+
 // Renderiza cartões de estatísticas no Dashboard Admin
 function renderAdminDashboardStats() {
     const totalDonsEl = document.getElementById("admin-stat-total-donations");
     const totalFamEl = document.getElementById("admin-stat-total-families");
     const totalOngsEl = document.getElementById("admin-stat-total-ongs");
     const activeCampEl = document.getElementById("admin-stat-active-campaigns");
+    
     const donations = store.get("ps_demo_donations", []);
     const physical = store.get("ps_demo_physical_donations", []);
     const company = store.get("ps_demo_company_donations", []);
     const requests = store.get("ps_demo_requests", []);
     const campaigns = store.get("ps_demo_campaigns", []);
+    
     const totalDonations = donations.length + physical.length + company.length + 3850;
     const totalFamilies = requests.length + 1240;
     const totalOngs = 45; // Valor demo estático + dinâmicos cadastrados
     const activeCampaigns = campaigns.filter(c => c.status === "active").length + 18;
+    
     if (totalDonsEl) totalDonsEl.textContent = totalDonations;
     if (totalFamEl) totalFamEl.textContent = totalFamilies;
     if (totalOngsEl) totalOngsEl.textContent = totalOngs;
     if (activeCampEl) activeCampEl.textContent = activeCampaigns;
 }
+
 // Injeta os Gráficos SVG no Dashboard
 function renderAdminCharts() {
     // 1. Gráfico de Crescimento (SVG Linha/Área)
@@ -49,25 +62,20 @@ function renderAdminCharts() {
                         <stop offset="100%" stop-color="var(--color-primary)" stop-opacity="0"/>
                     </linearGradient>
                 </defs>
-                <!-- Grid Lines -->
                 <line x1="40" y1="20" x2="480" y2="20" stroke="var(--color-border)" stroke-dasharray="3,3"/>
                 <line x1="40" y1="75" x2="480" y2="75" stroke="var(--color-border)" stroke-dasharray="3,3"/>
                 <line x1="40" y1="130" x2="480" y2="130" stroke="var(--color-border)" stroke-dasharray="3,3"/>
                 <line x1="40" y1="170" x2="480" y2="170" stroke="var(--color-border)"/>
-                <!-- Area Path -->
                 <path d="M 40 170 L 40 140 Q 120 120 200 90 T 360 50 L 480 30 L 480 170 Z" fill="url(#growthGrad)"/>
                 
-                <!-- Line Path -->
                 <path d="M 40 140 Q 120 120 200 90 T 360 50 L 480 30" fill="none" stroke="var(--color-primary)" stroke-width="3" stroke-linecap="round"/>
                 
-                <!-- Interactive Dots -->
                 <circle cx="40" cy="140" r="5" fill="var(--color-primary)" class="chart-dot" title="Jan: 800"/>
                 <circle cx="120" cy="125" r="5" fill="var(--color-primary)" class="chart-dot" title="Fev: 1200"/>
                 <circle cx="200" cy="90" r="5" fill="var(--color-primary)" class="chart-dot" title="Mar: 1800"/>
                 <circle cx="280" cy="80" r="5" fill="var(--color-primary)" class="chart-dot" title="Abr: 2100"/>
                 <circle cx="360" cy="50" r="5" fill="var(--color-primary)" class="chart-dot" title="Mai: 3200"/>
                 <circle cx="480" cy="30" r="5" fill="var(--color-primary)" class="chart-dot" title="Jun: 4100"/>
-                <!-- Labels -->
                 <text x="40" y="190" fill="var(--color-text-muted)" font-size="10" text-anchor="middle">Jan</text>
                 <text x="120" y="190" fill="var(--color-text-muted)" font-size="10" text-anchor="middle">Fev</text>
                 <text x="200" y="190" fill="var(--color-text-muted)" font-size="10" text-anchor="middle">Mar</text>
@@ -77,23 +85,21 @@ function renderAdminCharts() {
             </svg>
         `;
     }
+    
     // 2. Gráfico de Barras Mensais (SVG Columns)
     const barChartContainer = document.getElementById("admin-bars-chart");
     if (barChartContainer) {
         barChartContainer.innerHTML = `
             <svg viewBox="0 0 500 200" width="100%" height="100%" class="admin-chart-svg">
-                <!-- Grid lines -->
                 <line x1="40" y1="20" x2="480" y2="20" stroke="var(--color-border)" stroke-dasharray="3,3"/>
                 <line x1="40" y1="95" x2="480" y2="95" stroke="var(--color-border)" stroke-dasharray="3,3"/>
                 <line x1="40" y1="170" x2="480" y2="170" stroke="var(--color-border)"/>
-                <!-- Bars (Jan - Jun) -->
                 <rect x="55" y="100" width="30" height="70" rx="4" fill="var(--color-primary-light)" stroke="var(--color-primary)" stroke-width="1.5" class="chart-bar-rect"/>
                 <rect x="125" y="80" width="30" height="90" rx="4" fill="var(--color-primary-light)" stroke="var(--color-primary)" stroke-width="1.5" class="chart-bar-rect"/>
                 <rect x="195" y="60" width="30" height="110" rx="4" fill="var(--color-primary-light)" stroke="var(--color-primary)" stroke-width="1.5" class="chart-bar-rect"/>
                 <rect x="265" y="40" width="30" height="130" rx="4" fill="var(--color-primary-light)" stroke="var(--color-primary)" stroke-width="1.5" class="chart-bar-rect"/>
                 <rect x="335" y="30" width="30" height="140" rx="4" fill="var(--color-primary-light)" stroke="var(--color-primary)" stroke-width="1.5" class="chart-bar-rect"/>
                 <rect x="415" y="15" width="30" height="155" rx="4" fill="var(--color-primary)" class="chart-bar-rect"/>
-                <!-- Labels -->
                 <text x="70" y="190" fill="var(--color-text-muted)" font-size="10" text-anchor="middle">Jan</text>
                 <text x="140" y="190" fill="var(--color-text-muted)" font-size="10" text-anchor="middle">Fev</text>
                 <text x="210" y="190" fill="var(--color-text-muted)" font-size="10" text-anchor="middle">Mar</text>
@@ -104,6 +110,7 @@ function renderAdminCharts() {
         `;
     }
 }
+
 // Moderação de ONGs e Empresas
 function renderAdminPendingUsers() {
     const tbody = document.getElementById("admin-pending-users-tbody");
@@ -130,6 +137,7 @@ function renderAdminPendingUsers() {
     `).join("");
     if (window.lucide) lucide.createIcons();
 }
+
 function approveUser(id) {
     const users = store.get("ps_demo_users", []);
     const user = users.find(u => u.id === id);
@@ -141,6 +149,7 @@ function approveUser(id) {
         showToast(`Cadastro de "${user.name}" aprovado com sucesso!`);
     }
 }
+
 function rejectUser(id) {
     let users = store.get("ps_demo_users", []);
     const user = users.find(u => u.id === id);
@@ -152,6 +161,7 @@ function rejectUser(id) {
         showToast(`Cadastro de "${user.name}" rejeitado.`, "info");
     }
 }
+
 // Moderação de Campanhas
 function renderAdminCampaignsModeration() {
     const tbody = document.getElementById("admin-campaigns-moderation-tbody");
@@ -176,6 +186,7 @@ function renderAdminCampaignsModeration() {
         </tr>
     `).join("");
 }
+
 function toggleCampaignStatus(id) {
     const campaigns = store.get("ps_demo_campaigns", []);
     const c = campaigns.find(item => item.id === id);
@@ -187,6 +198,7 @@ function toggleCampaignStatus(id) {
         showToast(`Status da campanha "${c.title}" alterado.`);
     }
 }
+
 // Gerenciamento de Denúncias
 function renderAdminComplaints() {
     const list = document.getElementById("admin-complaints-list");
@@ -218,6 +230,12 @@ function renderAdminComplaints() {
         </li>
     `).join("");
 }
+
+// Declaração segura do mapa logístico para evitar erro de re-declaração global
+if (typeof logisticsStepMap === 'undefined') {
+    window.logisticsStepMap = new Map();
+}
+
 function dismissComplaint(id) {
     let complaints = store.get("ps_demo_complaints", []);
     complaints = complaints.filter(c => c.id !== id);
@@ -225,6 +243,7 @@ function dismissComplaint(id) {
     renderAdminComplaints();
     showToast("Denúncia descartada sem penalidades.");
 }
+
 function resolveComplaint(id, name) {
     let complaints = store.get("ps_demo_complaints", []);
     complaints = complaints.filter(c => c.id !== id);
@@ -234,6 +253,7 @@ function resolveComplaint(id, name) {
     renderAdminComplaints();
     showToast(`O usuário "${name}" foi sinalizado e notificado para esclarecimento.`, "warning");
 }
+
 // Renderiza a triagem de insumos doadores/empresas
 function renderAdminDonationsTriagem() {
     const tbody = document.getElementById("admin-donations-triagem-tbody");
@@ -262,6 +282,7 @@ function renderAdminDonationsTriagem() {
         </tr>
     `).join("");
 }
+
 function triageApprove(type, id) {
     let matchingItem;
     if (type === 'physical') {
@@ -285,9 +306,10 @@ function triageApprove(type, id) {
     store.set("ps_demo_stock", stock);
     renderAdminDonationsTriagem();
     renderAdminStock();
-    loadPublicData();
+    if (typeof loadPublicData === "function") loadPublicData();
     showToast("Item validado e adicionado ao estoque geral da ONG!");
 }
+
 // Renders requests matches/distribution
 function renderAdminRequestsDistribution() {
     const tbody = document.getElementById("admin-requests-distribution-tbody");
@@ -310,6 +332,7 @@ function renderAdminRequestsDistribution() {
         </tr>
     `).join("");
 }
+
 function distributeToRequest(id) {
     const requests = store.get("ps_demo_requests", []);
     const req = requests.find(r => r.id === id);
@@ -326,10 +349,11 @@ function distributeToRequest(id) {
         
         renderAdminRequestsDistribution();
         renderAdminStock();
-        loadPublicData();
+        if (typeof loadPublicData === "function") loadPublicData();
         showToast(`Pedido da ${req.family_name} foi atendido! Estoque atualizado.`);
     }
 }
+
 // Renders stock lists
 function renderAdminStock() {
     const tbody = document.getElementById("admin-stock-tbody");
@@ -349,11 +373,15 @@ function renderAdminStock() {
             </tr>
         `;
     }).join("");
-    // Update progress bars
-    updateStockPercentageUI("stock-pct-alimentos", "stock-bar-alimentos", stock.Alimentos || 0);
-    updateStockPercentageUI("stock-pct-roupas", "stock-bar-roupas", stock.Roupas || 0);
-    updateStockPercentageUI("stock-pct-higiene", "stock-bar-higiene", stock.Higiene || 0);
+    
+    // Update progress bars (Protegido contra elementos ausentes no DOM atual)
+    if (document.getElementById("stock-bar-alimentos") || document.getElementById("stock-pct-alimentos")) {
+        updateStockPercentageUI("stock-pct-alimentos", "stock-bar-alimentos", stock.Alimentos || 0);
+        updateStockPercentageUI("stock-pct-roupas", "stock-bar-roupas", stock.Roupas || 0);
+        updateStockPercentageUI("stock-pct-higiene", "stock-bar-higiene", stock.Higiene || 0);
+    }
 }
+
 function updateStockPercentageUI(pctId, barId, qty) {
     const pct = Math.min(Math.round(qty / 200 * 100), 100);
     const pctEl = document.getElementById(pctId);
@@ -361,6 +389,7 @@ function updateStockPercentageUI(pctId, barId, qty) {
     if (pctEl) pctEl.textContent = `${pct}% da capacidade`;
     if (barEl) barEl.style.width = `${pct}%`;
 }
+
 // Renderiza produtos à venda no Brechó do admin
 function renderAdminBrechoProducts() {
     const tbody = document.getElementById("admin-brecho-products-tbody");
@@ -381,6 +410,7 @@ function renderAdminBrechoProducts() {
     `).join("");
     if (window.lucide) lucide.createIcons();
 }
+
 function adminDeleteBrechoProduct(id) {
     let products = store.get("ps_demo_brecho_products", []);
     const product = products.find(p => p.id === id);
@@ -388,10 +418,11 @@ function adminDeleteBrechoProduct(id) {
         products = products.filter(p => p.id !== id);
         store.set("ps_demo_brecho_products", products);
         renderAdminBrechoProducts();
-        renderBrechoProducts();
+        if (typeof renderBrechoProducts === "function") renderBrechoProducts();
         showToast(`Produto "${product.title}" removido com sucesso.`, "info");
     }
 }
+
 // SIMULADOR LOGÍSTICO (TCC)
 function populateLogisticsSelect() {
     const select = document.getElementById("logistics-select-item");
@@ -400,12 +431,17 @@ function populateLogisticsSelect() {
     const company = store.get("ps_demo_company_donations", []);
     const all = [
         ...physical.map(d => ({ id: d.id, name: d.item_name, donor: d.donor_name, type: 'physical' })),
-        ...company.map(d => ({ id: d.id, name: d.item_name, donor: d.company_name, type: 'company' }))
+        ...company.map(d => ({ id: d.id, name: d.company_name, donor: d.company_name, type: 'company' }))
     ];
     select.innerHTML = '<option value="">-- Selecione um Insumo --</option>' + 
         all.map(d => `<option value="${d.type}-${d.id}">${d.name} (${d.donor})</option>`).join("");
 }
-const logisticsStepMap = new Map();
+
+// Inicialização e vinculação segura do mapa logístico ao escopo global
+if (typeof logisticsStepMap === 'undefined') {
+    window.logisticsStepMap = new Map();
+}
+
 function updateLogisticsSimulator() {
     const select = document.getElementById("logistics-select-item");
     const val = select?.value;
@@ -414,21 +450,22 @@ function updateLogisticsSimulator() {
         if (actions) actions.style.display = "none";
         return;
     }
-    if (!logisticsStepMap.has(val)) {
-        logisticsStepMap.set(val, 1);
+    if (!window.logisticsStepMap.has(val)) {
+        window.logisticsStepMap.set(val, 1);
     }
-    const step = logisticsStepMap.get(val);
+    const step = window.logisticsStepMap.get(val);
     updateLogisticsUI(step, val);
     if (actions) actions.style.display = "block";
 }
+
 function advanceLogisticsFlow() {
     const select = document.getElementById("logistics-select-item");
     const val = select?.value;
     if (!val) return;
-    let step = logisticsStepMap.get(val) || 1;
+    let step = window.logisticsStepMap.get(val) || 1;
     if (step < 6) {
         step++;
-        logisticsStepMap.set(val, step);
+        window.logisticsStepMap.set(val, step);
     }
     // Sincroniza o status da doação correspondente no localStorage para simular atualização em tempo real
     const [type, idStr] = val.split("-");
@@ -451,14 +488,16 @@ function advanceLogisticsFlow() {
         }
     }
     updateLogisticsUI(step, val);
-    loadPublicData(); // Recarrega visões do doador / transparência
+    if (typeof loadPublicData === "function") loadPublicData(); // Recarrega visões do doador / transparência
 }
+
 function updateLogisticsUI(step, val) {
     const stepEls = document.querySelectorAll(".timeline-step");
     const lines = document.querySelectorAll(".timeline-line");
     const statusTitle = document.getElementById("logistics-current-status-title");
     const statusDesc = document.getElementById("logistics-current-status-desc");
     const advanceBtn = document.getElementById("logistics-advance-btn");
+    
     stepEls.forEach((el, i) => {
         const idx = i + 1;
         el.classList.toggle("active", idx === step);
@@ -468,6 +507,7 @@ function updateLogisticsUI(step, val) {
         const idx = i + 1;
         el.classList.toggle("completed", idx < step);
     });
+    
     const steps = ["Registrado", "Validado pela ONG", "Em Estoque", "Match com Família", "Em Rota de Entrega", "Entregue"];
     const descs = [
         "Aguardando validação da ONG.",
@@ -485,6 +525,7 @@ function updateLogisticsUI(step, val) {
         advanceBtn.disabled = step >= 6;
     }
 }
-// Exporta funções para o escopo global
+
+// Exporta funções para o escopo global com segurança
 window.updateLogisticsSimulator = updateLogisticsSimulator;
 window.advanceLogisticsFlow = advanceLogisticsFlow;
