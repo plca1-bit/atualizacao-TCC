@@ -1,0 +1,279 @@
+<!-- ================= DOAÇÕES E PEDIDOS ================= -->
+<section id="donations-section" class="app-section section-padding container">
+    <div class="section-header text-center">
+<br><br>        <h2 id="title-donations-portal">Portal de Doações e Pedidos</h2>
+        <p id="desc-donations-portal">Doe itens, participe de campanhas e registre uma necessidade para mobilizar a rede.</p>
+    </div>
+
+    <div class="donations-tabs" role="tablist" aria-label="Opções do portal de doações">
+        <button class="tab-btn active" type="button" role="tab" aria-selected="true" data-tab="active-campaigns-tab" id="tab-campaigns"><i data-lucide="megaphone"></i> Campanhas</button>
+        <button class="tab-btn" type="button" role="tab" aria-selected="false" data-tab="donate-items-tab" id="tab-items"><i data-lucide="package-plus"></i> Doar itens</button>
+        <button class="tab-btn" type="button" role="tab" aria-selected="false" data-tab="request-help-tab" id="tab-help"><i data-lucide="circle-help"></i> Pedir ajuda</button>
+    </div>
+
+    <!-- Campanhas coletivas -->
+    <div id="active-campaigns-tab" class="tab-content active">
+        <div class="section-header" style="margin-bottom: 8px;">
+            <h3>Campanhas em andamento</h3>
+            <p>Escolha uma campanha e doe os itens que puder disponibilizar.</p>
+        </div>
+        <div class="donations-container">
+            <article class="donation-card">
+                <div class="card-badge badge-campaign">Campanha ativa</div>
+                <h3 class="card-title">Arrecadação de Agasalhos 2026</h3>
+                <p class="card-location"><i data-lucide="calendar-days"></i> Até 30 de junho</p>
+                <p class="card-description">Ajude a reunir 100 cobertores e roupas de inverno para o abrigo municipal.</p>
+                <div class="card-footer">
+                    <span class="category-tag">Inverno</span>
+                    <button class="btn-action" type="button" onclick="document.getElementById('tab-items').click();">Doar itens</button>
+                </div>
+            </article>
+            <article class="donation-card">
+                <div class="card-badge badge-campaign">Meta coletiva</div>
+                <h3 class="card-title">Kit de higiene para idosos</h3>
+                <p class="card-location"><i data-lucide="target"></i> Prioridade da semana</p>
+                <p class="card-description">Sabonetes, creme dental, fraldas geriátricas e produtos de cuidado pessoal.</p>
+                <div class="card-footer">
+                    <span class="category-tag">Higiene</span>
+                    <button class="btn-action" type="button" onclick="document.getElementById('tab-items').click();">Doar itens</button>
+                </div>
+            </article>
+        </div>
+    </div>
+
+    <!-- Doar itens -->
+    <div id="donate-items-tab" class="tab-content">
+        <div class="section-header" style="margin-bottom: 8px;">
+            <h3>Doe um item</h3>
+            <p>Cadastre a doação e escolha como ela será entregue.</p>
+        </div>
+
+        <div class="donation-start-card">
+            <div class="donation-start-text">
+                <div class="donation-start-icon"><i data-lucide="package-plus"></i></div>
+                <div>
+                    <h4>Tem um item para doar?</h4>
+                    <p>Descreva o item e escolha entre entrega direta a um beneficiário ou mediação por uma ONG parceira. Leva menos de 2 minutos.</p>
+                </div>
+            </div>
+            <button class="btn btn-primary btn-lg" type="button" id="open-donation-wizard-btn"><i data-lucide="plus-circle"></i> Nova Doação</button>
+        </div>
+
+        <!-- Minhas doações (como doador e/ou beneficiário) -->
+        <div class="donation-flow-block hidden" id="my-donations-block">
+            <div class="section-header" style="margin-bottom: 8px;">
+                <h3><i data-lucide="list-checks"></i> Minhas doações</h3>
+                <p>Acompanhe cada etapa. O histórico nunca é apagado, apenas o status é atualizado.</p>
+            </div>
+            <div class="flow-cards-grid" id="my-donations-grid"></div>
+        </div>
+
+        <!-- Doações com entrega direta disponíveis para aceite -->
+        <div class="donation-flow-block hidden" id="direct-donations-block">
+            <div class="section-header" style="margin-bottom: 8px;">
+                <h3><i data-lucide="hand-heart"></i> Doações disponíveis para retirada direta</h3>
+                <p>Itens que os doadores preferem entregar sem passar por uma ONG. Aceite para combinar a retirada pelo chat.</p>
+            </div>
+            <div class="flow-cards-grid" id="direct-donations-grid"></div>
+        </div>
+
+        <!-- Solicitações de mediação (visível para contas de ONG) -->
+        <div class="donation-flow-block hidden" id="ong-mediation-block">
+            <div class="section-header" style="margin-bottom: 8px;">
+                <h3><i data-lucide="building-2"></i> Solicitações de mediação para sua ONG</h3>
+                <p>Doações que escolheram sua instituição como mediadora.</p>
+            </div>
+            <div class="flow-cards-grid" id="ong-mediation-grid"></div>
+        </div>
+    </div>
+
+    <!-- Pedir ajuda -->
+    <div id="request-help-tab" class="tab-content">
+        <div class="section-header" style="margin-bottom: 8px;">
+            <h3>Registre uma necessidade</h3>
+            <p>Após o envio, seu pedido será publicado em “Itens Urgentes Coletivos”.</p>
+        </div>
+        <form id="help-request-form" class="help-request-form form-grid">
+            <div class="form-group col-12">
+                <label for="req-family-name">Nome da pessoa ou família responsável</label>
+                <input id="req-family-name" type="text" required maxlength="80" placeholder="Ex.: Família Silva">
+            </div>
+            <div class="form-group col-6">
+                <label for="req-family-city">Cidade / bairro</label>
+                <input id="req-family-city" type="text" required maxlength="100" placeholder="Ex.: Janaúba - MG">
+            </div>
+            <div class="form-group col-6">
+                <label for="req-family-type">Categoria da necessidade</label>
+                <select id="req-family-type" required>
+                    <option value="">Selecione</option>
+                    <option value="Alimentos">Alimentos</option>
+                    <option value="Roupas">Roupas</option>
+                    <option value="Móveis">Móveis</option>
+                    <option value="Remédios">Remédios</option>
+                    <option value="Outros">Outros</option>
+                </select>
+            </div>
+            <div class="form-group col-8">
+                <label for="req-family-item">Item ou necessidade principal</label>
+                <input id="req-family-item" type="text" required maxlength="120" placeholder="Ex.: Cesta básica e leite infantil">
+            </div>
+            <div class="form-group col-4">
+                <label for="req-family-qty">Quantidade</label>
+                <input id="req-family-qty" type="number" required min="1" value="1">
+            </div>
+            <div class="form-group col-6">
+                <label for="req-family-urgency">Urgência</label>
+                <select id="req-family-urgency" required>
+                    <option value="alta">Alta — preciso o quanto antes</option>
+                    <option value="media" selected>Média — nos próximos dias</option>
+                    <option value="baixa">Baixa — posso aguardar</option>
+                </select>
+            </div>
+            <div class="form-group col-12">
+                <label for="req-family-photos">Fotos (opcional)</label>
+                <div class="file-upload-wrapper">
+                    <i data-lucide="upload-cloud"></i>
+                    <p id="req-family-photos-name">Anexe fotos que ajudem a ONG a entender o pedido</p>
+                    <input type="file" id="req-family-photos" accept="image/*" multiple>
+                </div>
+            </div>
+            <div class="form-group col-12">
+                <label for="req-family-desc">Explique brevemente a necessidade</label>
+                <textarea id="req-family-desc" required maxlength="500" rows="4" placeholder="Conte o que é necessário e por que o pedido é urgente."></textarea>
+            </div>
+            <div class="col-12">
+                <p class="form-help-text"><i data-lucide="info"></i> Use apenas informações verdadeiras. Uma ONG parceira vai analisar, podendo aprovar, recusar ou pedir mais informações.</p>
+                <button class="btn btn-primary btn-lg" type="submit"><i data-lucide="send"></i> Publicar pedido urgente</button>
+            </div>
+        </form>
+
+        <!-- Meus pedidos (solicitante acompanha status) -->
+        <div class="donation-flow-block hidden" id="my-pedidos-block" style="margin-top: 32px;">
+            <div class="section-header" style="margin-bottom: 8px;">
+                <h3><i data-lucide="list-checks"></i> Meus pedidos</h3>
+                <p>Acompanhe se a ONG aprovou, recusou ou pediu mais informações.</p>
+            </div>
+            <div class="flow-cards-grid" id="my-pedidos-grid"></div>
+        </div>
+
+        <!-- Pedidos para análise (visível para contas de ONG) -->
+        <div class="donation-flow-block hidden" id="ong-pedidos-block" style="margin-top: 32px;">
+            <div class="section-header" style="margin-bottom: 8px;">
+                <h3><i data-lucide="clipboard-list"></i> Pedidos de ajuda para sua ONG analisar</h3>
+                <p>Aprove, recuse ou peça mais informações. Depois de aprovar, busque uma doação compatível para vincular.</p>
+            </div>
+            <div class="flow-cards-grid" id="ong-pedidos-grid"></div>
+        </div>
+    </div>
+
+    <!-- Necessidades publicadas pelo formulário -->
+    <section class="urgent-needs-section" aria-labelledby="urgent-needs-title">
+        <div class="urgent-needs-heading">
+            <div>
+                <span class="badge-tagline"><i data-lucide="bell-ring" style="width: 14px; height: 14px;"></i> Atualizado pela comunidade</span>
+                <h3 id="urgent-needs-title"><i data-lucide="alert-circle"></i> Itens Urgentes Coletivos</h3>
+                <p>Pedidos cadastrados no portal que precisam de apoio da comunidade.</p>
+            </div>
+            <button class="btn btn-secondary btn-sm" type="button" onclick="document.getElementById('tab-help').click();">Cadastrar necessidade</button>
+        </div>
+        <div class="urgent-items-grid" id="urgent-items-grid" aria-live="polite"></div>
+    </section>
+</section>
+
+<!-- Modal: Nova Doação (wizard de 2 passos) -->
+<div class="modal-backdrop hidden" id="donation-wizard-modal" role="dialog" aria-modal="true" aria-labelledby="donation-wizard-title">
+    <div class="modal-card modal-large">
+        <button class="modal-close-btn" id="close-donation-wizard-btn" type="button" aria-label="Fechar formulário de doação">&times;</button>
+        <div class="modal-header">
+            <h3 id="donation-wizard-title">Nova Doação</h3>
+            <p>Cadastre o item e escolha como ele será entregue.</p>
+        </div>
+
+        <div class="wizard-progress" aria-label="Progresso do cadastro da doação">
+            <div class="wizard-progress-bar-fill" id="donation-wizard-progress-fill"></div>
+            <div class="wizard-node active" data-dstep="1">1</div><div class="wizard-node" data-dstep="2">2</div>
+        </div>
+
+        <form id="donation-wizard-form">
+            <div class="wizard-step active" id="donation-wizard-step-1">
+                <h4 class="wizard-step-title">Dados do item</h4>
+                <div class="form-grid">
+                    <div class="form-group col-6">
+                        <label for="dw-category">Categoria</label>
+                        <select id="dw-category" required>
+                            <option value="">Selecione</option>
+                            <option value="Alimentos">Alimentos / cesta básica</option>
+                            <option value="Roupas">Roupas e calçados</option>
+                            <option value="Móveis">Móveis e eletrodomésticos</option>
+                            <option value="Higiene">Higiene pessoal</option>
+                            <option value="Remédios">Remédios</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="dw-quantity">Quantidade</label>
+                        <input id="dw-quantity" type="number" value="1" min="1" required>
+                    </div>
+                    <div class="form-group col-12">
+                        <label for="dw-item-name">Descrição do item</label>
+                        <input id="dw-item-name" type="text" required maxlength="120" placeholder="Ex.: Pacote de arroz 5 kg">
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="dw-condition">Estado do produto</label>
+                        <select id="dw-condition" required>
+                            <option value="">Selecione</option>
+                            <option value="Novo">Novo (com etiqueta/lacrado)</option>
+                            <option value="Seminovo">Seminovo (pouco uso)</option>
+                            <option value="Usado - conservado">Usado - conservado</option>
+                            <option value="Usado - com desgaste">Usado - com desgaste</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="dw-weight">Peso aproximado (kg)</label>
+                        <input id="dw-weight" type="number" min="0" step="0.1" placeholder="Ex.: 2.5">
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="dw-city">Cidade</label>
+                        <input id="dw-city" type="text" required maxlength="100" placeholder="Ex.: Janaúba - MG">
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="dw-availability">Disponibilidade</label>
+                        <select id="dw-availability" required>
+                            <option value="Imediata">Retirada imediata</option>
+                            <option value="Combinar horário">Preciso combinar horário</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-12">
+                        <label for="dw-photos">Fotos do item (opcional)</label>
+                        <div class="file-upload-wrapper">
+                            <i data-lucide="upload-cloud"></i>
+                            <p id="dw-photos-name">Anexe uma ou mais fotos do item</p>
+                            <input type="file" id="dw-photos" accept="image/*" multiple>
+                        </div>
+                    </div>
+                    <div class="form-group col-12">
+                        <label for="dw-description">Observações</label>
+                        <textarea id="dw-description" maxlength="400" rows="3" placeholder="Detalhes que ajudem na triagem ou na entrega."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="wizard-step" id="donation-wizard-step-2">
+                <h4 class="wizard-step-title">Como deseja entregar?</h4>
+                <div class="role-selector-grid" id="delivery-method-grid">
+                    <button class="role-tab active" data-delivery="direct" type="button"><i data-lucide="handshake"></i><strong>Entregar diretamente</strong><span>O sistema procura um beneficiário. Vocês combinam o local pelo chat.</span></button>
+                    <button class="role-tab" data-delivery="ong" type="button"><i data-lucide="building-2"></i><strong>Mediação de ONG</strong><span>Uma instituição parceira recebe, faz a triagem e organiza a entrega.</span></button>
+                </div>
+
+                <div class="form-group col-12 hidden" id="dw-ong-select-group" style="margin-top: 18px;">
+                    <label for="dw-ong-select">Escolha a instituição</label>
+                    <select id="dw-ong-select"></select>
+                </div>
+
+                <p class="role-wizard-hint" id="delivery-wizard-hint">Entrega direta: assim que um beneficiário aceitar, um chat é aberto para combinar local e horário.</p>
+            </div>
+        </form>
+
+        <div class="wizard-footer-buttons"><button class="btn btn-secondary" id="donation-wizard-prev-btn" disabled type="button">Voltar</button><button class="btn btn-primary" id="donation-wizard-next-btn" type="button">Avançar</button></div>
+    </div>
+</div>

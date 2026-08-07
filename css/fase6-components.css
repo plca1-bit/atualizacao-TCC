@@ -1,0 +1,112 @@
+/* ========================================================
+   ESTILOS - FASE 6: TIMELINE, NOTIFICAÇÕES E CERTIFICADOS
+   ======================================================== */
+
+/* Central de Notificações */
+.notif-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--color-border, #eee);
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.notif-item:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+.notif-item.unread {
+    background-color: rgba(31, 166, 94, 0.08);
+    border-left: 4px solid var(--color-primary, #1fa65e);
+}
+
+.notif-content strong {
+    display: block;
+    font-size: 0.95rem;
+    color: #333;
+}
+
+.notif-content p {
+    margin: 4px 0;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.notif-time {
+    font-size: 0.75rem;
+    color: #999;
+}
+
+/* Timeline / Histórico de Atividades */
+.timeline-group-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-primary, #1fa65e);
+    margin: 16px 0 12px 0;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 4px;
+}
+
+.timeline-list {
+    position: relative;
+    padding-left: 20px;
+    border-left: 2px solid #e2e8f0;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 16px;
+}
+
+.timeline-badge {
+    position: absolute;
+    left: -29px;
+    top: 4px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: var(--color-primary, #1fa65e);
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 2px #e2e8f0;
+}
+
+.timeline-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px 16px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.timeline-category {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: #64748b;
+    letter-spacing: 0.5px;
+}
+
+.timeline-card h5 {
+    margin: 4px 0;
+    font-size: 1rem;
+    color: #1e293b;
+}
+
+.timeline-card p {
+    margin: 0 0 6px 0;
+    font-size: 0.875rem;
+    color: #475569;
+}
+
+/* Cartões de Certificado / Conquistas */
+.certificate-badge-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.certificate-badge-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1) !important;
+}
+
+.badge-icon {
+    font-size: 2.5rem;
+}

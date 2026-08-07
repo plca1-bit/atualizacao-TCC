@@ -1,0 +1,49 @@
+<!-- ================= FLOATING CHAT WIDGET (WHATSAPP WEB-STYLE) ================= -->
+<div id="chat-widget-container" class="chat-widget-container hidden">
+    <!-- Botão de Ativação Flutuante -->
+    <button class="chat-toggle-btn" id="chat-toggle-btn" aria-label="Abrir central de mensagens">
+        <i data-lucide="message-square"></i>
+        <span class="chat-badge hidden" id="chat-notif-badge">0</span>
+    </button>
+    
+    <!-- Janela de Conversa Bipartida -->
+    <div class="chat-window hidden" id="chat-window">
+        <div class="chat-split-body">
+            
+            <!-- Coluna 1: Lista de Conversas (Contatos) -->
+            <div class="chat-sidebar-contacts" id="chat-sidebar-contacts">
+                <!-- Inserido dinamicamente via js/chat.js -->
+            </div>
+            
+            <!-- Coluna 2: Conversa Ativa -->
+            <div class="chat-active-pane">
+                <!-- Cabeçalho da Conversa -->
+                <div class="chat-header">
+                    <div class="chat-user-status">
+                        <span class="user-avatar" id="chat-active-avatar">SP</span>
+                        <div>
+                            <h4 id="chat-active-name" style="margin: 0; font-size: 0.88rem; font-weight: 700; color: var(--color-text-main);">Suporte Ponte Solidária</h4>
+                            <!-- Indicador online e status digitando -->
+                            <span class="status-indicator online" id="chat-active-status">Online</span>
+                        </div>
+                    </div>
+                    <button class="close-btn" id="chat-close-btn" aria-label="Fechar janela de mensagens" style="background: none; border: none; font-size: 1.4rem; font-weight: 700; color: var(--color-text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; transition: var(--transition);">&times;</button>
+                </div>
+                
+                <!-- Corpo das Mensagens -->
+                <div class="chat-body" id="chat-body-messages">
+                    <!-- Inserido dinamicamente via js/chat.js -->
+                </div>
+                
+                <!-- Rodapé de Digitação -->
+                <form class="chat-footer" id="chat-input-form">
+                    <input type="text" id="chat-input-text" placeholder="Escreva uma mensagem..." autocomplete="off" aria-label="Texto da mensagem">
+                    <button type="submit" class="btn btn-primary btn-icon" aria-label="Enviar mensagem" style="border-radius: var(--radius-round); width: 36px; height: 36px; padding: 0;">
+                        <i data-lucide="send" style="width: 16px; height: 16px;"></i>
+                    </button>
+                </form>
+            </div>
+            
+        </div>
+    </div>
+</div>

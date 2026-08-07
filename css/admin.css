@@ -1,0 +1,52 @@
+/* Estilos do painel estao em css/pages/admin-dashboard.css. */
+/* ========================================================
+   ESTILOS DE IMPRESSÃO - RELATÓRIOS DA ONG
+   ======================================================== */
+@media print {
+    /* Esconde elementos de navegação e botões interativos */
+    header,
+    footer,
+    .main-nav,
+    .mobile-nav-toggle,
+    .btn,
+    button,
+    #chat-widget-container,
+    .donations-tabs {
+        display: none !important;
+    }
+
+    /* Ajusta o container principal para largura total em papel A4 */
+    body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-size: 12pt;
+    }
+
+    .app-section,
+    .container {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+    }
+
+    /* Formatação elegante de tabelas e cartões impresso */
+    table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        margin-top: 20px;
+    }
+
+    th, td {
+        border: 1px solid #ddd !important;
+        padding: 8px !important;
+        text-align: left !important;
+    }
+
+    .card, .stat-card {
+        border: 1px solid #ccc !important;
+        page-break-inside: avoid;
+        margin-bottom: 15px;
+    }
+}

@@ -1,0 +1,82 @@
+<section id="admin-section" class="app-section section-padding container hidden">
+    <div class="section-header text-center">
+        <h2>Painel do Administrador</h2>
+        <p>Gestão centralizada de ONGs, moderação de usuários, estatísticas e auditoria de logs.</p>
+    </div>
+
+    <!-- Estatísticas Globais -->
+    <div class="stats-summary-grid mb-4">
+        <div class="stat-summary-card">
+            <span class="number" id="admin-stat-usuarios">0</span>
+            <span class="label">Usuários Cadastrados</span>
+        </div>
+        <div class="stat-summary-card">
+            <span class="number" id="admin-stat-doacoes">0</span>
+            <span class="label">Total de Doações</span>
+        </div>
+        <div class="stat-summary-card">
+            <span class="number" id="admin-stat-vendas">0</span>
+            <span class="label">Vendas Realizadas</span>
+        </div>
+    </div>
+
+    <!-- Tabela 1: Aprovação de ONGs -->
+    <div class="admin-card mb-4">
+        <h3><i data-lucide="check-square"></i> Solicitantes e Aprovação de ONGs</h3>
+        <div class="table-responsive mt-3">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ONG / Instituição</th>
+                        <th>CNPJ</th>
+                        <th>Status</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-ongs-tbody">
+                    <tr><td colspan="4" class="text-center">Carregando ONGs...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Tabela 2: Gestão e Bloqueio de Usuários -->
+    <div class="admin-card mb-4">
+        <h3><i data-lucide="users"></i> Gestão e Moderação de Usuários</h3>
+        <div class="table-responsive mt-3">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>E-mail</th>
+                        <th>Perfil</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-usuarios-tbody">
+                    <tr><td colspan="4" class="text-center">Carregando usuários...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Tabela 3: Auditoria de Logs Automáticos -->
+    <div class="admin-card">
+        <h3><i data-lucide="shield"></i> Logs de Auditoria do Sistema</h3>
+        <div class="table-responsive mt-3">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Data / Hora</th>
+                        <th>Usuário</th>
+                        <th>Ação</th>
+                        <th>Detalhes</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-auditoria-tbody">
+                    <tr><td colspan="4" class="text-center">Carregando histórico de auditoria...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

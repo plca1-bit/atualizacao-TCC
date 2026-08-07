@@ -1,0 +1,92 @@
+<section id="empresas-section" class="app-section section-padding container">
+    <div class="section-header">
+        <h2>Área de Responsabilidade Social Empresarial (RSE)</h2>
+        <p>Portal exclusivo para supermercados, padarias e empresas parceiras. Cadastre excedentes alimentícios ou itens próximos do vencimento e agende a coleta pela nossa rede de ONGs.</p>
+    </div>
+    <!-- Not Logged / Non-Company role Alert -->
+    <div class="not-logged-prompt" id="company-auth-prompt">
+        <i data-lucide="building-2" size="48"></i>
+        <p>Você precisa estar logado como **Empresa Parceira** para acessar as ferramentas de RSE e emitir certificados.</p>
+        <button class="btn btn-primary" id="company-login-prompt-btn">Fazer Login / Cadastrar Empresa</button>
+    </div>
+    <!-- Company Dashboard Panel -->
+    <div class="company-dashboard hidden" id="company-dashboard-panel">
+        <div class="company-welcome-banner">
+            <div>
+                <h3 id="company-welcome-title">Bem-vindo, Carrefour Brasil</h3>
+                <p>Obrigado por ajudar a combater o desperdício de alimentos e a alimentar famílias necessitadas.</p>
+            </div>
+            <div class="company-badge-display">
+                <i data-lucide="award" class="cert-gold-icon"></i>
+                <div>
+                    <strong>Selo RSE 2026</strong>
+                    <span>Empresa Solidária Diamante</span>
+                </div>
+            </div>
+        </div>
+        <div class="company-layout-grid">
+            <!-- Form Card to donate surplus -->
+            <div class="company-card-box">
+                <h4><i data-lucide="plus-circle"></i> Cadastrar Excedente de Estoque</h4>
+                <form id="company-surplus-form" class="form-grid">
+                    <div class="form-group col-12">
+                        <label for="company-item-name">O que deseja doar?</label>
+                        <input type="text" id="company-item-name" required placeholder="Ex: 50kg de Bananas, 30 Pães de Forma, 10 Litros de Leite">
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="company-item-type">Categoria</label>
+                        <select id="company-item-type" required>
+                            <option value="Alimentos">Alimentos Perecíveis</option>
+                            <option value="Alimentos">Alimentos Não-Perecíveis</option>
+                            <option value="Higiene">Produtos de Higiene</option>
+                            <option value="Outros">Outros Insumos</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="company-item-expiry">Data de Vencimento</label>
+                        <input type="date" id="company-item-expiry" required>
+                    </div>
+                    <div class="form-group col-12">
+                        <label for="company-pickup-instructions">Instruções para Retirada</label>
+                        <textarea id="company-pickup-instructions" required rows="2" placeholder="Ex: Retirar na doca 3 de carga e descarga. Falar com supervisor Marcos."></textarea>
+                    </div>
+                    <!-- Agendador -->
+                    <div class="form-group col-6">
+                        <label for="company-pickup-date">Agendar Data de Retirada</label>
+                        <input type="date" id="company-pickup-date" required>
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="company-pickup-time">Turno / Horário</label>
+                        <select id="company-pickup-time" required>
+                            <option value="Manhã (08h às 12h)">Manhã (08h às 12h)</option>
+                            <option value="Tarde (13h às 17h)">Tarde (13h às 17h)</option>
+                            <option value="Noite (18h às 20h)">Noite (18h às 20h)</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mt-2">
+                        <button type="submit" class="btn btn-primary full-width"><i data-lucide="calendar"></i> Agendar Retirada de Insumos</button>
+                    </div>
+                </form>
+            </div>
+            <!-- List of Company Donations and Seal Certificate downloads -->
+            <div class="company-card-box">
+                <h4><i data-lucide="history"></i> Minhas Doações & Selos RSE</h4>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Data Coleta</th>
+                                <th>Status</th>
+                                <th>Certificado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="company-donations-tbody">
+                            <!-- Preenchido via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

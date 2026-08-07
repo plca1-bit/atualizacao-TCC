@@ -1,0 +1,24 @@
+.transparency-hero { max-width: 790px; margin: 0 auto 30px; }
+.transparency-highlights { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 26px; }
+.transparency-highlights article { display: flex; align-items: center; gap: 12px; padding: 18px; background: var(--color-bg-card); border: 1px solid var(--color-border); border-radius: var(--radius-md); }
+.transparency-highlights i { width: 26px; height: 26px; flex: 0 0 auto; color: var(--color-primary); }
+.transparency-highlights strong, .transparency-highlights span { display: block; }
+.transparency-highlights strong { margin-bottom: 3px; color: var(--color-text-main); font-size: .9rem; }
+.transparency-highlights span { color: var(--color-text-muted); font-size: .78rem; line-height: 1.35; }
+.transparency-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+.transparency-card, .delivery-history-container { padding: 27px; background: var(--color-bg-card); border: 1px solid var(--color-border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); }
+.transparency-card-heading, .history-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.transparency-card-heading > i, .history-heading > i { width: 30px; height: 30px; color: var(--color-primary); }
+.transparency-kicker { display: block; margin-bottom: 5px; color: var(--color-primary); font-size: .75rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.transparency-card h3, .delivery-history-container h3 { margin: 0; color: var(--color-text-main); font-family: var(--font-heading); font-size: 1.22rem; }
+.card-desc { margin: 12px 0 22px; color: var(--color-text-muted); font-size: .9rem; line-height: 1.55; }
+.resource-breakdown { display: grid; gap: 18px; }
+.resource-row > div:first-child { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 7px; color: var(--color-text-main); font-size: .88rem; }
+.resource-row strong { color: var(--color-primary); }
+.resource-track { height: 10px; overflow: hidden; background: var(--color-bg-main); border-radius: 999px; }
+.resource-track span { display: block; height: 100%; background: var(--color-primary); border-radius: inherit; }
+.resource-track.pink span { background: var(--color-accent-pink); }.resource-track.purple span { background: #8b5cf6; }
+.transparency-note { display: flex; gap: 7px; margin: 24px 0 0; padding-top: 16px; color: var(--color-text-muted); border-top: 1px solid var(--color-border); font-size: .79rem; line-height: 1.45; }.transparency-note i { width: 16px; height: 16px; flex: 0 0 auto; color: var(--color-primary); }
+.audit-list { display: grid; gap: 18px; padding: 0; margin: 24px 0 0; list-style: none; }.audit-list li { display: flex; align-items: flex-start; gap: 12px; }.audit-icon-wrapper { display: grid; width: 34px; height: 34px; flex: 0 0 auto; color: var(--color-success); background: rgba(31, 166, 94, .12); border-radius: 10px; place-items: center; }.audit-icon-wrapper i { width: 18px; height: 18px; }.audit-list strong { display: block; margin-bottom: 4px; color: var(--color-text-main); font-size: .9rem; }.audit-text { color: var(--color-text-muted); font-size: .84rem; line-height: 1.5; }
+.delivery-history-container { margin-top: 24px; }.history-heading { margin-bottom: 20px; }.history-heading p { margin: 7px 0 0; color: var(--color-text-muted); font-size: .88rem; }.table-responsive { overflow-x: auto; border: 1px solid var(--color-border); border-radius: var(--radius-md); }.data-table { width: 100%; min-width: 680px; border-collapse: collapse; font-size: .88rem; }.data-table th { padding: 13px 15px; color: var(--color-text-muted); background: var(--color-bg-main); font-size: .74rem; font-weight: 800; letter-spacing: .03em; text-align: left; text-transform: uppercase; }.data-table td { padding: 15px; color: var(--color-text-main); border-top: 1px solid var(--color-border); }.data-table tbody tr:hover { background: var(--color-bg-main); }.status-badge { display: inline-block; padding: 5px 9px; border-radius: 999px; font-size: .75rem; font-weight: 750; }.status-badge.success { color: var(--color-success); background: rgba(31, 166, 94, .12); }
+@media (max-width: 760px) { .transparency-highlights, .transparency-grid { grid-template-columns: 1fr; }.transparency-card, .delivery-history-container { padding: 20px; } }

@@ -1,0 +1,287 @@
+<!-- ================= SEÇÃO HOME (PÁGINA INICIAL) ================= -->
+<section id="home-section" class="app-section active-section">
+    
+    <!-- Hero: apresenta as duas ações principais da plataforma -->
+    <div class="hero-banner">
+        <div class="container hero-container">
+            <div class="hero-content">
+                <span class="badge-tagline" id="hero-tagline">
+                    <i data-lucide="sparkles" style="width: 14px; height: 14px;"></i> Construindo Pontes de Solidariedade
+                </span>
+                <h1 class="hero-title" id="hero-title">Transforme solidariedade em ajuda de verdade</h1>
+                <p class="hero-description" id="hero-desc">
+                    Encontre uma forma segura de doar ou cadastre a necessidade da sua família. A Ponte Solidária aproxima pessoas, ONGs e recursos essenciais.
+                </p>
+                <div class="hero-ctas">
+                    <button
+                        class="btn btn-primary btn-lg"
+                        id="hero-donate-items-btn"
+                        type="button"
+                        aria-label="Ir para a aba Doar Itens"
+                        onclick="document.getElementById('nav-donations').click(); document.getElementById('tab-items').click();">
+                        <i data-lucide="heart"></i> <span id="btn-want-donate">Quero Doar</span>
+                    </button>
+                    <button
+                        class="btn btn-secondary btn-lg"
+                        id="hero-request-help-btn"
+                        type="button"
+                        aria-label="Ir para a aba Solicitar Ajuda"
+                        onclick="document.getElementById('nav-donations').click(); document.getElementById('tab-help').click();">
+                        <i data-lucide="hand-helping"></i> <span id="btn-need-help">Preciso de Ajuda</span>
+                    </button>
+                </div>
+                <p class="hero-description" style="font-size: 0.9rem; margin: 18px 0 0;">
+                    <i data-lucide="shield-check" style="width: 16px; height: 16px; vertical-align: -3px;"></i>
+                    Doações e pedidos acompanhados pela rede de ONGs parceiras.
+                </p>
+            </div>
+            
+            <div class="hero-visual">
+                <div class="hero-photo-card">
+                    <img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=800&q=80" alt="Crianças sorrindo em projeto social" loading="lazy">
+                    <div class="hero-badge-float badge-float-1">
+                        <i data-lucide="shield-check"></i>
+                        <span>100% Auditável</span>
+                    </div>
+                    <div class="hero-badge-float badge-float-2">
+                        <i data-lucide="check-circle2"></i>
+                        <span>ONGs Verificadas</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formas de contribuir -->
+    <div class="container impact-gallery-container">
+        <div class="section-header text-center" style="margin-bottom: 28px;">
+            <h2>Escolha como quer ajudar</h2>
+            <p>Direcione sua contribuição para a necessidade que mais combina com você.</p>
+        </div>
+        <div class="impact-gallery">
+            
+            <!-- Card 1: Insumos -->
+            <article class="gallery-item-card" role="button" tabindex="0" aria-label="Doar alimentos e itens de higiene" onclick="document.getElementById('nav-donations').click(); document.getElementById('tab-items').click();" onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); this.click(); }" style="cursor: pointer;">
+                <div class="gallery-image-wrapper">
+                    <img src="https://images.unsplash.com/photo-1593113598332-cd288d649433?auto=format&fit=crop&w=400&q=80" alt="Cestas de alimentos" loading="lazy">
+                    <span class="gallery-category-badge">Alimentação</span>
+                </div>
+                <div class="gallery-card-content">
+                    <div class="gallery-card-header">
+                        <i data-lucide="shopping-bag" class="card-icon"></i>
+                        <h3>Arrecadação de Insumos</h3>
+                    </div>
+                    <p>Doe cestas básicas, alimentos não perecíveis e itens essenciais de higiene.</p>
+                </div>
+            </article>
+
+            <!-- Card 2: Cobertores & Agasalhos -->
+            <article class="gallery-item-card" role="button" tabindex="0" aria-label="Participar das campanhas de agasalhos" onclick="document.getElementById('nav-donations').click(); document.getElementById('tab-campaigns').click();" onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); this.click(); }" style="cursor: pointer;">
+                <div class="gallery-image-wrapper">
+                    <img src="https://images.unsplash.com/photo-1599059813005-11265ba4b4ce?auto=format&fit=crop&w=400&q=80" alt="Roupas quentes" loading="lazy">
+                    <span class="gallery-category-badge">Vestuário</span>
+                </div>
+                <div class="gallery-card-content">
+                    <div class="gallery-card-header">
+                        <i data-lucide="shirt" class="card-icon"></i>
+                        <h3>Cobertores & Agasalhos</h3>
+                    </div>
+                    <p>Participe de campanhas de agasalhos e ajude a aquecer pessoas no inverno.</p>
+                </div>
+            </article>
+
+            <!-- Card 3: Apoio Financeiro -->
+            <article class="gallery-item-card" role="button" tabindex="0" aria-label="Fazer uma doação financeira" onclick="document.getElementById('nav-donations').click(); document.getElementById('tab-money').click();" onkeydown="if(event.key === 'Enter' || event.key === ' ') { event.preventDefault(); this.click(); }" style="cursor: pointer;">
+                <div class="gallery-image-wrapper">
+                    <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=400&q=80" alt="Distribuição voluntária" loading="lazy">
+                    <span class="gallery-category-badge">Doação Direta</span>
+                </div>
+                <div class="gallery-card-content">
+                    <div class="gallery-card-header">
+                        <i data-lucide="coins" class="card-icon"></i>
+                        <h3>Apoio Financeiro</h3>
+                    </div>
+                    <p>Contribua por PIX ou cartão para apoiar projetos e compras urgentes.</p>
+                </div>
+            </article>
+
+        </div>
+    </div>
+
+    <!-- Como Funciona -->
+    <div class="how-it-works container section-padding">
+        <div class="section-header text-center">
+            <h2 id="title-how-works">Como funciona o portal?</h2>
+            <p id="desc-how-works">Criamos um ambiente rápido e seguro para conectar quem precisa com quem quer ajudar.</p>
+        </div>
+        
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-icon step-1">
+                    <i data-lucide="user-plus"></i>
+                </div>
+                <h3 id="step1-title">1. Crie uma Conta</h3>
+                <p id="step1-desc">Cadastre-se como doador (Pessoa Física), empresa parceira de excedentes ou beneficiário.</p>
+            </div>
+            
+            <div class="step-card">
+                <div class="step-icon step-2">
+                    <i data-lucide="plus-circle"></i>
+                </div>
+                <h3 id="step2-title">2. Publique sua Ação</h3>
+                <p id="step2-desc">Cadastre uma doação de insumos ou crie uma solicitação de cesta básica em poucos passos.</p>
+            </div>
+            
+            <div class="step-card">
+                <div class="step-icon step-3">
+                    <i data-lucide="truck"></i>
+                </div>
+                <h3 id="step3-title">3. Entrega Garantida</h3>
+                <p id="step3-desc">As ONGs parceiras validam o pedido, coletam o item e entregam diretamente para a família.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Campanhas em destaque (mesmos dados/estrutura da aba "Campanhas" do
+         Portal de Doações — reaproveita os componentes .donation-card,
+         .card-badge e .btn-action já definidos em css/sections/doacoes.css,
+         sem duplicar CSS novo). -->
+    <div class="campaigns-preview container section-padding">
+        <div class="section-header text-center">
+            <h2 id="title-home-campaigns">Campanhas em andamento</h2>
+            <p id="desc-home-campaigns">Escolha uma campanha ativa das nossas ONGs parceiras e doe os itens que puder disponibilizar.</p>
+        </div>
+
+        <div class="donations-container">
+            <article class="donation-card">
+                <div class="card-badge badge-campaign">Campanha ativa</div>
+                <h3 class="card-title">Arrecadação de Agasalhos 2026</h3>
+                <p class="card-location"><i data-lucide="calendar-days"></i> Até 30 de junho</p>
+                <p class="card-description">Ajude a reunir 100 cobertores e roupas de inverno para o abrigo municipal.</p>
+                <div class="card-footer">
+                    <span class="category-tag">Inverno</span>
+                    <button class="btn-action" type="button" onclick="document.getElementById('nav-donations').click(); document.getElementById('tab-campaigns').click();">Doar itens</button>
+                </div>
+            </article>
+            <article class="donation-card">
+                <div class="card-badge badge-campaign">Meta coletiva</div>
+                <h3 class="card-title">Kit de higiene para idosos</h3>
+                <p class="card-location"><i data-lucide="target"></i> Prioridade da semana</p>
+                <p class="card-description">Sabonetes, creme dental, fraldas geriátricas e produtos de cuidado pessoal.</p>
+                <div class="card-footer">
+                    <span class="category-tag">Higiene</span>
+                    <button class="btn-action" type="button" onclick="document.getElementById('nav-donations').click(); document.getElementById('tab-campaigns').click();">Doar itens</button>
+                </div>
+            </article>
+        </div>
+
+        <div class="section-cta">
+            <button class="btn btn-secondary" type="button" onclick="document.getElementById('nav-donations').click(); document.getElementById('tab-campaigns').click();">
+                Ver todas as campanhas <i data-lucide="arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Indicadores de Impacto (Números Reais) -->
+    <div class="statistics-dashboard">
+        <div class="container section-padding">
+            <div class="section-header text-center light-text">
+                <h2 id="title-impact">Impacto em Tempo Real</h2>
+                <p id="desc-impact">Acompanhe as ações ativas consolidadas pela nossa rede de ajuda mútua.</p>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="home-stat-families">1.240</div>
+                    <div class="stat-label" id="label-families">Famílias Atendidas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="home-stat-donations">3.850</div>
+                    <div class="stat-label" id="label-donations">Itens Entregues</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="home-stat-ongs">45</div>
+                    <div class="stat-label" id="label-ongs">ONGs Integradas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="home-stat-campaigns">18</div>
+                    <div class="stat-label" id="label-campaigns">Campanhas Ativas</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- ONGs parceiras (prévia) — renderizado por renderHomeOngsPreview() em
+         js/doacoes.js, reaproveitando ongsCache/getApprovedOngs(), a mesma
+         lista de instituições já aprovadas e sincronizada em tempo real com
+         a coleção "users" do Firestore (nenhuma consulta nova ao banco). -->
+    <div class="ongs-preview container section-padding">
+        <div class="section-header text-center">
+            <h2 id="title-home-ongs">ONGs parceiras verificadas</h2>
+            <p id="desc-home-ongs">Instituições aprovadas pela nossa moderação, prontas para mediar doações com segurança.</p>
+        </div>
+        <div class="ongs-grid" id="home-ongs-grid" aria-live="polite">
+            <div class="skeleton-card-img skeleton" style="height:140px;"></div>
+            <div class="skeleton-card-img skeleton" style="height:140px;"></div>
+            <div class="skeleton-card-img skeleton" style="height:140px;"></div>
+        </div>
+        <div class="section-cta">
+            <button class="btn btn-secondary" type="button" onclick="document.getElementById('hero-donate-items-btn').click();">
+                Quero doar por uma ONG <i data-lucide="arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Depoimentos -->
+    <div class="testimonials container section-padding">
+        <div class="section-header text-center">
+            <h2 id="title-testimonials">Quem foi ajudado e quem ajuda</h2>
+            <p id="desc-testimonials">Relatos de solidariedade, transparência e transformação social em nossa plataforma.</p>
+        </div>
+        
+        <div class="testimonials-slider">
+            <div class="testimonial-card">
+                <div class="testimonial-content">
+                    <p>"Graças ao Ponte Solidária e à ONG Amor ao Próximo, recebi cestas básicas e fraldas para o meu bebê. Tivemos amparo no momento em que mais precisávamos."</p>
+                </div>
+                <div class="testimonial-user">
+                    <div class="testimonial-avatar">MC</div>
+                    <div>
+                        <h4>Maria do Carmo</h4>
+                        <span class="role">Beneficiária (Mãe Solo)</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testimonial-card">
+                <div class="testimonial-content">
+                    <p>"Tinha móveis em ótimo estado e não sabia como destinar com segurança. Pelo site, encontrei uma família a 2km e fiz a doação. O rastreamento funciona perfeitamente!"</p>
+                </div>
+                <div class="testimonial-user">
+                    <div class="testimonial-avatar">RS</div>
+                    <div>
+                        <h4>Roberto Souza</h4>
+                        <span class="role">Doador Comum</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testimonial-card">
+                <div class="testimonial-content">
+                    <p>"A auditoria dos cadastros nos deu um selo que aumentou nossa arrecadação de insumos em 200%. As pessoas confiam na integridade da nossa instituição."</p>
+                </div>
+                <div class="testimonial-user">
+                    <div class="testimonial-avatar">AS</div>
+                    <div>
+                        <h4>Ana Silva</h4>
+                        <span class="role">Diretora ONG Pão da Vida</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</section>

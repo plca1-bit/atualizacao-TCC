@@ -1,0 +1,45 @@
+<section id="brecho-section" class="app-section section-padding container">
+    <div class="section-header text-center">
+        <span class="badge-tagline"><i data-lucide="shopping-bag" style="width: 14px; height: 14px;"></i> Consumo com propósito</span>
+        <h2>Brechó Solidário</h2>
+        <p>Venda itens em bom estado por preços acessíveis e fortaleça a rede de solidariedade.</p>
+    </div>
+
+    <div class="brecho-layout">
+        <div>
+            <section class="brecho-seller-panel hidden" id="brecho-seller-panel" aria-labelledby="sell-title">
+                <div class="brecho-panel-heading">
+                    <div><h3 id="sell-title"><i data-lucide="circle-plus"></i> Anunciar um item</h3><p>Os anúncios são publicados imediatamente no Brechó. Para manter os preços solidários, o valor máximo é R$ 100,00.</p></div>
+                    <button class="icon-btn" id="close-brecho-seller-form" type="button" aria-label="Fechar formulário de anúncio"><i data-lucide="x"></i></button>
+                </div>
+                <form id="brecho-product-form" class="form-grid">
+                    <div class="form-group col-12"><label for="brecho-product-image">Foto do item</label><input id="brecho-product-image" type="file" accept="image/png,image/jpeg,image/webp" required><small>Envie uma imagem PNG, JPG ou WEBP de até 2 MB.</small></div>
+                    <div class="form-group col-6"><label for="brecho-product-name">Nome do produto</label><input id="brecho-product-name" type="text" required maxlength="80" placeholder="Ex.: Casaco infantil"></div>
+                    <div class="form-group col-6"><label for="brecho-product-price">Preço solidário (R$)</label><input id="brecho-product-price" type="number" required min="1" max="100" step="0.01" placeholder="Ex.: 25,00"></div>
+                    <div class="form-group col-6"><label for="brecho-product-contact">Contato</label><input id="brecho-product-contact" type="text" required maxlength="100" placeholder="WhatsApp ou e-mail"></div>
+                    <div class="form-group col-6"><label for="brecho-product-category">Categoria</label><select id="brecho-product-category" required><option value="Roupas">Roupas</option><option value="Calçados">Calçados</option><option value="Acessórios">Acessórios</option><option value="Casa">Casa</option><option value="Livros">Livros</option><option value="Outros">Outros</option></select></div>
+                    <div class="form-group col-12"><label for="brecho-product-description">Descrição</label><textarea id="brecho-product-description" required maxlength="350" rows="3" placeholder="Informe tamanho, estado de conservação e qualquer detalhe importante."></textarea></div>
+                    <div class="col-12"><button class="btn btn-primary" type="submit"><i data-lucide="upload"></i> Publicar no Brechó</button></div>
+                </form>
+            </section>
+
+            <section class="brecho-storefront" aria-labelledby="storefront-title">
+                <div class="brecho-storefront-heading">
+                    <div><h3 id="storefront-title">Itens disponíveis</h3><p>Pesquise pelo nome e adicione à sua sacola.</p></div>
+                    <button class="btn btn-primary btn-sm" id="open-brecho-seller-form" type="button"><i data-lucide="plus"></i> Adicionar item para vender</button>
+                    <label class="brecho-search" for="brecho-search"><i data-lucide="search"></i><input id="brecho-search" type="search" placeholder="Pesquisar produto"></label>
+                </div>
+                <div class="products-grid" id="brecho-products-grid" aria-live="polite"></div>
+            </section>
+        </div>
+
+        <aside class="cart-sidebar" aria-label="Sacola de compras">
+            <div class="cart-header"><h3><i data-lucide="shopping-bag" style="width: 20px; height: 20px; vertical-align: -4px;"></i> Sua Sacola</h3><span id="cart-count" class="badge" aria-live="polite">0 itens</span></div>
+            <p class="cart-intro">Revise os produtos antes de concluir a compra.</p>
+            <div id="cart-items-container" class="cart-items"><p id="sacola-vazia" class="cart-empty">Sua sacola está vazia.</p><ul id="itens-sacola"></ul></div>
+            <div class="cart-total"><h4>Total: <span id="total-sacola">R$ 0,00</span></h4><button onclick="finalizarPagamento()" class="btn btn-success full-width" type="button"><i data-lucide="credit-card"></i> Finalizar compra</button><p>O vendedor será avisado após a compra.</p></div>
+
+            <div class="seller-notifications" id="brecho-seller-notifications" aria-live="polite"></div>
+        </aside>
+    </div>
+</section>

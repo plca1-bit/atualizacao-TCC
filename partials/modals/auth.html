@@ -1,0 +1,83 @@
+<!-- ================= ENTRAR ================= -->
+<div class="modal-backdrop hidden" id="login-modal" role="dialog" aria-modal="true" aria-labelledby="login-title">
+    <div class="modal-card auth-modal-card">
+        <button class="modal-close-btn" id="close-login-modal-btn" type="button" aria-label="Fechar login">&times;</button>
+        <div class="modal-header">
+            <h3 id="login-title">Entrar na Ponte Solidária</h3>
+            <p>Acesse sua conta para doar, pedir ajuda ou gerenciar entregas.</p>
+        </div>
+        <form id="login-form">
+            <div class="form-group auth-field">
+                <label for="login-email">E-mail</label>
+                <div class="auth-input-icon"><i data-lucide="mail"></i><input type="email" id="login-email" required autocomplete="email" placeholder="voce@email.com"></div>
+            </div>
+            <div class="form-group auth-field">
+                <div class="auth-label-row"><label for="login-password">Senha</label><a href="#" class="forgot-pass-link">Esqueceu a senha?</a></div>
+                <div class="auth-input-icon"><i data-lucide="lock"></i><input type="password" id="login-password" required minlength="6" autocomplete="current-password" placeholder="Sua senha"><button id="toggle-password" type="button" aria-label="Mostrar senha"><i data-lucide="eye"></i></button></div>
+            </div>
+            <label class="checkbox-container auth-remember"><input type="checkbox" id="login-remember"><span>Manter-me conectado</span></label>
+            <button type="submit" class="btn btn-primary btn-lg full-width">Entrar</button>
+            <div class="auth-divider"><span>ou</span></div>
+            <p class="auth-switch-text">Ainda não tem conta? <a href="#" id="switch-to-register">Criar cadastro</a></p>
+        </form>
+    </div>
+</div>
+
+<!-- ================= CADASTRO ================= -->
+<div class="modal-backdrop hidden" id="register-modal" role="dialog" aria-modal="true" aria-labelledby="register-title">
+    <div class="modal-card modal-large auth-modal-card">
+        <button class="modal-close-btn" id="close-register-modal-btn" type="button" aria-label="Fechar cadastro">&times;</button>
+        <div class="modal-header">
+            <h3 id="register-title">Criar uma conta</h3>
+            <p>Escolha seu perfil e complete o cadastro em quatro etapas.</p>
+        </div>
+
+        <div class="wizard-progress" aria-label="Progresso do cadastro">
+            <div class="wizard-progress-bar-fill" id="wizard-progress-fill"></div>
+            <div class="wizard-node active" data-step="1">1</div><div class="wizard-node" data-step="2">2</div><div class="wizard-node" data-step="3">3</div><div class="wizard-node" data-step="4">4</div>
+        </div>
+
+        <div class="wizard-step active" id="wizard-step-1">
+            <h4 class="wizard-step-title">Como você vai usar a plataforma?</h4>
+            <div class="role-selector-grid">
+                <button class="role-tab active" data-role="person" type="button"><i data-lucide="user-round"></i><strong>Pessoa</strong><span>Quero doar, pedir ajuda e/ou comprar no brechó — tudo em uma única conta.</span></button>
+                <button class="role-tab" data-role="ong" type="button"><i data-lucide="building-2"></i><strong>ONG / Instituição</strong><span>Vou receber doações, mediar coletas, triagem e entregas para a comunidade.</span></button>
+            </div>
+            <p class="role-wizard-hint" id="role-wizard-hint">Pessoa: doe itens, solicite ajuda, compre no brechó e acompanhe seu histórico, tudo com o mesmo cadastro.</p>
+        </div>
+
+        <div class="wizard-step" id="wizard-step-2">
+            <h4 class="wizard-step-title">Dados de identificação</h4>
+            <div class="form-grid">
+                <div class="form-group col-12"><label for="reg-wizard-name" id="label-wizard-name">Nome completo</label><input type="text" id="reg-wizard-name" required maxlength="100" placeholder="Ex.: Maria da Silva"></div>
+                <div class="form-group col-12"><label for="reg-wizard-doc" id="label-wizard-doc">CPF</label><input type="text" id="reg-wizard-doc" required maxlength="18" placeholder="000.000.000-00"></div>
+                <div class="form-group col-6 hidden" id="field-ong-resp-name"><label for="reg-wizard-ong-resp-name">Responsável pela instituição</label><input type="text" id="reg-wizard-ong-resp-name" placeholder="Ex.: Ana Souza"></div>
+                <div class="form-group col-6 hidden" id="field-ong-resp-doc"><label for="reg-wizard-ong-resp-cpf">CPF do responsável</label><input type="text" id="reg-wizard-ong-resp-cpf" placeholder="000.000.000-00"></div>
+            </div>
+        </div>
+
+        <div class="wizard-step" id="wizard-step-3">
+            <h4 class="wizard-step-title">Contato e atuação</h4>
+            <div class="form-grid">
+                <div class="form-group col-6"><label for="reg-wizard-email">E-mail</label><input type="email" id="reg-wizard-email" required autocomplete="email" placeholder="contato@email.com"></div>
+                <div class="form-group col-6"><label for="reg-wizard-phone">Celular / WhatsApp</label><input type="tel" id="reg-wizard-phone" required placeholder="(00) 00000-0000"></div>
+                <div class="form-group col-12"><label for="reg-wizard-address">Endereço</label><input type="text" id="reg-wizard-address" required placeholder="Rua, número, bairro, cidade - UF"></div>
+                <div class="form-group col-6 hidden" id="field-institution-area"><label for="reg-wizard-service-area">Área de atuação</label><input type="text" id="reg-wizard-service-area" placeholder="Ex.: Janaúba e região"></div>
+                <div class="form-group col-6 hidden" id="field-institution-logistics"><label for="reg-wizard-logistics">Como a instituição atua?</label><select id="reg-wizard-logistics"><option value="coleta-entrega">Coleta, triagem e entrega</option><option value="coleta">Coleta e triagem</option><option value="entrega">Distribuição e entrega</option></select></div>
+                <div class="form-group col-12 hidden" id="field-ong-doc-group"><label for="reg-wizard-ong-doc">Documento da instituição</label><div class="file-upload-wrapper"><i data-lucide="upload-cloud"></i><p id="wizard-file-name">Anexe CNPJ, estatuto ou comprovante de atuação</p><input type="file" id="reg-wizard-ong-doc" accept=".pdf,image/*"></div></div>
+            </div>
+        </div>
+
+        <div class="wizard-step" id="wizard-step-4">
+            <h4 class="wizard-step-title">Crie seu acesso</h4>
+            <div class="form-grid">
+                <div class="form-group col-6"><label for="reg-wizard-pass">Senha</label><input type="password" id="reg-wizard-pass" required minlength="6" autocomplete="new-password" placeholder="Mínimo 6 caracteres"></div>
+                <div class="form-group col-6"><label for="reg-wizard-pass-confirm">Confirme a senha</label><input type="password" id="reg-wizard-pass-confirm" required minlength="6" autocomplete="new-password" placeholder="Repita a senha"></div>
+                <div class="col-12"><label class="checkbox-container"><input type="checkbox" id="reg-wizard-terms" required><span>Li e concordo com os Termos de Uso e a Política de Privacidade.</span></label></div>
+                <div class="col-12 info-badge warning hidden" id="wizard-ong-warning"><i data-lucide="truck"></i><span><strong>Perfil de instituição:</strong> sua conta poderá receber doações, organizar coletas, registrar a triagem e confirmar as entregas para os receptores.</span></div>
+            </div>
+        </div>
+
+        <div class="wizard-footer-buttons"><button class="btn btn-secondary" id="wizard-prev-btn" disabled type="button">Voltar</button><button class="btn btn-primary" id="wizard-next-btn" type="button">Avançar</button></div>
+    </div>
+</div>

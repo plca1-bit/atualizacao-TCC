@@ -1,0 +1,99 @@
+<section id="perfil-section" class="app-section section-padding container hidden">
+    <div class="section-header text-center">
+        <br>
+        <h2>Meu Perfil</h2>
+        <p>Suas informações, seu histórico e seus certificados em um só lugar.</p>
+        <br>
+    </div>
+
+    <div class="perfil-layout">
+        <!-- Cartão principal: foto e dados básicos -->
+        <article class="admin-card perfil-card-principal">
+            <div class="perfil-foto-wrapper">
+                <img id="perfil-foto-preview" class="perfil-foto" alt="Foto de perfil" hidden>
+                <span id="perfil-foto-inicial" class="perfil-foto perfil-foto-inicial">U</span>
+                <label class="perfil-foto-editar" for="perfil-foto-input" title="Alterar foto">
+                    <i data-lucide="camera"></i>
+                </label>
+                <input type="file" id="perfil-foto-input" accept="image/*" hidden>
+            </div>
+            <h3 id="perfil-nome">—</h3>
+            <span class="user-role-badge" id="perfil-papel">—</span>
+
+            <dl class="perfil-dados-lista">
+                <div><dt><i data-lucide="mail"></i> E-mail</dt><dd id="perfil-email">—</dd></div>
+                <div><dt><i data-lucide="phone"></i> Telefone</dt><dd id="perfil-telefone">—</dd></div>
+                <div><dt><i data-lucide="map-pin"></i> Cidade</dt><dd id="perfil-cidade">—</dd></div>
+            </dl>
+
+            <button class="btn btn-secondary btn-sm full-width" id="perfil-editar-btn" type="button">
+                <i data-lucide="pencil"></i> Editar dados
+            </button>
+        </article>
+
+        <div class="perfil-coluna-direita">
+            <!-- Estatísticas -->
+            <div class="stats-summary-grid perfil-stats-grid">
+                <div class="stat-summary-card">
+                    <span class="number" id="perfil-stat-doacoes">0</span>
+                    <span class="label">Doações feitas</span>
+                </div>
+                <div class="stat-summary-card">
+                    <span class="number" id="perfil-stat-compras">0</span>
+                    <span class="label">Itens comprados</span>
+                </div>
+                <div class="stat-summary-card">
+                    <span class="number" id="perfil-stat-pedidos">0</span>
+                    <span class="label">Pedidos realizados</span>
+                </div>
+                <div class="stat-summary-card">
+                    <span class="number" id="perfil-stat-certificados">0</span>
+                    <span class="label">Certificados</span>
+                </div>
+            </div>
+
+            <!-- Últimas atividades / Timeline (Integrado Fase 6) -->
+            <article class="admin-card mb-4">
+                <h3><i data-lucide="history"></i> Minha Linha do Tempo</h3>
+                <div id="user-timeline-container" class="timeline-wrapper mt-3">
+                    <ul class="perfil-atividades-lista" id="perfil-atividades-lista">
+                        <li class="perfil-atividade-vazia">Nenhuma atividade registrada ainda.</li>
+                    </ul>
+                </div>
+            </article>
+
+            <!-- Certificados de Conquistas (Integrado Fase 6) -->
+            <article class="admin-card">
+                <h3><i data-lucide="award"></i> Minhas Conquistas e Certificados</h3>
+                <div id="user-certificates-container" class="row mt-3">
+                    <p class="text-muted">Carregando conquistas...</p>
+                </div>
+            </article>
+        </div>
+    </div>
+
+    <!-- Formulário de edição de dados -->
+    <div class="modal-backdrop hidden" id="perfil-editar-modal" role="dialog" aria-modal="true">
+        <div class="modal-card">
+            <button class="modal-close-btn" id="perfil-editar-close-btn" type="button" aria-label="Fechar">&times;</button>
+            <div class="modal-header"><h3>Editar meus dados</h3></div>
+            <form id="perfil-editar-form">
+                <div class="form-grid">
+                    <div class="form-group col-12">
+                        <label for="perfil-edit-nome">Nome</label>
+                        <input type="text" id="perfil-edit-nome" required maxlength="100">
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="perfil-edit-telefone">Celular / WhatsApp</label>
+                        <input type="tel" id="perfil-edit-telefone" required placeholder="(00) 00000-0000">
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="perfil-edit-endereco">Endereço</label>
+                        <input type="text" id="perfil-edit-endereco" required placeholder="Rua, número, bairro, cidade - UF">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary full-width mt-3">Salvar alterações</button>
+            </form>
+        </div>
+    </div>
+</section>

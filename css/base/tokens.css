@@ -1,0 +1,94 @@
+/* ==========================================
+   PONTE SOLIDÁRIA - DESIGN SYSTEM TOKENS
+   ========================================== */
+:root {
+    /* Paleta clara como estado inicial */
+    --color-primary: #7C3AED;
+    --color-primary-hover: #6D28D9;
+    --color-primary-light: rgba(124, 58, 237, 0.12);
+    
+    --color-secondary-pink: #F472B6; 
+    --color-accent-pink: #EC4899;     
+    --color-accent-pink-hover: #DB2777;
+    --color-accent-purple-light: rgba(192, 132, 252, 0.2);
+    --color-bg-main: #F8FAFC;
+    --color-bg-card: #FFFFFF;
+    --color-bg-nav: rgba(255, 255, 255, 0.92);
+    
+    --color-text-main: #172033;
+    --color-text-muted: #52627A;
+    --color-text-on-primary: #FFFFFF;
+    
+    --color-border: #D9E1EC;
+    --color-success: #10B981;        /* Standard green success */
+    --color-warning: #F59E0B;         /* Alert gold */
+    --color-danger: #EF4444;         /* Alert red */
+    /* Typography scale */
+    --font-heading: 'Outfit', 'Inter', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-base-size: 16px;
+    /* Shadow layers */
+    --shadow-sm: 0 2px 10px rgba(15, 23, 42, 0.08);
+    --shadow-md: 0 10px 30px rgba(15, 23, 42, 0.12);
+    --shadow-lg: 0 20px 50px rgba(15, 23, 42, 0.16);
+    
+    /* Radius */
+    --radius-sm: 8px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-round: 50%;
+    
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --container-width: 1140px;
+}
+/* Base Dark Mode variables (kept for backwards compatibility but matching root) */
+body.dark-mode {
+    --color-bg-main: #0F1219;
+    --color-bg-card: #1A1D24;
+    --color-bg-nav: rgba(15, 18, 25, 0.88);
+    
+    --color-primary: #63378f;
+    --color-primary-hover: #D8B4FE;
+    --color-primary-light: rgba(192, 132, 252, 0.15);
+    
+    --color-secondary-pink: #F472B6;
+    --color-accent-pink: #EC4899;
+    --color-accent-pink-hover: #DB2777;
+    --color-accent-purple-light: rgba(192, 132, 252, 0.2);
+    --color-text-main: #F8FAFC;
+    --color-text-muted: #94A3B8;
+    --color-text-on-primary: #0F1219;
+    
+    --color-border: #334155;
+    
+    --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+/* Accessibility - High Contrast Mode overrides */
+body.high-contrast {
+    --color-bg-main: #000000 !important;
+    --color-bg-card: #000000 !important;
+    --color-bg-nav: #000000 !important;
+    
+    --color-primary: #ffff00 !important;       /* Bright yellow links/buttons */
+    --color-primary-hover: #ffffff !important;
+    --color-primary-light: #1c1c1c !important;
+    
+    --color-secondary-pink: #1c1c1c !important;
+    --color-accent-pink: #00ffff !important;     /* Cyan highlights */
+    --color-accent-pink-hover: #ffffff !important;
+    --color-accent-purple-light: #333333 !important;
+    --color-text-main: #ffffff !important;
+    --color-text-muted: #e0e0e0 !important;
+    --color-text-on-primary: #000000 !important;
+    
+    --color-border: #ffffff !important;
+    --color-success: #00ff00 !important;
+    --color-warning: #ffff00 !important;
+    --color-danger: #ff0000 !important;
+    
+    --shadow-sm: none !important;
+    --shadow-md: none !important;
+    --shadow-lg: none !important;
+}
