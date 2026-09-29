@@ -1,0 +1,712 @@
+/* ========================================================
+   PONTE SOLIDÁRIA - WHATSAPP WEB-STYLE CHAT
+   ======================================================== */
+.chat-widget-container {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 4000;
+}
+/* Floating button */
+.chat-toggle-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius-round);
+    background-color: var(--color-primary);
+    color: white;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(108, 43, 217, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: var(--transition);
+}
+.chat-toggle-btn:hover {
+    background-color: var(--color-primary-hover);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(108, 43, 217, 0.45);
+}
+.chat-toggle-btn i {
+    width: 26px;
+    height: 26px;
+}
+.chat-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: var(--color-danger);
+    color: white;
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 3px 7px;
+    border-radius: 99px;
+    border: 2px solid var(--color-bg-card);
+}
+/* Chat Main Layout Window */
+.chat-window {
+    position: absolute;
+    bottom: 80px;
+    right: 0;
+    width: min(90vw, 440px);
+    height: 500px;
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.chat-split-body {
+    display: flex;
+    flex-grow: 1;
+    height: 100%;
+    overflow: hidden;
+}
+/* Contact List Sidebar */
+.chat-sidebar-contacts {
+    width: 190px;
+    border-right: 1px solid var(--color-border);
+    background-color: var(--color-bg-main);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+/* Item 13 da revisão — abas "Conversas" (ativas) / "Histórico" (doação
+   ou pedido já concluído): conversa arquivada nunca aparece misturada
+   com as ativas, mas continua acessível para preservar o histórico. */
+.chat-list-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--color-border);
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    background-color: var(--color-bg-main);
+    z-index: 1;
+}
+.chat-list-tab {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 8px 4px;
+    font-size: 0.66rem;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: var(--transition);
+}
+.chat-list-tab:hover {
+    color: var(--color-text-main);
+}
+.chat-list-tab.active {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+}
+.contact-item {
+    padding: 10px 6px 10px 8px;
+    border-bottom: 1px solid var(--color-border);
+    cursor: pointer;
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    transition: var(--transition);
+    border-left: 3px solid transparent;
+    position: relative;
+}
+.contact-item:hover {
+    background-color: var(--color-primary-light);
+}
+.contact-item.active {
+    background-color: var(--color-primary-light);
+    border-left-color: var(--color-primary);
+}
+/* Item 13 — "aumentar o contador... marcar como não lida": a linha toda
+   fica com o nome em negrito extra enquanto houver mensagem não lida. */
+.contact-item.unread .contact-name {
+    color: var(--color-primary);
+}
+.contact-avatar {
+    width: 32px;
+    height: 32px;
+    background-color: var(--color-primary);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 800;
+    border-radius: var(--radius-round);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+.contact-item-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 4px;
+}
+.contact-name {
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: var(--color-text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.contact-time {
+    font-size: 0.6rem;
+    color: var(--color-text-muted);
+    flex-shrink: 0;
+}
+/* Identificação do contexto (item 13 — "isso evita que o usuário veja
+   apenas um nome sem saber por que está conversando"): mostra sempre o
+   que está sendo negociado ("Pedido: X" / "Doação: Y"). */
+.contact-context {
+    font-size: 0.64rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 1px 0 0 0;
+}
+.contact-item-bottom-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4px;
+    margin-top: 2px;
+}
+.contact-last-msg {
+    font-size: 0.68rem;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+    flex-grow: 1;
+}
+/* Contador de não lidas por conversa (item 13 — "quantidade de mensagens
+   não lidas") */
+.conv-unread-badge {
+    background-color: var(--color-danger);
+    color: white;
+    font-size: 0.62rem;
+    font-weight: 800;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    border-radius: 99px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+/* Etiqueta de conversa arquivada (item 13 — "Encerramento") */
+.conv-archived-tag {
+    display: inline-block;
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: var(--color-success);
+    background-color: rgba(16, 163, 74, 0.12);
+    padding: 1px 6px;
+    border-radius: 99px;
+    margin-top: 3px;
+}
+/* Menu "⋯" de cada conversa — "Excluir conversa" (item 13) */
+.conv-menu {
+    position: relative;
+    flex-shrink: 0;
+    align-self: flex-start;
+}
+.conv-menu-toggle {
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: var(--radius-sm, 4px);
+}
+.conv-menu-toggle:hover {
+    background-color: rgba(0, 0, 0, 0.08);
+    color: var(--color-text-main);
+}
+.conv-menu-dropdown, .msg-menu-dropdown {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm, 6px);
+    box-shadow: var(--shadow-md, 0 4px 12px rgba(0,0,0,0.15));
+    z-index: 20;
+    min-width: 130px;
+    overflow: hidden;
+}
+.conv-menu-dropdown button, .msg-menu-dropdown button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 8px 12px;
+    font-size: 0.72rem;
+    color: var(--color-danger);
+    cursor: pointer;
+}
+.conv-menu-dropdown button:hover, .msg-menu-dropdown button:hover {
+    background-color: var(--color-primary-light);
+}
+/* Conversa Ativa */
+.chat-active-pane {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-bg-card);
+    overflow: hidden;
+}
+.chat-header {
+    background-color: var(--color-primary-light);
+    border-bottom: 1px solid var(--color-border);
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}
+.chat-user-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.chat-header .user-avatar {
+    width: 32px;
+    height: 32px;
+    background-color: var(--color-primary);
+    color: white;
+    font-weight: 700;
+    border-radius: var(--radius-round);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.status-indicator {
+    font-size: 0.7rem;
+    color: var(--color-text-muted);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.status-indicator.online {
+    color: var(--color-success);
+    font-weight: 600;
+}
+.status-indicator.online::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background-color: var(--color-success);
+    border-radius: var(--radius-round);
+}
+/* Item 13 — cabeçalho da conversa aberta mostra que ela já está
+   arquivada (doação/pedido concluído), sem o indicador de "online". */
+.status-indicator.archived {
+    color: var(--color-success);
+    font-weight: 600;
+}
+/* Corpo das Mensagens */
+.chat-body {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 16px;
+    background-color: #efeae2; /* WhatsApp background light */
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+body.dark-mode .chat-body {
+    background-color: #0b141a; /* WhatsApp background dark */
+}
+/* Bolhas de Mensagem */
+.message {
+    padding: 8px 12px 20px 12px;
+    border-radius: var(--radius-md);
+    max-width: 85%;
+    font-size: 0.82rem;
+    line-height: 1.4;
+    position: relative;
+    box-shadow: 0 1px 1.5px rgba(0, 0, 0, 0.1);
+    animation: messageEntry 0.2s ease;
+    /* Item 32 da revisão ("mensagens longas"): sem isso, uma mensagem sem
+       espaços (uma URL comprida, por exemplo) empurrava a bolha para fora
+       da largura do chat em vez de quebrar linha. */
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+@keyframes messageEntry {
+    from { opacity: 0; transform: scale(0.9) translateY(5px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.message.sent {
+    align-self: flex-end;
+    background-color: #d9fdd3; /* WhatsApp light sent bubble */
+    color: #111b21;
+    border-top-right-radius: 2px;
+}
+body.dark-mode .message.sent {
+    background-color: #005c4b; /* WhatsApp dark sent bubble */
+    color: #e9edef;
+}
+.message.received {
+    align-self: flex-start;
+    background-color: #ffffff;
+    color: #111b21;
+    border-top-left-radius: 2px;
+}
+body.dark-mode .message.received {
+    background-color: #202c33;
+    color: #e9edef;
+}
+.message-time {
+    position: absolute;
+    bottom: 4px;
+    right: 8px;
+    font-size: 0.62rem;
+    color: var(--color-text-muted);
+}
+/* Item 13 — "Excluir mensagens": bolha apagada some o texto original,
+   fica só o aviso, em itálico e um pouco apagada — nunca desaparece de
+   verdade da conversa (preserva o rastro de que algo foi enviado ali). */
+.message.deleted {
+    opacity: 0.7;
+    font-style: italic;
+}
+/* Menu "⋯" de cada mensagem própria — "Excluir mensagem" (item 13).
+   Só existe em bolhas "sent" (a própria mensagem); chat.js nunca gera
+   esse menu para uma mensagem "received". */
+/* Fica dentro da própria bolha (o chat-body corta overflow horizontal,
+   então um menu "para fora" da bolha ficaria cortado) — canto superior,
+   só visível ao passar o mouse/tocar na mensagem. */
+.msg-menu {
+    position: absolute;
+    top: 2px;
+    right: 4px;
+}
+.msg-menu-toggle {
+    background: none;
+    border: none;
+    color: inherit;
+    opacity: 0.55;
+    font-size: 0.8rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 2px;
+    transition: var(--transition);
+}
+.message:hover .msg-menu-toggle, .msg-menu-toggle:focus {
+    opacity: 1;
+}
+.msg-menu-dropdown {
+    right: 0;
+    left: auto;
+}
+/* Indicador de Digitando */
+.typing-indicator {
+    align-self: flex-start;
+    background-color: rgba(255, 255, 255, 0.8);
+    font-style: italic;
+    color: var(--color-primary);
+    padding: 6px 12px;
+}
+.typing-indicator::after {
+    content: '...';
+    animation: typingDots 1.5s infinite;
+}
+@keyframes typingDots {
+    0% { content: '.'; }
+    33% { content: '..'; }
+    66% { content: '...'; }
+}
+/* Rodapé de Envio */
+.chat-footer {
+    display: flex;
+    padding: 10px 12px;
+    background-color: var(--color-bg-main);
+    border-top: 1px solid var(--color-border);
+    gap: 8px;
+    align-items: center;
+    flex-shrink: 0;
+}
+.chat-footer input {
+    flex-grow: 1;
+    border: 1px solid var(--color-border);
+    background-color: var(--color-bg-card);
+    color: var(--color-text-main);
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    outline: none;
+    font-family: var(--font-body);
+}
+.chat-footer input:focus {
+    border-color: var(--color-primary);
+}
+/* Custom Webkit scrollbar for Contact Sidebar */
+.chat-sidebar-contacts::-webkit-scrollbar, .chat-body::-webkit-scrollbar {
+    width: 4px;
+}
+.chat-sidebar-contacts::-webkit-scrollbar-thumb, .chat-body::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.15);
+    border-radius: 2px;
+}
+body.dark-mode .chat-sidebar-contacts::-webkit-scrollbar-thumb, body.dark-mode .chat-body::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Item 32 da revisão ("chat em celular"): a janela tinha altura fixa em
+   500px — em telas baixas (celular em paisagem, iPhone SE etc.) isso
+   ultrapassava a viewport e cortava o rodapé de envio de mensagem. Mesmo
+   breakpoint (480px) já usado no resto do projeto (css/base/responsivo.css). */
+@media (max-width: 480px) {
+    .chat-widget-container {
+        bottom: 16px;
+        right: 16px;
+    }
+    .chat-window {
+        width: 92vw;
+        height: min(500px, 75vh);
+        bottom: 76px;
+        right: -6px;
+    }
+    .chat-sidebar-contacts {
+        width: 130px;
+    }
+    .contact-context, .contact-last-msg {
+        display: none; /* tela estreita: mantém só nome + horário/badge, o resto cabe na conversa aberta */
+    }
+}
+
+/* ========================================================
+   IMAGENS NO CHAT — botão de anexo, prévia, miniatura na bolha
+   e visualizador ampliado (com X para fechar)
+   ======================================================== */
+/* O painel de conversa é estreito (~250 px ao lado da lista): o campo de
+   texto precisa poder encolher para o botão de anexo caber sem empurrar
+   o botão de enviar para fora. */
+.chat-footer #chat-input-text { min-width: 0; }
+.chat-footer button[type="submit"] { flex-shrink: 0; }
+.chat-attach-btn {
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    border-radius: 50%;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition: var(--transition);
+}
+.chat-attach-btn:hover, .chat-attach-btn:focus-visible {
+    background-color: var(--color-primary-light);
+    color: var(--color-primary);
+}
+
+/* Prévia da imagem escolhida, logo acima do campo de texto */
+.chat-image-preview {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    background-color: var(--color-bg-main);
+    border-top: 1px solid var(--color-border);
+    flex-shrink: 0;
+}
+.chat-image-preview-box {
+    position: relative;
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
+}
+.chat-image-preview-box img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid var(--color-border);
+}
+.chat-image-preview-remove {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    line-height: 1;
+    font-weight: 700;
+    color: #fff;
+    background-color: #1f2937;
+    border: 2px solid var(--color-bg-main);
+    border-radius: 50%;
+    cursor: pointer;
+}
+.chat-image-preview-remove:hover { background-color: var(--color-danger); }
+.chat-image-preview-hint {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    line-height: 1.3;
+}
+
+/* Miniatura dentro da bolha */
+.message.has-image { padding: 4px 4px 20px 4px; }
+.message.has-image .message-text { display: block; padding: 6px 8px 0 8px; }
+.message-image-btn {
+    display: block;
+    width: 220px;
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
+    background: none;
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: zoom-in;
+}
+.message-image-btn:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
+}
+.message-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 300px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+.message.has-image .msg-menu { z-index: 2; }
+.message.has-image .msg-menu-toggle {
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.45);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    opacity: 0.9;
+}
+
+/* Visualizador ampliado */
+.chat-image-viewer {
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 56px 16px 16px;
+    background-color: rgba(0, 0, 0, 0.88);
+    animation: chatViewerFade 0.15s ease;
+}
+.chat-image-viewer-img {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 6px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+    background-color: #fff;
+}
+.chat-image-viewer-close {
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    line-height: 1;
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.14);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.chat-image-viewer-close:hover, .chat-image-viewer-close:focus-visible {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-color: #fff;
+    outline: none;
+}
+body.chat-image-viewer-open { overflow: hidden; }
+@keyframes chatViewerFade { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+    .chat-image-viewer, .message { animation: none; }
+}
+
+
+/* ===== Conversas agrupadas por pessoa ===== */
+.chat-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.chat-header-actions .conv-menu { align-self: center; }
+.chat-header-actions .conv-menu-toggle { font-size: 1.25rem; padding: 2px 8px; }
+.chat-thread-divider {
+    align-self: center;
+    max-width: 92%;
+    margin: 10px 0 4px;
+    text-align: center;
+}
+.chat-thread-divider span {
+    display: inline-block;
+    background-color: var(--color-primary-light);
+    color: var(--color-text-muted);
+    border-radius: 999px;
+    padding: 3px 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+.chat-thread-select-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-top: 1px solid var(--color-border);
+    background-color: var(--color-bg-card);
+    font-size: 0.74rem;
+    color: var(--color-text-muted);
+}
+.chat-thread-select-wrap.hidden { display: none; }
+.chat-thread-select-wrap select {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.74rem;
+    padding: 4px 6px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm, 6px);
+    background-color: var(--color-bg-card);
+    color: var(--color-text-main);
+}
+/* Menu "⋯" também nas mensagens recebidas e apagadas */
+.message.received .msg-menu-dropdown,
+.message.deleted .msg-menu-dropdown { right: auto; left: 0; }
+.msg-menu-dropdown button { color: var(--color-text-main); }
+.msg-menu-dropdown button[data-msg-delete] { color: var(--color-danger); }

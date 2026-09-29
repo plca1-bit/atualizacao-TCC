@@ -1,0 +1,120 @@
+<section id="admin-section" class="app-section section-padding container hidden">
+    <div class="admin-hero">
+        <div class="admin-hero-icon"><i data-lucide="shield-check"></i></div>
+        <div>
+            <h2>Painel do Administrador</h2>
+            <p>Gestão centralizada de ONGs, moderação de usuários, estatísticas e auditoria de logs.</p>
+        </div>
+    </div>
+
+    <!-- Estatísticas Globais -->
+    <div class="stats-summary-grid mb-4">
+        <div class="stat-summary-card stat-accent-primary">
+            <div class="stat-summary-icon"><i data-lucide="users"></i></div>
+            <div class="stat-summary-body">
+                <span class="number" id="admin-stat-usuarios">0</span>
+                <span class="label">Usuários Cadastrados</span>
+            </div>
+        </div>
+        <div class="stat-summary-card stat-accent-pink">
+            <div class="stat-summary-icon"><i data-lucide="package-heart"></i></div>
+            <div class="stat-summary-body">
+                <span class="number" id="admin-stat-doacoes">0</span>
+                <span class="label">Total de Doações</span>
+            </div>
+        </div>
+        <div class="stat-summary-card stat-accent-success">
+            <div class="stat-summary-icon"><i data-lucide="megaphone"></i></div>
+            <div class="stat-summary-body">
+                <span class="number" id="admin-stat-campanhas">0</span>
+                <span class="label">Campanhas Ativas</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela 1: Aprovação de ONGs -->
+    <div class="admin-card mb-4">
+        <div class="admin-card-header">
+            <div class="admin-card-heading">
+                <span class="admin-card-icon"><i data-lucide="check-square"></i></span>
+                <div>
+                    <h3>Solicitantes e Aprovação de ONGs</h3>
+                    <p class="admin-card-subtitle">Analise o CNPJ e libere o acesso das instituições cadastradas.</p>
+                </div>
+            </div>
+            <span class="admin-card-count" id="admin-ongs-count">—</span>
+        </div>
+        <div class="table-responsive mt-3">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ONG / Instituição</th>
+                        <th>CNPJ</th>
+                        <th>Status</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-ongs-tbody">
+                    <tr class="admin-row-loading"><td colspan="4" class="text-center py-3">Carregando ONGs...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Tabela 2: Gestão e Bloqueio de Usuários -->
+    <div class="admin-card mb-4">
+        <div class="admin-card-header">
+            <div class="admin-card-heading">
+                <span class="admin-card-icon"><i data-lucide="users"></i></span>
+                <div>
+                    <h3>Gestão e Moderação de Usuários</h3>
+                    <p class="admin-card-subtitle">Bloqueie ou libere o acesso de qualquer conta da plataforma.</p>
+                </div>
+            </div>
+            <span class="admin-card-count" id="admin-usuarios-count">—</span>
+        </div>
+        <div class="table-responsive mt-3">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>E-mail</th>
+                        <th>Perfil</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-usuarios-tbody">
+                    <tr class="admin-row-loading"><td colspan="4" class="text-center py-3">Carregando usuários...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Tabela 3: Auditoria de Logs Automáticos -->
+    <div class="admin-card">
+        <div class="admin-card-header">
+            <div class="admin-card-heading">
+                <span class="admin-card-icon"><i data-lucide="shield"></i></span>
+                <div>
+                    <h3>Logs de Auditoria do Sistema</h3>
+                    <p class="admin-card-subtitle">Últimas 30 ações administrativas registradas, mais recentes primeiro.</p>
+                </div>
+            </div>
+        </div>
+        <div class="table-responsive mt-3">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Data / Hora</th>
+                        <th>Usuário</th>
+                        <th>Ação</th>
+                        <th>Detalhes</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-auditoria-tbody">
+                    <tr class="admin-row-loading"><td colspan="4" class="text-center py-3">Carregando histórico de auditoria...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

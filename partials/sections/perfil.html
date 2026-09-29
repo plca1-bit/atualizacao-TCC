@@ -1,0 +1,242 @@
+<section id="perfil-section" class="app-section section-padding container hidden">
+    <div class="section-header text-center">
+        <br>
+        <h2>Meu Perfil</h2>
+        <p>Suas informações, seu histórico e seu impacto em um só lugar.</p>
+        <br>
+    </div>
+
+    <div class="perfil-layout">
+        <!-- Cartão principal: foto e dados básicos -->
+        <article class="admin-card perfil-card-principal">
+            <div class="perfil-foto-wrapper">
+                <img id="perfil-foto-preview" class="perfil-foto" alt="Foto de perfil" hidden>
+                <span id="perfil-foto-inicial" class="perfil-foto perfil-foto-inicial">U</span>
+            </div>
+            <h3 id="perfil-nome">—</h3>
+            <span class="user-role-badge" id="perfil-papel">—</span>
+
+            <dl class="perfil-dados-lista">
+                <div><dt><i data-lucide="mail"></i> E-mail</dt><dd id="perfil-email">—</dd></div>
+                <div><dt><i data-lucide="phone"></i> Telefone</dt><dd id="perfil-telefone">—</dd></div>
+                <div><dt><i data-lucide="map-pin"></i> Cidade</dt><dd id="perfil-cidade">—</dd></div>
+                <div><dt><i data-lucide="calendar"></i> Membro desde</dt><dd id="perfil-membro-desde">—</dd></div>
+            </dl>
+
+            <div class="perfil-card-actions">
+                <button class="btn btn-secondary btn-sm full-width" id="perfil-editar-btn" type="button">
+                    <i data-lucide="pencil"></i> Editar perfil
+                </button>
+                <button class="btn btn-secondary btn-sm full-width" id="perfil-config-btn" type="button">
+                    <i data-lucide="settings"></i> Configurações
+                </button>
+            </div>
+        </article>
+
+        <div class="perfil-coluna-direita">
+            <!-- Meu impacto: os grupos abaixo são preenchidos/mostrados
+                 dinamicamente em js/perfil.js conforme o "role" real do
+                 usuário (users/{id}.role: "person" ou "ong" — não existe
+                 papel separado de "Doador" e "Beneficiário" no cadastro;
+                 qualquer Pessoa pode doar e pedir ajuda ao mesmo tempo,
+                 então as duas visões aparecem juntas para quem é Pessoa). -->
+            <article class="admin-card mb-4">
+                <h3><i data-lucide="bar-chart-3"></i> Meu Impacto</h3>
+
+                <div class="impacto-subgrupo hidden" id="perfil-doador-block">
+                    <h4><i data-lucide="gift"></i> Como doador</h4>
+                    <div class="stat-mini-grid">
+                        <div class="stat-mini-item"><span class="number" id="perfil-stat-doacoes">0</span><span class="label">Doações realizadas</span></div>
+                        <div class="stat-mini-item"><span class="number" id="perfil-stat-doacoes-andamento">0</span><span class="label">Em andamento</span></div>
+                        <div class="stat-mini-item"><span class="number" id="perfil-stat-doacoes-concluidas">0</span><span class="label">Concluídas</span></div>
+                        <div class="stat-mini-item"><span class="number" id="perfil-stat-pedidos-atendidos">0</span><span class="label">Pedidos que atendeu</span></div>
+                        <div class="stat-mini-item"><span class="number" id="perfil-stat-campanhas-apoiadas">0</span><span class="label">Campanhas apoiadas</span></div>
+                    </div>
+                </div>
+
+                <div class="impacto-subgrupo hidden" id="perfil-beneficiario-block">
+                    <h4><i data-lucide="hand-heart"></i> Como beneficiário</h4>
+                    <div class="stat-mini-grid">
+                        <div class="stat-mini-item"><span class="number" id="perfil-stat-pedidos-realizados">0</span><span class="label">Pedidos realizados</span></div>
+                        <div class="stat-mini-item"><span class="number" id="perfil-stat-pedidos-analise">0</span><span class="label">Aguardando doador</span></div>
+                        <div class="stat-mini-item"><span class="number" id="perfil-stat-pedidos-aprovados">0</span><span class="label">Atendidos</span></div>
+                        <div class="stat-mini-item"><span class="number" id="perfil-stat-pedidos-concluidos">0</span><span class="label">Atendidos</span></div>
+                        <div class="stat-mini-item"><span class="number" id="perfil-stat-doacoes-recebidas">0</span><span class="label">Doações recebidas</span></div>
+                    </div>
+                </div>
+
+                <div class="impacto-subgrupo hidden" id="perfil-ong-block">
+                    <h4><i data-lucide="building-2"></i> Como instituição</h4>
+                    <div class="stat-mini-grid">
+                        <div class="stat-mini-item"><span class="number" id="perfil-stat-campanhas-criadas">0</span><span class="label">Campanhas criadas</span></div>
+                        <div class="stat-mini-item"><span class="number" id="perfil-stat-campanhas-ativas">0</span><span class="label">Campanhas ativas</span></div>
+                        <div class="stat-mini-item"><span class="number" id="perfil-stat-ong-pedidos-recebidos">0</span><span class="label">Pedidos recebidos</span></div>
+                        <div class="stat-mini-item"><span class="number" id="perfil-stat-ong-pedidos-aprovados">0</span><span class="label">Pedidos atendidos</span></div>
+                        <div class="stat-mini-item"><span class="number" id="perfil-stat-ong-doacoes-mediadas">0</span><span class="label">Doações mediadas</span></div>
+                        <div class="stat-mini-item"><span class="number" id="perfil-stat-ong-doacoes-recebidas">0</span><span class="label">Doações recebidas</span></div>
+                        <div class="stat-mini-item"><span class="number" id="perfil-stat-ong-familias">0</span><span class="label">Famílias atendidas</span></div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Últimas atividades / Timeline (Integrado Fase 6) -->
+            <article class="admin-card mb-4">
+                <h3><i data-lucide="history"></i> Minha Linha do Tempo</h3>
+                <div id="user-timeline-container" class="timeline-wrapper mt-3">
+                    <ul class="perfil-atividades-lista" id="perfil-atividades-lista">
+                        <li class="perfil-atividade-vazia">Nenhuma atividade registrada ainda.</li>
+                    </ul>
+                </div>
+            </article>
+
+            <!-- Minhas Campanhas — só aparece para contas ONG já aprovadas
+                 pela administração (mesma regra de requireOngAprovada() usada
+                 em js/doacoes.js para mediar doações/pedidos). Lê e escreve
+                 na coleção "campanhas" do Firestore: renderMinhasCampanhas()
+                 e o formulário de criação ficam em js/doacoes.js. -->
+            <article class="admin-card mb-4 hidden" id="minhas-campanhas-block">
+                <div class="flow-card-top" style="margin-bottom: 4px;">
+                    <h3 style="margin:0;"><i data-lucide="megaphone"></i> Minhas Campanhas</h3>
+                    <button class="btn btn-primary btn-sm" type="button" id="nova-campanha-btn">
+                        <i data-lucide="plus-circle"></i> Nova Campanha
+                    </button>
+                </div>
+                <p style="margin: 0 0 4px; color: var(--color-text-muted); font-size: .85rem;">Campanhas criadas pela sua instituição, visíveis na Home e no Portal de Doações assim que ficam ativas.</p>
+                <div class="flow-cards-grid mt-3" id="minhas-campanhas-grid"></div>
+            </article>
+        </div>
+    </div>
+
+    <!-- Formulário de nova campanha / edição de campanha (só ONGs aprovadas).
+         O mesmo modal/form serve para criar e editar: saveCampanha() em
+         js/doacoes.js decide addDoc x updateDoc a partir de camp-edit-id
+         (vazio = criação nova). editarCampanha() troca os textos e
+         pré-preenche os campos; abrirModalNovaCampanha() limpa tudo. -->
+    <div class="modal-backdrop hidden" id="nova-campanha-modal" role="dialog" aria-modal="true" aria-labelledby="nova-campanha-title">
+        <div class="modal-card">
+            <button class="modal-close-btn" id="nova-campanha-close-btn" type="button" aria-label="Fechar">&times;</button>
+            <div class="modal-header">
+                <h3 id="nova-campanha-title">Nova campanha</h3>
+                <p id="nova-campanha-subtitle">Publique um aviso de mobilização para chamar atenção para uma causa — quem quiser ajudar clica em "Quero doar" e cadastra uma doação de um dos itens aceitos, direcionada direto para sua instituição.</p>
+            </div>
+            <form id="nova-campanha-form" class="form-grid">
+                <input type="hidden" id="camp-edit-id" value="">
+                <div class="form-group col-12">
+                    <label for="camp-titulo">Título da campanha</label>
+                    <input id="camp-titulo" type="text" required maxlength="90" placeholder="Ex.: Agasalhos para o inverno">
+                </div>
+                <div class="form-group col-12">
+                    <label for="camp-itens-aceitos">Itens aceitos nesta campanha</label>
+                    <input id="camp-itens-aceitos" type="text" required maxlength="200" placeholder="Ex.: Cobertores, Casacos, Calças, Meias">
+                    <p class="form-hint"><i data-lucide="info" style="width: 13px; height: 13px; vertical-align: -2px;"></i> Separe cada item por vírgula. Quem doar para esta campanha só vai poder escolher entre estes itens no formulário de doação.</p>
+                </div>
+                <div class="form-group col-6">
+                    <label for="camp-categoria">Categoria</label>
+                    <select id="camp-categoria" required>
+                        <option value="">Selecione</option>
+                        <option value="Alimentação">Alimentação</option>
+                        <option value="Vestuário">Vestuário</option>
+                        <option value="Higiene">Higiene pessoal</option>
+                        <option value="Outros">Outros</option>
+                    </select>
+                </div>
+                <div class="form-group col-6">
+                    <label for="camp-quantidade-desejada">Quantidade desejada (opcional)</label>
+                    <input id="camp-quantidade-desejada" type="number" min="1" placeholder="Ex.: 200">
+                </div>
+                <div class="form-group col-6">
+                    <label for="camp-localizacao">Localização</label>
+                    <input id="camp-localizacao" type="text" required maxlength="120" placeholder="Ex.: Janaúba, MG">
+                </div>
+                <div class="form-group col-6">
+                    <label for="camp-data-inicio">Data de início</label>
+                    <input id="camp-data-inicio" type="date" required>
+                </div>
+                <div class="form-group col-6">
+                    <label for="camp-data-fim">Data limite (opcional)</label>
+                    <input id="camp-data-fim" type="date">
+                </div>
+                <div class="form-group col-12">
+                    <label for="camp-descricao">Descrição</label>
+                    <textarea id="camp-descricao" maxlength="400" rows="3" required placeholder="O que a campanha arrecada e para quem se destina."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary full-width mt-3" id="nova-campanha-submit-btn">Publicar campanha</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Formulário de edição de dados -->
+    <div class="modal-backdrop hidden" id="perfil-editar-modal" role="dialog" aria-modal="true" aria-labelledby="perfil-editar-title">
+        <div class="modal-card">
+            <button class="modal-close-btn" id="perfil-editar-close-btn" type="button" aria-label="Fechar">&times;</button>
+            <div class="modal-header"><h3 id="perfil-editar-title">Editar meus dados</h3></div>
+            <form id="perfil-editar-form">
+                <div class="form-grid">
+                    <div class="form-group col-12">
+                        <label for="perfil-edit-nome">Nome</label>
+                        <input type="text" id="perfil-edit-nome" required maxlength="100">
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="perfil-edit-telefone">Celular / WhatsApp</label>
+                        <input type="tel" id="perfil-edit-telefone" required placeholder="(00) 00000-0000">
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="perfil-edit-endereco">Endereço</label>
+                        <input type="text" id="perfil-edit-endereco" required placeholder="Rua, número, bairro, cidade - UF">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary full-width mt-3">Salvar alterações</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Configurações da conta -->
+    <div class="modal-backdrop hidden" id="perfil-config-modal" role="dialog" aria-modal="true" aria-labelledby="perfil-config-title">
+        <div class="modal-card">
+            <button class="modal-close-btn" id="perfil-config-close-btn" type="button" aria-label="Fechar">&times;</button>
+            <div class="modal-header">
+                <h3 id="perfil-config-title">Configurações</h3>
+                <p>Gerencie seus dados, sua segurança e como você usa a Ponte Solidária.</p>
+            </div>
+
+            <ul class="perfil-config-lista">
+                <li>
+                    <button type="button" class="config-item-btn" id="config-alterar-dados-btn">
+                        <span><i data-lucide="user-cog"></i> Alterar dados</span>
+                        <i data-lucide="chevron-right"></i>
+                    </button>
+                </li>
+                <li>
+                    <button type="button" class="config-item-btn" id="config-notificacoes-btn">
+                        <span><i data-lucide="bell"></i> Notificações</span>
+                        <i data-lucide="chevron-right"></i>
+                    </button>
+                </li>
+            </ul>
+
+            <div class="config-secao-acessibilidade">
+                <h4><i data-lucide="accessibility"></i> Acessibilidade</h4>
+
+                <div class="config-item-row">
+                    <span>Tamanho do texto</span>
+                    <div class="font-size-btns" id="font-size-btns" role="group" aria-label="Tamanho do texto">
+                        <button type="button" class="font-size-btn" data-tamanho="sm" aria-pressed="false">A-</button>
+                        <button type="button" class="font-size-btn" data-tamanho="md" aria-pressed="false">A</button>
+                        <button type="button" class="font-size-btn" data-tamanho="lg" aria-pressed="false">A+</button>
+                    </div>
+                </div>
+
+                <div class="config-item-row">
+                    <span>Alto contraste</span>
+                    <button type="button" class="a11y-toggle-btn" id="config-alto-contraste-btn" aria-pressed="false">
+                        <i data-lucide="contrast"></i> Ativar
+                    </button>
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-danger full-width mt-3" id="config-sair-btn">
+                <i data-lucide="log-out"></i> Sair da conta
+            </button>
+        </div>
+    </div>
+</section>

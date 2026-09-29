@@ -1,0 +1,46 @@
+<section id="transparency-section" class="app-section section-padding container">
+    <div class="section-header text-center transparency-hero">
+<br><br>        <h2 id="title-transparency">Portal de Transparência</h2>
+        <p id="desc-transparency">Veja de forma simples como os recursos são direcionados e quais práticas ajudam a manter a rede segura.</p>
+    </div>
+
+    <div class="transparency-highlights">
+        <article><i data-lucide="receipt-text"></i><div><strong>Recursos acompanhados</strong><span>Informações organizadas para consulta.</span></div></article>
+        <article><i data-lucide="truck"></i><div><strong>Entrega mediada</strong><span>Instituições registram as etapas logísticas.</span></div></article>
+        <article><i data-lucide="shield-alert"></i><div><strong>Moderação ativa</strong><span>Cadastros de ONG e pedidos de ajuda passam por revisão antes de valer na rede.</span></div></article>
+    </div>
+
+    <!-- Resumo público (número agregado, sem nome/endereço de ninguém) —
+         visível para qualquer visitante, mesmo sem login. -->
+    <div class="transparency-highlights" aria-label="Resumo agregado da rede">
+        <article><i data-lucide="gift"></i><div><strong id="transparency-stat-donations">—</strong><span>Doações recebidas</span></div></article>
+        <article><i data-lucide="package-check"></i><div><strong id="transparency-stat-deliveries">—</strong><span>Entregas concluídas</span></div></article>
+        <article><i data-lucide="badge-check"></i><div><strong id="transparency-stat-ongs">—</strong><span>ONGs aprovadas</span></div></article>
+        <article><i data-lucide="heart-handshake"></i><div><strong id="transparency-stat-families">—</strong><span>Famílias atendidas</span></div></article>
+    </div>
+
+    <div class="transparency-grid">
+        <article class="transparency-card">
+            <div class="transparency-card-heading"><div><span class="transparency-kicker">Resumo financeiro</span><h3>Destinação dos recursos</h3></div><i data-lucide="pie-chart"></i></div>
+            <p class="card-desc">Distribuição por categoria, calculada a partir das doações reais já cadastradas na plataforma.</p>
+            <div class="resource-breakdown" id="resource-breakdown-container">
+                <p class="text-center text-muted" style="padding: 12px 0;">Carregando distribuição...</p>
+            </div>
+            <p class="transparency-note"><i data-lucide="info"></i> Os percentuais são recalculados em tempo real a partir das doações cadastradas em "doacoes" no banco de dados — não são valores fixos de exemplo.</p>
+        </article>
+
+        <article class="transparency-card text-card">
+            <div class="transparency-card-heading"><div><span class="transparency-kicker">Segurança</span><h3>Como reduzimos riscos</h3></div><i data-lucide="shield-check"></i></div>
+            <ul class="audit-list">
+                <li><div class="audit-icon-wrapper"><i data-lucide="file-check-2"></i></div><div><strong>Instituições verificadas</strong><span class="audit-text">O cadastro institucional solicita documentos, responsável e área de atuação antes de liberar a mediação de doações.</span></div></li>
+                <li><div class="audit-icon-wrapper"><i data-lucide="user-cog"></i></div><div><strong>Moderação administrativa</strong><span class="audit-text">O administrador da plataforma aprova ou recusa cada ONG cadastrada e pode bloquear contas em caso de mau uso.</span></div></li>
+                <li><div class="audit-icon-wrapper"><i data-lucide="route"></i></div><div><strong>Etapas de entrega</strong><span class="audit-text">A coleta, a triagem e a distribuição podem ser registradas para dar visibilidade ao percurso de cada item.</span></div></li>
+            </ul>
+        </article>
+    </div>
+
+    <section class="delivery-history-container" aria-labelledby="history-title">
+        <div class="history-heading"><div><span class="transparency-kicker">Movimentações</span><h3 id="history-title">Histórico de entregas</h3><p>Registros recentes que ajudam a acompanhar a atividade da rede. Detalhe por doação disponível para quem está logado.</p></div><i data-lucide="clipboard-list"></i></div>
+        <div class="table-responsive"><table class="data-table"><thead><tr><th>Código</th><th>Data</th><th>Doador</th><th>Item</th><th>Cidade</th><th>Tipo de entrega</th><th>ONG mediadora</th><th>Status</th></tr></thead><tbody id="delivery-history-tbody"><tr><td colspan="8" class="text-center py-4">Carregando histórico...</td></tr></tbody></table></div>
+    </section>
+</section>

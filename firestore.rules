@@ -1,0 +1,695 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function estaLogado() {
+      return request.auth != null;
+    }
+    function ehDono(campo) {
+      return estaLogado() && request.auth.uid == resource.data[campo];
+    }
+    function dadosDoUsuarioLogado() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    // Nota: existia aqui uma função "ehOng()" (sem checar aprovação) usada
+    // em doações/pedidos — removida no item 28 da revisão porque permitia
+    // que uma ONG com approved == false mediasse doações/pedidos direto
+    // pela API do Firestore. Toda ação de ONG agora passa por
+    // ehOngAprovada(), abaixo.
+    function ehAdmin() {
+      return estaLogado() && dadosDoUsuarioLogado().role == "admin";
+    }
+    // Mesma checagem de isOngAprovada() (js/firebase-auth.js): só ONGs com
+    // "approved" == true (ou, em documentos antigos sem esse campo,
+    // "status" == "approved") podem criar/gerenciar campanhas.
+    function ehOngAprovada() {
+      let d = dadosDoUsuarioLogado();
+      return estaLogado() && d.role == "ong" && d.get("approved", d.get("status", "") == "approved") == true;
+    }
+    // Fecha no banco a mesma lacuna corrigida em confirmDirectDelivery()
+    // (js/doacoes.js, item da revisão sobre confirmação de entrega): marcar
+    // uma doação de entrega direta como "Entregue" só pode ser feito por
+    // quem é de fato o beneficiário — antes, qualquer participante do
+    // documento (inclusive o próprio doador) também tinha permissão pela
+    // regra genérica abaixo, mesmo com o botão já escondido dele na UI.
+    // Item 9 da revisão: agora também exige que o doador já tenha marcado
+    // a entrega como realizada (progressStep 4, ver
+    // entregaMarcadaPeloDoador() logo abaixo) antes de aceitar a
+    // confirmação — sem isso, o beneficiário conseguia pular direto de
+    // "Combinando entrega" para "Concluída" sem o doador nunca ter
+    // registrado a entrega.
+    function confirmandoRecebimentoDireto() {
+      return resource.data.deliveryMethod == "direct"
+        && resource.data.get("progressStep", 0) == 4
+        && request.resource.data.trackingStatus == "Entregue"
+        && resource.data.trackingStatus != "Entregue";
+    }
+
+    // Fase 1: impede que o próprio usuário altere papel, aprovação ou
+    // bloqueio da própria conta — só um administrador pode mudar esses
+    // campos (aprovar ONG, bloquear usuário etc.). "status" também é
+    // protegido aqui porque ainda é lido por telas antigas em paralelo
+    // com "approved"/"blocked".
+    function alterouCampoSensivel() {
+      return request.resource.data.role != resource.data.role
+        || request.resource.data.get('approved', null) != resource.data.get('approved', null)
+        || request.resource.data.get('blocked', null) != resource.data.get('blocked', null)
+        || request.resource.data.get('status', null) != resource.data.get('status', null);
+    }
+
+    // Perfis públicos (nome, cidade, papel etc.)
+    match /users/{userId} {
+      allow read: if estaLogado();
+      allow create: if estaLogado() && request.auth.uid == userId;
+      // 🔴 Correção: antes, "ehAdmin()" sozinho liberava a atualização de
+      // QUALQUER documento — inclusive o do próprio admin logado, sensível
+      // ou não. Um admin conseguia então gravar "blocked: true" na própria
+      // conta (mesmo caminho de alternarBloqueioUsuario(), js/fase7-engine.js)
+      // e travar o próprio acesso. Agora a conta que está sendo editada
+      // (request.auth.uid == userId) nunca pode alterar campo sensível nela
+      // mesma, seja ela um admin ou não — só edita esses campos em uma
+      // conta de outra pessoa. A interface já esconde o botão "Bloquear"
+      // na própria linha do admin (carregarUsuariosAdmin(),
+      // js/fase7-engine.js); esta regra fecha o mesmo caminho pela API do
+      // Firestore direto, fora da UI.
+      allow update: if estaLogado() && (
+        (request.auth.uid == userId && !alterouCampoSensivel())
+        || (ehAdmin() && request.auth.uid != userId)
+      );
+    }
+
+    // Módulo 3 — Doações
+    match /doacoes/{doacaoId} {
+      allow read: if estaLogado();
+      // Regra fundamental do fluxo de atendimento direto: doadorId !=
+      // beneficiarioId. finalizeDonationWizard() (js/doacoes.js) já
+      // bloqueia isso na hora de montar o formulário, mas a regra
+      // confirma de novo aqui — sem ela, uma chamada direta à API do
+      // Firestore conseguiria criar uma doação já nascendo com
+      // beneficiaryId igual ao próprio donorId (ex.: atendendo o próprio
+      // pedido), o que nunca deve existir.
+      allow create: if estaLogado() && request.resource.data.donorId == request.auth.uid
+        && (request.resource.data.beneficiaryId == "" || request.resource.data.beneficiaryId != request.resource.data.donorId);
+      // Fase 1 (item 28 da revisão): a checagem de "ONG aprovada" existia
+      // só no front-end (requireOngAprovada(), js/doacoes.js) — uma ONG
+      // com approved == false conseguia, direto pelo console do navegador,
+      // chamar updateDoc() nesta coleção e avançar/mediar uma doação sem
+      // nunca ter sido aprovada. "ehOng()" virou "ehOngAprovada()": front
+      // e regra agora exigem a mesma condição.
+      function doacaoCamposAlterados() {
+        return request.resource.data.diff(resource.data).affectedKeys();
+      }
+      // Nenhum participante — doador, ONG ou beneficiário — pode reescrever
+      // quem é quem, nem a data de criação. beneficiaryId só é livre
+      // enquanto a doação ainda não tem beneficiário (""); depois de
+      // vinculado, só passa a ser alterado por quem já é o dono do campo
+      // (checado dentro de cada função de ação abaixo).
+      // ongId/ongName/deliveryMethod NÃO estão mais fixados aqui (item 8 da
+      // revisão, fluxo de recusa de mediação): antes eram travados igual a
+      // donorId/createdAt, o que também travava rejectOngDonation() —
+      // qualquer updateDoc() que tentasse limpar ongId/ongName depois de
+      // uma recusa, ou trocar deliveryMethod para "direct", era rejeitado
+      // pela regra mesmo já validado no front-end. Cada um dos três só
+      // muda agora dentro de recusaPelaOng()/reescolheOngPeloDoador()/
+      // tornaDoacaoDiretaPeloDoador() (abaixo) — as outras funções de ação
+      // continuam impedindo essa troca porque simplesmente não incluem
+      // ongId/ongName/deliveryMethod no próprio hasOnly(), que já é
+      // suficiente para barrar qualquer alteração desses campos por elas.
+      function doacaoFixouImutaveis() {
+        return request.resource.data.donorId == resource.data.donorId
+          && request.resource.data.donorName == resource.data.donorName
+          && request.resource.data.createdAt == resource.data.createdAt
+          && (resource.data.beneficiaryId == "" || request.resource.data.beneficiaryId == resource.data.beneficiaryId);
+      }
+
+      // Doador: só cancela, e só enquanto a doação está no início do fluxo
+      // (mesmo gate visual de cancelDonation(), js/doacoes.js).
+      function cancelamentoPeloDoador() {
+        return ehDono("donorId")
+          && resource.data.trackingStatus == "Em andamento"
+          && resource.data.get("progressStep", 0) <= 1
+          && request.resource.data.trackingStatus == "Cancelada"
+          && doacaoCamposAlterados().hasOnly(["trackingStatus", "history", "updatedAt"]);
+      }
+
+      // Beneficiário: aceita uma doação de entrega direta ainda sem dono
+      // (acceptDonation()) — só pode se declarar dono do campo, nunca
+      // trocar o dono de uma doação já aceita por outra pessoa.
+      // Regra fundamental (doadorId != beneficiarioId): quem cadastrou a
+      // doação (donorId) nunca pode ser quem a aceita — mesma checagem
+      // que já existia só no front-end (acceptDirectDonation(),
+      // js/doacoes.js) e que agora também é exigida pelo banco. Sem isso,
+      // "resource.data.beneficiaryId == ''" sozinho não impedia o próprio
+      // doador de se declarar beneficiário da própria doação.
+      function aceiteDoBeneficiario() {
+        return resource.data.deliveryMethod == "direct"
+          && resource.data.beneficiaryId == ""
+          && resource.data.donorId != request.auth.uid
+          && request.resource.data.beneficiaryId == request.auth.uid
+          && doacaoCamposAlterados().hasOnly(["beneficiaryId", "beneficiaryName", "progressStep", "history", "updatedAt"]);
+      }
+
+      // Beneficiário: confirma recebimento (confirmDirectDelivery()) — já
+      // tem que ser o dono de beneficiaryId antes desta chamada.
+      function confirmacaoDoBeneficiario() {
+        return ehDono("beneficiaryId")
+          && confirmandoRecebimentoDireto()
+          && doacaoCamposAlterados().hasOnly(["trackingStatus", "progressStep", "history", "updatedAt"]);
+      }
+
+      // Doador: marca a entrega como realizada (markDirectDelivered(),
+      // item 9 da revisão) — só a partir de "Combinando entrega"
+      // (progressStep 3) e sem tocar em trackingStatus, que continua "Em
+      // andamento" até o beneficiário confirmar em confirmacaoDoBeneficiario().
+      function entregaMarcadaPeloDoador() {
+        return ehDono("donorId")
+          && resource.data.deliveryMethod == "direct"
+          && resource.data.trackingStatus == "Em andamento"
+          && resource.data.get("progressStep", 0) == 3
+          && request.resource.data.trackingStatus == "Em andamento"
+          && request.resource.data.progressStep == 4
+          && doacaoCamposAlterados().hasOnly(["progressStep", "history", "updatedAt"]);
+      }
+
+      // ONG aprovada e já vinculada a esta doação (ongId == ela mesma):
+      // vincula um beneficiário via pedido (vincularDoacaoAoPedido()) só
+      // enquanto a doação ainda não tem um, ou avança as etapas normais
+      // da mediação.
+      function ongVinculaBeneficiario() {
+        return ehOngAprovada() && ehDono("ongId")
+          && resource.data.deliveryMethod == "ong"
+          && resource.data.beneficiaryId == ""
+          // Regra fundamental (doadorId != beneficiarioId) também na
+          // mediação por ONG: espelha a checagem de vincularDoacaoAoPedido()
+          // (js/doacoes.js) — a ONG não pode vincular a doação de alguém
+          // como atendendo o próprio pedido dessa mesma pessoa.
+          && request.resource.data.beneficiaryId != resource.data.donorId
+          && doacaoCamposAlterados().hasOnly(["beneficiaryId", "beneficiaryName", "trackingStatus", "progressStep", "history", "updatedAt"]);
+      }
+      // Item 2 do plano de finalização: a etapa final da mediação
+      // ("Concluída", que vira trackingStatus "Entregue") só pode fechar
+      // sozinha pela ONG quando a doação NÃO tem beneficiário vinculado
+      // (foi só pro estoque geral). Se tem (vincularDoacaoAoPedido() já
+      // setou beneficiaryId), a ONG concluir sem o campo
+      // beneficiarioConfirmouRecebimento (setado só pelo próprio
+      // beneficiário, ver beneficiarioConfirmaRecebimentoMediado() abaixo)
+      // é bloqueado aqui — mesma trava de advanceOngDonation() (js/
+      // doacoes.js), pra ninguém pular o JS chamando a API direto.
+      function avancoPelaOng() {
+        return ehOngAprovada() && ehDono("ongId")
+          && !(request.resource.data.trackingStatus == "Entregue"
+               && resource.data.get("beneficiaryId", "") != ""
+               && resource.data.get("beneficiarioConfirmouRecebimento", false) != true)
+          && doacaoCamposAlterados().hasOnly(["trackingStatus", "progressStep", "history", "updatedAt"]);
+      }
+
+      // Beneficiário confirma o recebimento pelo PRÓPRIO pedido
+      // (confirmarRecebimentoPedido(), js/doacoes.js) e isso é espelhado
+      // aqui na doação vinculada: só o campo
+      // beneficiarioConfirmouRecebimento (e, se a ONG já tiver terminado
+      // as etapas dela, também trackingStatus/progressStep pra fechar o
+      // ciclo dos dois lados de uma vez — ver comentário em
+      // confirmarRecebimentoPedido()).
+      function beneficiarioConfirmaRecebimentoMediado() {
+        return ehDono("beneficiaryId")
+          && resource.data.deliveryMethod == "ong"
+          && resource.data.trackingStatus == "Em andamento"
+          && request.resource.data.beneficiarioConfirmouRecebimento == true
+          && doacaoCamposAlterados().hasOnly(["beneficiarioConfirmouRecebimento", "trackingStatus", "progressStep", "history", "updatedAt"]);
+      }
+
+      // ONG recusa a mediação (rejectOngDonation(), js/doacoes.js): limpa
+      // ongId/ongName e devolve a doação para "Em andamento" com
+      // progressStep 0, guardando o motivo em ultimaRecusa e a própria
+      // instituição em ongsRecusadas (pra não voltar a ser sugerida no
+      // "Escolher outra ONG" do doador). Só cabe enquanto a mediação ainda
+      // está na triagem inicial (progressStep <= 1) — depois de "Recebida"
+      // pra frente a única ação de recusa possível é cancelar o fluxo
+      // inteiro, não devolver a doação pra fila.
+      function recusaPelaOng() {
+        return ehOngAprovada() && ehDono("ongId")
+          && resource.data.deliveryMethod == "ong"
+          && resource.data.trackingStatus == "Em andamento"
+          && resource.data.get("progressStep", 0) <= 1
+          && request.resource.data.deliveryMethod == "ong"
+          && request.resource.data.ongId == ""
+          && request.resource.data.ongName == ""
+          && request.resource.data.trackingStatus == "Em andamento"
+          && request.resource.data.progressStep == 0
+          && doacaoCamposAlterados().hasOnly(["trackingStatus", "progressStep", "ongId", "ongName", "ongsRecusadas", "ultimaRecusa", "history", "updatedAt"]);
+      }
+
+      // Doador escolhe outra instituição depois de uma recusa
+      // (confirmarReescolherOng(), js/doacoes.js) — só a partir do estado
+      // que recusaPelaOng() deixa (deliveryMethod "ong", sem ongId, ainda
+      // "Em andamento"); a nova ONG entra na triagem inicial de novo
+      // (progressStep 1, "ONG selecionada"), mesmo ponto de partida de
+      // toda doação nova com mediação.
+      function reescolheOngPeloDoador() {
+        return ehDono("donorId")
+          && resource.data.deliveryMethod == "ong"
+          && resource.data.ongId == ""
+          && resource.data.trackingStatus == "Em andamento"
+          && request.resource.data.ongId is string && request.resource.data.ongId != ""
+          && request.resource.data.trackingStatus == "Em andamento"
+          && request.resource.data.progressStep == 1
+          && doacaoCamposAlterados().hasOnly(["ongId", "ongName", "progressStep", "history", "updatedAt"]);
+      }
+
+      // Doador desiste da mediação depois de uma recusa e disponibiliza a
+      // doação diretamente (tornarDoacaoDireta(), js/doacoes.js) — mesma
+      // origem de estado que reescolheOngPeloDoador(), trocando
+      // deliveryMethod para "direct" em vez de escolher outra ONG.
+      function tornaDoacaoDiretaPeloDoador() {
+        return ehDono("donorId")
+          && resource.data.deliveryMethod == "ong"
+          && resource.data.ongId == ""
+          && resource.data.trackingStatus == "Em andamento"
+          && request.resource.data.deliveryMethod == "direct"
+          && request.resource.data.ongId == "" && request.resource.data.ongName == ""
+          && request.resource.data.beneficiaryId == "" && request.resource.data.beneficiaryName == ""
+          && request.resource.data.trackingStatus == "Em andamento"
+          && request.resource.data.progressStep == 1
+          && doacaoCamposAlterados().hasOnly(["deliveryMethod", "ongId", "ongName", "beneficiaryId", "beneficiaryName", "progressStep", "history", "updatedAt"]);
+      }
+
+      // Chat: além do abaixo, cada participante pode limpar o próprio
+      // histórico (chatClearedAt.<uid>, timestamp ISO) e esconder mensagens
+      // avulsas só para si (chatMsgHidden.<uid>, lista de ids) — sempre só
+      // a própria chave, nunca a de outra conta.
+      // Item 13 da revisão ("Chat — reformular todo o fluxo"): cada
+      // participante marca sua própria leitura (chatLastRead.<uid>, um
+      // mapa uid → timestamp ISO — é o que zera o contador de não lidas
+      // daquela pessoa), pode remover a conversa da própria lista
+      // (chatHiddenFor.<uid>, um mapa uid → bool — "excluir conversa para
+      // mim") e, desde o item 5 do plano de finalização, grava até onde já
+      // foi notificado de mensagem nova (chatNotifiedUpTo.<uid>, um mapa
+      // uid → timestamp ISO da última mensagem recebida que já virou
+      // notificação — ver registrarThreadDeChat(), js/doacoes.js). As
+      // funções abaixo garantem que ninguém consegue, pela API do
+      // Firestore, marcar como lido/ocultar/notificado em nome de outra
+      // conta: só a própria chave (request.auth.uid) de cada mapa pode
+      // mudar na mesma escrita.
+      function participaDaDoacao() {
+        return resource.data.donorId == request.auth.uid || resource.data.beneficiaryId == request.auth.uid || resource.data.ongId == request.auth.uid;
+      }
+      function mapaSoAlteraAPropriaChave(campo) {
+        let antes = resource.data.get(campo, {});
+        let depois = request.resource.data.get(campo, {});
+        return depois.diff(antes).affectedKeys().hasOnly([request.auth.uid]);
+      }
+      function atualizaEstadoChatDaDoacao() {
+        return participaDaDoacao()
+          && doacaoCamposAlterados().hasOnly(["chatLastRead", "chatHiddenFor", "chatNotifiedUpTo", "chatClearedAt", "chatMsgHidden", "updatedAt"])
+          && mapaSoAlteraAPropriaChave("chatLastRead")
+          && mapaSoAlteraAPropriaChave("chatHiddenFor")
+          && mapaSoAlteraAPropriaChave("chatNotifiedUpTo")
+          && mapaSoAlteraAPropriaChave("chatClearedAt")
+          && mapaSoAlteraAPropriaChave("chatMsgHidden");
+      }
+
+      // LIMITAÇÃO CONHECIDA (mesmo espírito do item 27, notificacoes/
+      // auditoria_logs acima): a regra garante QUEM pode escrever e QUAIS
+      // campos, mas não valida que "history" só cresce (não teria como,
+      // sem Cloud Functions, impedir que alguém reenvie um array editado
+      // junto de um patch legítimo). O ganho aqui é fechar a lacuna maior:
+      // antes, qualquer participante podia reescrever donorId/ongId/
+      // beneficiaryId/trackingStatus/progressStep livremente; agora só
+      // altera exatamente os campos da própria ação.
+      allow update: if estaLogado() && doacaoFixouImutaveis() && (
+        cancelamentoPeloDoador() || aceiteDoBeneficiario() ||
+        confirmacaoDoBeneficiario() || entregaMarcadaPeloDoador() ||
+        ongVinculaBeneficiario() || avancoPelaOng() ||
+        beneficiarioConfirmaRecebimentoMediado() ||
+        recusaPelaOng() || reescolheOngPeloDoador() || tornaDoacaoDiretaPeloDoador() ||
+        atualizaEstadoChatDaDoacao()
+      );
+
+      // Chat real da doação: doador ↔ beneficiário (entrega direta) ou
+      // doador ↔ ONG (mediação). Só quem já faz parte da doação lê/envia
+      // mensagens.
+      function fazParteDaDoacao() {
+        let d = get(/databases/$(database)/documents/doacoes/$(doacaoId)).data;
+        return d.donorId == request.auth.uid || d.beneficiaryId == request.auth.uid || d.ongId == request.auth.uid;
+      }
+      // Item 13 da revisão — "Excluir mensagens": o autor pode apagar a
+      // PRÓPRIA mensagem, mas isso nunca é literalmente um "delete" do
+      // documento — vira um soft-delete (deleted: true), preservando quem
+      // mandou e quando. Isso é proposital: "excluir mensagem" (a própria
+      // bolha vira "Mensagem excluída.") é uma ação bem diferente de
+      // apagar o histórico inteiro da negociação, que a própria revisão
+      // pede para NUNCA ser possível — por isso nenhuma outra escrita em
+      // /mensagens é permitida (nem update de texto, nem delete de
+      // documento, nem apagar a mensagem de outra pessoa).
+      function apenasApagaAPropriaMensagem() {
+        return resource.data.senderId == request.auth.uid
+          && resource.data.get("deleted", false) == false
+          && request.resource.data.deleted == true
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["deleted", "deletedAt"]);
+      }
+      match /mensagens/{mensagemId} {
+        allow read: if estaLogado() && fazParteDaDoacao();
+        allow create: if estaLogado() && request.resource.data.senderId == request.auth.uid && fazParteDaDoacao();
+        allow update: if estaLogado() && fazParteDaDoacao() && apenasApagaAPropriaMensagem();
+        allow delete: if false;
+      }
+    }
+
+    // Módulo 4 — Pedidos de ajuda
+    match /pedidos/{pedidoId} {
+      // 🔴 Correção de privacidade: "allow read: if estaLogado()" deixava
+      // qualquer conta autenticada ler o documento inteiro do pedido —
+      // nome completo da família, fotos, cidade, descrição — mesmo que a
+      // tela (partials/sections/doacoes.html, form-hint do formulário)
+      // prometesse que "o nome completo fica visível só para você, a ONG
+      // responsável pelo pedido e o administrador da plataforma". A
+      // interface (pedidoNomeExibicao(), js/doacoes.js) já escondia o nome
+      // na renderização, mas isso é só cosmético: o documento completo
+      // continuava chegando ao navegador de qualquer usuário logado (via
+      // onSnapshot ou console do navegador), então a promessa nunca foi
+      // garantida pelo banco. Agora só lê o documento completo quem tem
+      // motivo: o próprio solicitante, a ONG responsável (ongId == ela) ou
+      // um admin. Toda ONG aprovada que ainda não assumiu o pedido — e
+      // qualquer outro usuário logado — usa a versão sanitizada em
+      // /pedidos_publicos abaixo, que nunca teve nome nem fotos.
+      allow read: if estaLogado() && (ehDono("solicitanteId") || ehDono("ongId") || ehAdmin());
+      allow create: if estaLogado() && request.resource.data.solicitanteId == request.auth.uid;
+      // Mesmo ajuste do item 28: só ONG já aprovada pode aprovar/recusar/
+      // vincular um pedido (antes "ehOng()" deixava qualquer ONG, aprovada
+      // ou não, fazer isso direto pela API do Firestore).
+      //
+      // Mesma falha encontrada em /doacoes corrigida aqui: a regra dizia
+      // QUEM podia atualizar mas não QUAIS campos — um solicitante logado
+      // "dono" do próprio pedido podia, tecnicamente, reescrever ongId,
+      // status ou doacaoVinculadaId direto pela API, e uma ONG aprovada
+      // podia editar campos de outro pedido sem relação com ela.
+      function pedidoCamposAlterados() {
+        return request.resource.data.diff(resource.data).affectedKeys();
+      }
+      function pedidoFixouImutaveis() {
+        return request.resource.data.solicitanteId == resource.data.solicitanteId
+          && request.resource.data.solicitanteNome == resource.data.solicitanteNome
+          && request.resource.data.item == resource.data.item
+          && request.resource.data.createdAt == resource.data.createdAt;
+      }
+
+      // Solicitante: só fecha o ciclo (confirmarRecebimentoPedido()), e só
+      // quando já existe uma doação vinculada.
+      function confirmacaoDoSolicitante() {
+        return ehDono("solicitanteId")
+          && resource.data.status == "vinculado"
+          && request.resource.data.status == "concluido"
+          && pedidoCamposAlterados().hasOnly(["status", "history", "updatedAt"]);
+      }
+
+      // ONG aprovada: assume um pedido ainda sem instituição responsável
+      // (aprovarPedido() / recusarPedido() / pedirMaisInfoPedido()).
+      function ongAssumePedido() {
+        return ehOngAprovada()
+          && resource.data.ongId == ""
+          && request.resource.data.ongId == request.auth.uid
+          && request.resource.data.status in ["aprovado", "recusado", "mais_info"]
+          && pedidoCamposAlterados().hasOnly(["ongId", "ongName", "status", "ongObservacao", "history", "updatedAt"]);
+      }
+
+      // ONG já responsável (ongId == ela mesma): pede mais informação de
+      // novo, recusa depois de analisar, ou vincula uma doação
+      // (vincularDoacaoAoPedido()) — nunca troca o próprio ongId.
+      function ongAvancaPedido() {
+        return ehOngAprovada() && ehDono("ongId")
+          && request.resource.data.status in ["aprovado", "recusado", "mais_info", "vinculado"]
+          // Regra fundamental (doadorId != beneficiarioId), também na
+          // mediação por ONG (vincularDoacaoAoPedido(), js/doacoes.js):
+          // só entra em jogo quando o status vira "vinculado" — nos demais
+          // casos (aprovar/recusar/pedir mais info) não há doação
+          // envolvida ainda, então não faz sentido ler /doacoes aqui.
+          && (request.resource.data.status != "vinculado"
+              || get(/databases/$(database)/documents/doacoes/$(request.resource.data.doacaoVinculadaId)).data.donorId != resource.data.solicitanteId)
+          && pedidoCamposAlterados().hasOnly(["status", "ongObservacao", "doacaoVinculadaId", "history", "updatedAt"]);
+      }
+
+      // Item 7 da revisão: doador vincula diretamente um pedido ainda sem
+      // doação ("Atender um pedido específico", passo 2 do wizard de Nova
+      // Doação — finalizeDonationWizard(), js/doacoes.js). Só aceita
+      // quando já existe, de fato, uma doação recém-criada por esse mesmo
+      // doador apontando pra este pedido (confere lendo o documento em
+      // /doacoes pelo id que está sendo gravado em doacaoVinculadaId) —
+      // ninguém consegue marcar um pedido como "vinculado" sem antes ter
+      // criado a doação correspondente. Item 10 da revisão: "recusado"
+      // entrou no conjunto de partida — um pedido recusado por uma ONG
+      // continua podendo ser atendido diretamente por qualquer doador.
+      // Regra fundamental (doadorId != beneficiarioId) — este é o ponto
+      // que realmente fecha o caminho descrito na spec do fluxo de
+      // atendimento direto: "usuário → pedido próprio → 'quero atender' →
+      // próprio chat" NUNCA pode existir. "doacao.beneficiaryId ==
+      // resource.data.solicitanteId" já garantia que a doação aponta pro
+      // solicitante certo, mas sozinho não impedia solicitanteId ==
+      // donorId (a mesma pessoa nos dois papéis) — "resource.data.solicitanteId
+      // != request.auth.uid" fecha isso: quem está gravando esta escrita
+      // (o doador, via doadorVinculaPedidoDireto()) nunca pode ser o
+      // próprio autor do pedido.
+      function doadorVinculaPedidoDireto() {
+        let doacao = get(/databases/$(database)/documents/doacoes/$(request.resource.data.doacaoVinculadaId)).data;
+        return estaLogado()
+          && resource.data.status in ["pendente", "aprovado", "recusado"]
+          && resource.data.doacaoVinculadaId == ""
+          && resource.data.solicitanteId != request.auth.uid
+          && request.resource.data.status == "vinculado"
+          && doacao.donorId == request.auth.uid
+          && doacao.deliveryMethod == "direct"
+          && doacao.beneficiaryId == resource.data.solicitanteId
+          && pedidoCamposAlterados().hasOnly(["status", "doacaoVinculadaId", "history", "updatedAt"]);
+      }
+
+      // Item 13 da revisão — mesmo mecanismo de leitura/ocultação "por
+      // conta" descrito acima em /doacoes (atualizaEstadoChatDaDoacao()),
+      // agora para o chat do pedido: solicitante e ONG responsável.
+      function participaDoPedido() {
+        return resource.data.solicitanteId == request.auth.uid || resource.data.ongId == request.auth.uid;
+      }
+      function mapaSoAlteraAPropriaChavePedido(campo) {
+        let antes = resource.data.get(campo, {});
+        let depois = request.resource.data.get(campo, {});
+        return depois.diff(antes).affectedKeys().hasOnly([request.auth.uid]);
+      }
+      function atualizaEstadoChatDoPedido() {
+        return participaDoPedido()
+          && pedidoCamposAlterados().hasOnly(["chatLastRead", "chatHiddenFor", "chatNotifiedUpTo", "chatClearedAt", "chatMsgHidden", "updatedAt"])
+          && mapaSoAlteraAPropriaChavePedido("chatLastRead")
+          && mapaSoAlteraAPropriaChavePedido("chatHiddenFor")
+          && mapaSoAlteraAPropriaChavePedido("chatNotifiedUpTo")
+          && mapaSoAlteraAPropriaChavePedido("chatClearedAt")
+          && mapaSoAlteraAPropriaChavePedido("chatMsgHidden");
+      }
+
+      allow update: if estaLogado() && pedidoFixouImutaveis() && (
+        confirmacaoDoSolicitante() || ongAssumePedido() || ongAvancaPedido() || doadorVinculaPedidoDireto() ||
+        atualizaEstadoChatDoPedido()
+      );
+
+      // Fase 3 — Chat vinculado ao pedido. O solicitante sempre lê/envia; a
+      // ONG só depois de ser a responsável pelo pedido (ongId == ela) E o
+      // pedido já ter sido aprovado — antes disso não faz sentido conversa
+      // nenhuma (ver mesma restrição espelhada em renderMyPedidos()/
+      // renderOngPedidos(), js/doacoes.js). Item 10 da revisão: antes,
+      // qualquer ONG aprovada (ehOngAprovada() sozinho) lia/escrevia
+      // mensagens de QUALQUER pedido, mesmo um que nunca tinha assumido e
+      // mesmo antes de decidir — corrigido aqui.
+      function fazParteDoPedidoLiberado() {
+        let p = get(/databases/$(database)/documents/pedidos/$(pedidoId)).data;
+        return p.solicitanteId == request.auth.uid ||
+          (ehOngAprovada() && p.ongId == request.auth.uid && p.status in ["aprovado", "vinculado", "concluido"]);
+      }
+      // Item 13 da revisão — mesmo soft-delete de mensagem descrito acima
+      // em /doacoes/{doacaoId}/mensagens (apenasApagaAPropriaMensagem()):
+      // só o autor apaga a própria mensagem, e só vira "deleted: true",
+      // nunca um delete de verdade nem edição do texto original.
+      function apenasApagaAPropriaMensagemDoPedido() {
+        return resource.data.senderId == request.auth.uid
+          && resource.data.get("deleted", false) == false
+          && request.resource.data.deleted == true
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["deleted", "deletedAt"]);
+      }
+      match /mensagens/{mensagemId} {
+        allow read: if estaLogado() && fazParteDoPedidoLiberado();
+        allow create: if estaLogado() && request.resource.data.senderId == request.auth.uid && fazParteDoPedidoLiberado();
+        allow update: if estaLogado() && fazParteDoPedidoLiberado() && apenasApagaAPropriaMensagemDoPedido();
+        allow delete: if false;
+      }
+    }
+
+    // Espelho sanitizado de /pedidos: mesmo id, só os campos que já eram
+    // sempre pensados para ser vistos por qualquer conta logada (fila
+    // pública de "Itens Urgentes Coletivos" e fila de triagem de ONGs que
+    // ainda não assumiram o pedido) — nunca solicitanteNome, photos,
+    // ongObservacao nem history. Nome e fotos só existem em /pedidos.
+    // "solicitanteId" aqui é só um identificador (mesmo tratamento que
+    // donorId/beneficiaryId já recebem em /doacoes), usado para notificar
+    // o solicitante quando uma ONG ainda sem acesso ao documento privado
+    // aprova/recusa/pede mais informações.
+    match /pedidos_publicos/{pedidoId} {
+      allow read: if estaLogado();
+      allow create: if estaLogado()
+        && request.resource.data.solicitanteId == request.auth.uid
+        && request.resource.data.keys().hasOnly([
+          "solicitanteId", "solicitanteCidade", "category", "item", "quantity",
+          "urgency", "description", "status", "ongId", "doacaoVinculadaId",
+          "atendimento", "createdAt", "updatedAt"
+        ]);
+      // Item 7 da revisão: espelha aqui a mesma permissão de
+      // doadorVinculaPedidoDireto() (acima, em /pedidos) — sem isso, o
+      // espelho público ficava com "status"/"doacaoVinculadaId" atrasados
+      // sempre que um doador (não-ONG) vinculava um pedido diretamente,
+      // já que só ehDono("solicitanteId") || ehOngAprovada() podiam
+      // gravar aqui antes desta mudança.
+      // Mesma regra fundamental (doadorId != beneficiarioId) de
+      // doadorVinculaPedidoDireto() acima, espelhada aqui pelo mesmo
+      // motivo que o resto desta função já espelha o documento privado:
+      // sem isso, o espelho público sozinho seria um segundo caminho para
+      // um usuário vincular a própria doação ao próprio pedido.
+      function doadorVinculaPedidoPublicoDireto() {
+        let doacao = get(/databases/$(database)/documents/doacoes/$(request.resource.data.doacaoVinculadaId)).data;
+        return resource.data.status in ["pendente", "aprovado", "recusado"]
+          && resource.data.doacaoVinculadaId == ""
+          && resource.data.solicitanteId != request.auth.uid
+          && request.resource.data.status == "vinculado"
+          && doacao.donorId == request.auth.uid
+          && doacao.deliveryMethod == "direct"
+          && doacao.beneficiaryId == resource.data.solicitanteId;
+      }
+      // Espelha só os campos que também podem mudar no /pedidos original
+      // por ação de ONG (assumir, avançar), do solicitante (concluir) ou
+      // de um doador vinculando um pedido específico diretamente.
+      allow update: if estaLogado() && (ehDono("solicitanteId") || ehOngAprovada() || doadorVinculaPedidoPublicoDireto())
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(["status", "ongId", "doacaoVinculadaId", "updatedAt"]);
+      allow delete: if false;
+    }
+
+    // Fase 6 — Central de notificações. Cada notificação pertence a uma
+    // única conta (usuarioId); só o próprio dono lê e marca como lida.
+    // Quem cria é sempre o código do site em nome de quem disparou a ação
+    // (aceite de doação, aprovação de pedido etc.), por isso "create" fica
+    // aberto para qualquer usuário logado — o campo usuarioId é que decide
+    // quem consegue ler cada documento depois. LIMITAÇÃO CONHECIDA (item 27
+    // da revisão): sem um backend (Cloud Functions), a regra não tem como
+    // confirmar que quem está criando a notificação realmente participou
+    // da ação que ela descreve — só valida o formato do documento. Uma
+    // implementação de produção real moveria essa escrita para uma Cloud
+    // Function acionada pelas próprias mudanças em "doacoes"/"pedidos".
+    match /notificacoes/{notifId} {
+      allow read: if estaLogado() && resource.data.usuarioId == request.auth.uid;
+      allow create: if estaLogado()
+        && request.resource.data.usuarioId is string
+        && request.resource.data.titulo is string
+        && request.resource.data.lida == false;
+      allow update: if estaLogado() && resource.data.usuarioId == request.auth.uid &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(["lida"]);
+      allow delete: if false;
+    }
+
+    // Fase 6/7 — histórico de atividades e auditoria (somado ao registro
+    // de notificação em registrarAcaoGlobal()). Mesmo princípio: cada
+    // usuário só lê o próprio histórico; auditoria é só leitura para admin.
+    // Mesma limitação conhecida de "notificacoes" acima (item 27): sem
+    // Cloud Functions, "create" fica aberto para qualquer conta logada,
+    // validando só o formato do documento.
+    match /historico_atividades/{itemId} {
+      allow read: if estaLogado() && resource.data.usuarioId == request.auth.uid;
+      allow create: if estaLogado()
+        && request.resource.data.usuarioId is string
+        && request.resource.data.titulo is string;
+      allow update, delete: if false;
+    }
+    // auditoria_logs recebe dois tipos de registro bem diferentes:
+    //   (a) "origem: admin" — só as duas ações exclusivas de administrador
+    //       (aprovar ONG, bloquear/desbloquear usuário — registrarLogAuditoria(),
+    //       js/fase7-engine.js). Ninguém além de um admin pode gravar aqui:
+    //       é exatamente o risco apontado no item 27 ("um usuário não deveria
+    //       poder criar uma entrada dizendo 'eu sou administrador e fiz X'").
+    //   (b) sem "origem: admin" — o registro-triplo automático de qualquer
+    //       ação notável (registrarAcaoGlobal(), js/fase6-engine.js: doação
+    //       aceita, pedido aprovado etc.), disparado pelo próprio usuário
+    //       que participou da ação. Continua com a mesma limitação descrita
+    //       acima em "notificacoes": sem Cloud Functions não dá pra provar
+    //       que o autor da escrita é realmente quem ele diz ser, só validar
+    //       o formato do documento — por isso vale só para esse tipo "não
+    //       administrativo" do log, nunca para o (a).
+    match /auditoria_logs/{logId} {
+      allow read: if ehAdmin();
+      allow create: if estaLogado()
+        && request.resource.data.acao is string
+        && request.resource.data.detalhes is string
+        && (request.resource.data.get('origem', '') == 'admin' ? ehAdmin() : true);
+      allow update, delete: if false;
+    }
+
+    // Home, Portal de Doações (js/doacoes.js, renderCampanhasPublicas —
+    // leitura em tempo real) e Painel Admin/Portal de Transparência
+    // (js/fase7-engine.js) leem esta coleção sem filtro por usuário.
+    // Escrita: só a ONG aprovada dona da campanha cria/edita a própria
+    // campanha (tela "Nova Campanha" em Meu Perfil, js/doacoes.js); um
+    // admin também pode editar/encerrar qualquer campanha. "ongId" nunca
+    // muda depois de criada, e só a própria conta pode se declarar dona.
+    match /campanhas/{campanhaId} {
+      allow read: if estaLogado();
+      allow create: if ehOngAprovada() && request.resource.data.ongId == request.auth.uid;
+      allow update: if ehAdmin() || (ehOngAprovada() && resource.data.ongId == request.auth.uid
+        && request.resource.data.ongId == resource.data.ongId);
+      // Exclusão física só é permitida para a própria ONG dona (ou admin).
+      // O app (excluirCampanha(), js/doacoes.js) só chama deleteDoc quando
+      // a campanha ainda não tem NENHUMA doação vinculada — nesse caso não
+      // há histórico de movimentação para preservar. Assim que existe pelo
+      // menos uma doação vinculada, o app nunca apaga o documento: regrava
+      // status "removida" (allow update, acima) para a campanha sumir da
+      // área pública sem perder o histórico das doações já feitas contra
+      // ela. As regras não conseguem validar aqui, sem Cloud Functions, se
+      // a coleção "doacoes" ainda tem referências a este id — a garantia de
+      // "nunca apagar campanha com doação vinculada" é aplicada no cliente.
+      allow delete: if ehAdmin() || (ehOngAprovada() && resource.data.ongId == request.auth.uid);
+    }
+    // "vendas" ainda não tem nenhuma tela/função que grave nela (só leitura,
+    // para os contadores do Painel Admin/Transparência) — permissão de
+    // escrita fica fechada até existir essa função, igual "campanhas"
+    // estava antes da tela "Nova Campanha".
+    match /vendas/{vendaId} {
+      allow read: if estaLogado();
+      allow write: if false;
+    }
+
+    // 🔴 Correção: Portal de Transparência é uma área pública da navegação
+    // (partials/layout/header.html, "#nav-transparency" não fica escondida
+    // atrás de login, diferente de "admin-only"), mas antes só conseguia
+    // ler os números direto de /doacoes, /pedidos, /users e /campanhas —
+    // todas com "allow read: if estaLogado()". Resultado: um visitante sem
+    // login abria a Transparência (ou a Home) e o Firestore negava a
+    // leitura, deixando a tela sem dado nenhum.
+    // Esta coleção guarda só um resumo agregado (contagens, sem nome/
+    // cidade/endereço de doador, beneficiário ou ONG) e pode ser lida por
+    // qualquer visitante, logado ou não. A tabela "Histórico de entregas"
+    // (por doação, com nome do doador) continua exigindo login em /doacoes,
+    // porque esse sim é dado pessoal.
+    // Escrita: qualquer conta logada pode recalcular e regravar o resumo —
+    // é o que o próprio app faz sempre que alguém logado abre a Home ou o
+    // Portal de Transparência (renderImpactoHome(), js/fase7-engine.js).
+    // LIMITAÇÃO CONHECIDA (mesmo espírito do item 27 — notificacoes/
+    // auditoria_logs/historico_atividades, acima): sem Cloud Functions a
+    // regra não recalcula os números ela mesma a partir do banco, só
+    // valida o formato do documento (inteiros >= 0). Uma conta logada
+    // mal-intencionada poderia gravar um número errado aqui; o dano
+    // possível é uma estatística pública incorreta, nunca um vazamento de
+    // dado pessoal — esse continua protegido nas coleções de origem.
+    match /estatisticas_publicas/{docId} {
+      allow read: if true;
+      allow write: if estaLogado()
+        && request.resource.data.keys().hasOnly([
+          "doacoesRecebidas", "entregasConcluidas", "ongsAprovadas",
+          "familiasAtendidas", "atualizadoEm"
+        ])
+        && request.resource.data.doacoesRecebidas is int && request.resource.data.doacoesRecebidas >= 0
+        && request.resource.data.entregasConcluidas is int && request.resource.data.entregasConcluidas >= 0
+        && request.resource.data.ongsAprovadas is int && request.resource.data.ongsAprovadas >= 0
+        && request.resource.data.familiasAtendidas is int && request.resource.data.familiasAtendidas >= 0;
+    }
+  }
+}

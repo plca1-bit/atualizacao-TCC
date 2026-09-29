@@ -1,0 +1,172 @@
+/* ========================================================
+   PONTE SOLIDÁRIA — PAINEL DE ACESSIBILIDADE (item 6 da revisão)
+   ========================================================
+   Botão fixo + painel, presentes em TODAS as páginas (SPA e as
+   estáticas termos.html / privacidade.html), sem exigir login.
+   Reúne num só lugar visível o que já existia escondido em
+   Perfil > Configurações (alto contraste, tamanho de fonte) e o
+   que é novo (reduzir animações, destacar links, VLibras).
+   ======================================================== */
+
+/* ---------- Botão flutuante (FAB) ---------- */
+.a11y-fab {
+    position: fixed;
+    /* Abaixo do header fixo (.main-header, 80px de altura / 70px no
+       mobile — css/layout/header.css), no canto superior direito. */
+    top: 100px;
+    right: 20px;
+    /* Precisa ficar abaixo de .modal-backdrop (z-index: 5000), senão o
+       botão flutua por cima de qualquer modal aberto no site (login,
+       cadastro, wizards, configurações...). Mesmo valor usado pelo botão
+       de chat (css/components/chat.css), que já seguia essa regra. */
+    z-index: 4000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 18px;
+    background-color: var(--color-primary);
+    color: var(--color-text-on-primary);
+    border: none;
+    border-radius: var(--radius-round);
+    box-shadow: var(--shadow-md);
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.a11y-fab:hover,
+.a11y-fab:focus-visible {
+    background-color: var(--color-primary-hover);
+    transform: translateY(-2px);
+}
+.a11y-fab i { width: 22px; height: 22px; flex-shrink: 0; }
+/* Em telas pequenas, mantém só o ícone (com aria-label cobrindo o
+   texto para leitor de tela) e ajusta a distância pro header de 70px. */
+@media (max-width: 480px) {
+    .a11y-fab span { display: none; }
+    .a11y-fab { padding: 12px; top: 86px; right: 16px; }
+}
+
+/* ---------- Painel (reaproveita .modal-backdrop / .modal-card,
+   então ganha de graça o focus trap e o Esc-para-fechar já
+   implementados em js/a11y.js para todo modal do site) ---------- */
+.a11y-panel-card {
+    max-width: 380px;
+    text-align: left;
+}
+.a11y-panel-card h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 18px;
+    font-size: 1.15rem;
+}
+.a11y-panel-card h3 i { width: 20px; height: 20px; color: var(--color-primary); }
+.a11y-panel-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--color-border);
+}
+.a11y-panel-group:last-of-type { border-bottom: none; }
+.a11y-panel-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--color-text-main);
+}
+.a11y-panel-hint {
+    margin-top: 14px;
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+}
+
+/* ---------- Botões de tamanho de fonte ----------
+   Usados aqui e em Perfil > Configurações (partials/sections/perfil.html) —
+   por isso ficam num arquivo compartilhado em vez de dentro de
+   css/sections/perfil.css. */
+.font-size-btns {
+    display: inline-flex;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+.font-size-btn {
+    padding: 6px 12px;
+    color: var(--color-text-main);
+    background: var(--color-bg-card);
+    border: none;
+    border-right: 1px solid var(--color-border);
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.85rem;
+    transition: var(--transition);
+}
+.font-size-btn:last-child { border-right: none; }
+.font-size-btn:hover { background: var(--color-primary-light); }
+.font-size-btn[aria-pressed="true"] {
+    background: var(--color-primary);
+    color: var(--color-text-on-primary);
+}
+.a11y-panel-card .font-size-btns { display: flex; gap: 6px; }
+
+/* ---------- Botões de alternância (alto contraste, reduzir
+   animações, destacar links, Libras) ----------
+   Também compartilhado com Perfil > Configurações. */
+.a11y-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    color: var(--color-text-main);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.82rem;
+    transition: var(--transition);
+}
+.a11y-toggle-btn i { width: 15px; height: 15px; }
+.a11y-toggle-btn:hover { background: var(--color-primary-light); }
+.a11y-toggle-btn[aria-pressed="true"] {
+    background: var(--color-primary);
+    color: var(--color-text-on-primary);
+    border-color: var(--color-primary);
+}
+.a11y-panel-card .a11y-toggle-btn {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 8px;
+}
+
+/* ---------- Modo "reduzir animações" ---------- */
+.reduce-motion,
+.reduce-motion *,
+.reduce-motion *::before,
+.reduce-motion *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+}
+
+/* ---------- Modo "destacar links" ---------- */
+.highlight-links a:not(.btn):not(.nav-link):not(.a11y-fab) {
+    text-decoration: underline !important;
+    text-decoration-thickness: 2px !important;
+    text-underline-offset: 3px !important;
+    font-weight: 700 !important;
+}
+.highlight-links .nav-link,
+.highlight-links a.footer-link-highlight {
+    text-decoration: underline !important;
+    text-decoration-thickness: 2px !important;
+}
+
+/* ---------- Botão de acesso ao VLibras (mostrado só quando ativado
+   no painel; o widget oficial é injetado dinamicamente por
+   js/painel-acessibilidade.js) ---------- */
+div[vw].ponte-vlibras-hidden { display: none !important; }

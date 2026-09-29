@@ -1,0 +1,94 @@
+/* ==========================================
+   PONTE SOLIDÁRIA - RODAPÉ (FOOTER)
+   Extraído do CSS inline do index.html (Fase 2) para seguir o mesmo
+   padrão do resto do projeto: HTML, CSS e JS sempre separados.
+   O rodapé é propositalmente escuro em qualquer tema (claro/escuro),
+   como em várias plataformas SaaS — por isso usa uma pequena paleta
+   própria (--footer-*) em vez das variáveis globais de --color-bg-*.
+   ========================================== */
+.main-footer {
+    --footer-bg: #0F0D19;
+    --footer-text: #94A3B8;
+    --footer-heading: #FFFFFF;
+    --footer-border: rgba(255, 255, 255, 0.08);
+
+    background-color: var(--footer-bg);
+    color: var(--footer-text);
+    padding: 60px 0 30px;
+    border-top: 1px solid var(--footer-border);
+    margin-top: 80px;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 40px;
+    text-align: left;
+}
+
+.footer-col h4 {
+    color: var(--footer-heading);
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.footer-col h4 .highlight {
+    color: var(--color-accent-pink);
+}
+
+.footer-col p {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--footer-text);
+    margin: 0;
+}
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 0.9rem;
+}
+
+.footer-links a {
+    color: var(--footer-text);
+    text-decoration: none;
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.footer-links a:hover,
+.footer-links a:focus-visible {
+    color: var(--color-primary-hover, #C084FC);
+}
+
+.footer-link-highlight {
+    color: #C084FC !important;
+    font-weight: 600;
+}
+
+.footer-bottom {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    text-align: center;
+    font-size: 0.85rem;
+    color: #64748B;
+}
+
+/* Responsividade: em telas pequenas, colunas empilham e o texto centraliza
+   para não ficar desalinhado com o restante do layout mobile. */
+@media (max-width: 600px) {
+    .footer-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    .footer-links {
+        align-items: center;
+    }
+}
