@@ -1,0 +1,332 @@
+/* ========================================================
+   PONTE SOLIDÁRIA — ADAPTAÇÃO PARA CELULAR
+   ========================================================
+   Este arquivo é carregado POR ÚLTIMO e só tem regras dentro de
+   @media (max-width: ...) ou (pointer: coarse). Por isso o site no
+   computador (telas > 768px com mouse) NÃO é afetado: nenhuma regra
+   daqui vale lá. Nenhum comportamento (JS) foi alterado — só
+   tamanhos, espaçamentos, posições e áreas de toque.
+
+   Faixas usadas:
+     • até 768px  → celular e tablet em pé (menu hambúrguer já existente)
+     • até 520px  → celulares comuns (cabeçalho compacto)
+     • até 380px  → celulares pequenos (iPhone SE, Galaxy A pequenos)
+   ======================================================== */
+
+/* ---------- Fundamentos (celular e tablet em pé) ---------- */
+@media (max-width: 768px) {
+    html {
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+    }
+    body {
+        -webkit-tap-highlight-color: rgba(22, 101, 52, 0.15);
+    }
+
+    /* Respeita a "franja" (notch) dos celulares quando em paisagem */
+    .main-header {
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+    }
+
+    /* Imagens e mídia nunca passam da tela */
+    img, video, svg, canvas { max-width: 100%; }
+
+    /* Textos longos (e-mails, links, chaves PIX) quebram em vez de vazar */
+    p, li, td, th, label, .card-desc, .user-name {
+        overflow-wrap: break-word;
+    }
+
+    /* ----- Cabeçalho: tudo cabe numa linha, inclusive o botão do menu ----- */
+    .header-container {
+        gap: 6px;
+    }
+    .logo {
+        min-width: 0;
+        flex-shrink: 1;
+        gap: 8px;
+        font-size: 1.1rem;
+    }
+    .logo-text {
+        white-space: nowrap;
+    }
+    .logo-icon {
+        width: 38px;
+        height: 38px;
+        flex-shrink: 0;
+    }
+    .header-actions {
+        flex-shrink: 0;
+        gap: 2px;
+    }
+    .header-actions .icon-btn,
+    .mobile-nav-toggle {
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        padding: 0;
+        justify-content: center;
+    }
+    .user-auth-zone {
+        gap: 6px;
+    }
+    .user-auth-zone .btn {
+        padding: 8px 11px;
+        min-height: 40px;
+        font-size: 0.8rem;
+        white-space: nowrap;
+    }
+    .user-profile-zone {
+        gap: 0;
+    }
+    .profile-summary {
+        padding: 2px;
+        min-height: 40px;
+    }
+
+    /* Gaveta do menu: rola se a tela for baixa (ex.: celular deitado) e
+       os links têm área de toque confortável. */
+    .main-nav {
+        height: calc(100vh - 70px);
+        height: calc(100dvh - 70px);
+        overflow-y: auto;
+        padding: 28px 24px calc(28px + env(safe-area-inset-bottom));
+        -webkit-overflow-scrolling: touch;
+    }
+    .nav-list {
+        gap: 8px;
+    }
+    .nav-list li {
+        width: 100%;
+        text-align: center;
+    }
+    .nav-link {
+        display: inline-block;
+        min-height: 48px;
+        line-height: 32px;
+    }
+
+    /* Notificações: a caixa de 320px estourava a tela pela esquerda.
+       No celular ela ocupa a largura da tela, logo abaixo do cabeçalho. */
+    .notification-menu {
+        position: fixed;
+        top: 76px;
+        left: 12px;
+        right: 12px;
+        width: auto;
+        min-width: 0;
+        max-height: calc(100dvh - 96px);
+        overflow-y: auto;
+    }
+    .notification-list {
+        max-height: 50dvh;
+    }
+    .clear-btn {
+        min-height: 36px;
+        padding: 4px 6px;
+    }
+
+    /* Botão flutuante de acessibilidade: vai para o canto inferior
+       esquerdo (o do chat fica no direito), só o ícone — antes ele ficava
+       em cima dos títulos das páginas. */
+    .a11y-fab {
+        top: auto;
+        right: auto;
+        left: 16px;
+        bottom: max(16px, env(safe-area-inset-bottom));
+        width: 48px;
+        height: 48px;
+        padding: 0;
+        justify-content: center;
+    }
+    .a11y-fab span {
+        display: none;
+    }
+
+    /* Aviso (toast): largura da tela, abaixo do cabeçalho */
+    .toast-container {
+        top: calc(env(safe-area-inset-top) + 78px);
+        left: 12px;
+        right: 12px;
+        max-width: none;
+    }
+    .toast {
+        padding: 12px 14px;
+        font-size: 0.88rem;
+    }
+
+    /* ----- Formulários: 16px evita o "zoom" automático do iPhone ao
+       tocar num campo; altura mínima de 44px para o dedo. ----- */
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+    select,
+    textarea {
+        font-size: 16px;
+        min-height: 44px;
+    }
+    textarea {
+        min-height: 96px;
+    }
+    .btn {
+        min-height: 44px;
+    }
+    .btn.btn-sm,
+    .user-auth-zone .btn {
+        min-height: 40px;
+    }
+    input[type="checkbox"],
+    input[type="radio"] {
+        width: 20px;
+        height: 20px;
+    }
+
+    /* Modais: botão "×" maior e cartão respeitando a área segura */
+    .modal-backdrop {
+        padding-top: max(8px, env(safe-area-inset-top));
+        padding-bottom: max(8px, env(safe-area-inset-bottom));
+    }
+    .modal-close-btn {
+        width: 40px;
+        height: 40px;
+        top: 10px;
+        right: 10px;
+    }
+    .modal-card h3 {
+        padding-right: 40px;
+    }
+    .a11y-panel-card .font-size-btn {
+        flex: 1;
+        min-height: 40px;
+    }
+    .a11y-panel-card .a11y-toggle-btn {
+        min-height: 44px;
+    }
+
+    /* Rodapé: links com mais área de toque */
+    .footer-links a {
+        display: inline-block;
+        padding: 6px 4px;
+    }
+
+    /* Campos em colunas (.col-8 também) ocupam a linha inteira no celular */
+    .col-8 {
+        grid-column: span 12;
+    }
+
+    /* Painel do administrador: resumo em 2 colunas, o card ímpar ocupa a linha */
+    .stats-summary-grid > :last-child:nth-child(odd) {
+        grid-column: 1 / -1;
+    }
+}
+
+/* ---------- Celulares comuns ---------- */
+@media (max-width: 520px) {
+    /* O nome ao lado do ícone não cabe junto de sino + tema + Entrar +
+       Cadastrar + menu. O ícone continua sendo o link para o início
+       (tem aria-label) e o nome aparece no título da página e no rodapé. */
+    .logo-text {
+        display: none;
+    }
+
+    /* Abas das Doações: as 3 cabem na largura da tela, sem cortar */
+    .donations-tabs {
+        gap: 4px;
+        padding: 6px;
+    }
+    .donations-tabs .tab-btn {
+        flex: 1 1 0;
+        min-width: 0;
+        justify-content: center;
+        gap: 4px;
+        min-height: 44px;
+        padding: 8px 6px;
+        font-size: 0.8rem;
+        white-space: nowrap;
+    }
+    .donations-tabs .tab-btn i {
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+    }
+
+    .section-header h2 {
+        font-size: 1.5rem;
+    }
+    .modal-card {
+        padding: 22px 16px;
+    }
+    .wizard-footer-buttons {
+        gap: 8px;
+    }
+}
+
+/* ---------- Celulares pequenos ---------- */
+@media (max-width: 380px) {
+    .header-actions .icon-btn,
+    .mobile-nav-toggle {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+    }
+    .user-auth-zone .btn {
+        padding: 8px 9px;
+        font-size: 0.76rem;
+    }
+    .hero-title {
+        font-size: 2rem;
+    }
+    .modal-card {
+        padding: 20px 14px;
+    }
+    .donations-tabs .tab-btn {
+        font-size: 0.74rem;
+        padding: 8px 4px;
+    }
+    .donations-tabs .tab-btn i {
+        display: none;
+    }
+}
+
+/* ---------- Celular deitado (paisagem): pouca altura ---------- */
+@media (max-width: 920px) and (max-height: 500px) and (orientation: landscape) {
+    .modal-card {
+        max-height: calc(100dvh - 16px);
+    }
+    .main-nav {
+        padding-top: 16px;
+    }
+    .nav-list {
+        gap: 0;
+    }
+}
+
+/* ---------- Telas de toque (qualquer tamanho): sem efeitos "grudados" ----------
+   No toque, :hover fica preso depois de tocar; removemos só o "pulo"
+   (translateY) dos botões, sem mudar cores. */
+@media (hover: none) and (pointer: coarse) {
+    .btn:hover,
+    .a11y-fab:hover,
+    .chat-toggle-btn:hover,
+    .logo:hover {
+        transform: none;
+    }
+}
+
+/* ---------- Páginas estáticas (Termos de Uso e Privacidade) ----------
+   "body > .container" só existe nessas duas páginas e vence o <style>
+   interno delas (50px de recuo, que no celular sobrava). */
+@media (max-width: 600px) {
+    body > .container {
+        padding: 24px 18px;
+    }
+    body:has(> .container > .top-nav) {
+        padding: 16px 10px;
+    }
+    body > .container h1 {
+        font-size: 1.5rem;
+    }
+    body > .container .back-btn {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+    }
+}

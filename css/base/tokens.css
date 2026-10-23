@@ -1,0 +1,137 @@
+/* ==========================================
+   PONTE SOLIDÁRIA - DESIGN SYSTEM TOKENS
+   ========================================== */
+:root {
+    /* Paleta clara como estado inicial */
+    --color-primary: #166534;
+    --color-primary-hover: #14532D;
+    --color-primary-light: rgba(22, 101, 52, 0.12);
+    /* Cor do verde quando usado COMO TEXTO, ÍCONE, BORDA ou CONTORNO DE FOCO
+       (o --color-primary continua sendo o verde de PREENCHIMENTO de botões,
+       sempre com texto --color-text-on-primary por cima). Separar os dois
+       papéis é o que permite o modo escuro ter um verde claro legível. */
+    --color-primary-text: #166534;      /* 6.8:1 sobre o fundo claro */
+
+    /* Antes: rosa #F472B6/#EC4899 (muito saturado, texto sobre ele ~2.7:1).
+       Agora: fundo secundário verde bem suave e destaque magenta escuro. */
+    --color-secondary-pink: #E7F1EA;
+    --color-accent-pink: #BE185D;       /* 6.0:1 sobre branco */
+    --color-accent-pink-hover: #9D174D;
+    --color-accent-purple-light: rgba(190, 24, 93, 0.10);
+    --color-bg-subtle: #F1F5F9;
+    /* Botões secundários: fundo rosa-escuro com letra BRANCA (6.0:1). */
+    --color-secondary-fill: #BE185D;
+    --color-secondary-fill-hover: #9D174D;
+    --color-text-on-secondary: #FFFFFF;
+    --color-bg-main: #F8FAFC;
+    --color-bg-card: #FFFFFF;
+    --color-bg-nav: rgba(255, 255, 255, 0.92);
+    
+    --color-text-main: #172033;
+    --color-text-muted: #475569;        /* 7.6:1 sobre branco */
+    --color-text-on-primary: #FFFFFF;
+    
+    --color-border: #D9E1EC;          /* bordas decorativas de cards */
+    --color-border-strong: #64748B;   /* bordas de campos/controles (>= 3:1, WCAG 1.4.11) */
+    /* Item 40 da revisão ("contraste"): os três tons abaixo, como estavam
+       antes (#10B981, #F59E0B, #EF4444), ficavam abaixo de 4.5:1 (WCAG AA
+       para texto normal) sobre fundo branco/card — o pior caso era o
+       amarelo/dourado do warning, só 2.15:1. Escurecidos até passar em
+       4.5:1 mantendo a mesma família de cor (verde/âmbar/vermelho).
+       Continuam usados como estavam: ícones, texto, badges e bordas. */
+    --color-success: #047857;        /* 5.5:1 sobre branco */
+    --color-warning: #92400E;         /* 7.1:1 sobre branco (era #B45309, 5.0:1) */
+    --color-danger: #B91C1C;         /* 6.5:1 sobre branco (era #DC2626, 4.8:1) */
+    --color-text-on-status: #FFFFFF; /* texto sobre fundos success/danger/warning */
+    /* Typography scale */
+    --font-heading: 'Outfit', 'Inter', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-base-size: 16px;
+    /* Shadow layers */
+    --shadow-sm: 0 2px 10px rgba(15, 23, 42, 0.08);
+    --shadow-md: 0 10px 30px rgba(15, 23, 42, 0.12);
+    --shadow-lg: 0 20px 50px rgba(15, 23, 42, 0.16);
+    
+    /* Radius */
+    --radius-sm: 8px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-round: 50%;
+    
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --container-width: 1140px;
+}
+/* Base Dark Mode variables (kept for backwards compatibility but matching root) */
+body.dark-mode {
+    --color-bg-main: #0F1219;
+    --color-bg-card: #1A1D24;
+    --color-bg-nav: rgba(15, 18, 25, 0.88);
+    
+    --color-primary: #166534;           /* preenchimento: texto branco por cima (7.1:1) */
+    --color-primary-hover: #15803D;     /* hover do preenchimento (branco 5.0:1); era #86EFAC = texto branco ilegível */
+    --color-primary-light: rgba(134, 239, 172, 0.15);
+    --color-primary-text: #86EFAC;      /* verde claro p/ texto/ícone/borda/foco: 14:1 sobre o fundo escuro */
+
+    --color-secondary-pink: #1E2D25;
+    --color-accent-pink: #F9A8D4;       /* 10:1 sobre o fundo escuro */
+    --color-accent-pink-hover: #FBCFE8;
+    --color-accent-purple-light: rgba(249, 168, 212, 0.14);
+    --color-bg-subtle: #222733;
+    --color-secondary-fill: #BE185D;
+    --color-secondary-fill-hover: #9D174D;
+    --color-text-main: #F8FAFC;
+    --color-text-muted: #A8B5C9;
+    /* Item 40 da revisão ("contraste"): era #0F1219 (texto quase preto)
+       sobre o primário antigo (roxo) — só 2.2:1, bem abaixo dos 4.5:1 do
+       WCAG AA. Qualquer botão/badge usando essas duas variáveis juntas
+       (ex.: ".btn-primary") ficava com o texto quase ilegível no modo
+       escuro. Texto branco sobre o verde escuro #166534 dá 7.1:1. */
+    --color-text-on-primary: #FFFFFF;
+    
+    --color-border: #334155;
+    --color-border-strong: #94A3B8;
+
+    /* Antes os 3 tons de status eram os mesmos do tema claro (escuros) e
+       ficavam em ~3.4-3.9:1 sobre o fundo escuro. Versões claras: */
+    --color-success: #34D399;
+    --color-warning: #FBBF24;
+    --color-danger: #F87171;
+    --color-text-on-status: #0B1220;
+
+    --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+/* Accessibility - High Contrast Mode overrides */
+body.high-contrast {
+    --color-bg-main: #000000 !important;
+    --color-bg-card: #000000 !important;
+    --color-bg-nav: #000000 !important;
+    
+    --color-primary: #8FF0B5 !important;       /* Verde-menta suave (era amarelo #ffff00, forte demais) — 15:1 sobre preto */
+    --color-primary-hover: #ffffff !important;
+    --color-primary-light: #1c1c1c !important;
+    --color-primary-text: #8FF0B5 !important;
+    --color-bg-subtle: #000000 !important;
+    --color-secondary-fill: #000000 !important;
+    --color-secondary-fill-hover: #333333 !important;
+    --color-border-strong: #ffffff !important;
+    
+    --color-secondary-pink: #1c1c1c !important;
+    --color-accent-pink: #00ffff !important;     /* Cyan highlights */
+    --color-accent-pink-hover: #ffffff !important;
+    --color-accent-purple-light: #333333 !important;
+    --color-text-main: #ffffff !important;
+    --color-text-muted: #e0e0e0 !important;
+    --color-text-on-primary: #000000 !important;
+    
+    --color-border: #ffffff !important;
+    --color-success: #6EE7A0 !important;
+    --color-warning: #FFD98A !important;      /* Âmbar suave (era amarelo puro) */
+    --color-danger: #FF7B7B !important;       /* 8:1 sobre preto (o #ff0000 puro dava só 5.2:1 e texto preto sobre ele 4:1) */
+    --color-text-on-status: #000000 !important;
+    
+    --shadow-sm: none !important;
+    --shadow-md: none !important;
+    --shadow-lg: none !important;
+}

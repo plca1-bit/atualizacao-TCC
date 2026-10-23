@@ -1,0 +1,364 @@
+/* ========================================================
+   PONTE SOLIDÁRIA - RESPONSIVENESS & CONSOLIDATED QUERIES
+   ======================================================== */
+/* Laptops menores (max-width: 1100px): reduz o espaçamento do menu
+   principal antes de chegar no menu hambúrguer, evitando que os links
+   e as ações do header se apertem ou quebrem linha de forma feia. */
+@media (max-width: 1100px) {
+    .nav-list {
+        gap: 16px;
+    }
+    .nav-link {
+        font-size: 0.88rem;
+    }
+    .header-actions {
+        gap: 10px;
+    }
+}
+/* Notebooks & Tablets grandes (max-width: 992px) */
+@media (max-width: 992px) {
+    .hero-container {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 50px;
+    }
+    .hero-description {
+        margin: 0 auto 30px auto;
+    }
+    .hero-ctas {
+        justify-content: center;
+    }
+    .hero-visual {
+        margin-top: 20px;
+    }
+    .hero-photo-card {
+        max-width: 340px;
+        height: 380px;
+    }
+    .steps-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+    }
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    .ongs-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .admin-grid {
+        grid-template-columns: 1fr;
+    }
+    .col-span-2, .col-span-3 {
+        grid-column: span 1;
+    }
+}
+/* Celulares & Tablets normais (max-width: 768px) */
+@media (max-width: 768px) {
+    .main-header {
+        height: 70px;
+    }
+    
+    .header-actions {
+        gap: 6px;
+    }
+    /* Em telas pequenas, o header já acumula sino + tema + login/cadastro
+       (ou perfil) + hambúrguer. Esconder o nome/cargo do usuário logado
+       (mantendo só o avatar) evita que essa linha de ações fique
+       espremida ou corte itens. */
+    .user-info-text {
+        display: none;
+    }
+    .user-auth-zone .btn {
+        padding: 8px 12px;
+        font-size: 0.82rem;
+    }
+
+    /* Menu Sanduíche Drawer */
+    .mobile-nav-toggle {
+        display: flex !important;
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--color-text-main);
+        padding: 8px;
+        border-radius: var(--radius-sm);
+        transition: var(--transition);
+    }
+    .mobile-nav-toggle:hover {
+        background-color: var(--color-primary-light);
+    }
+    
+    .main-nav {
+        position: fixed;
+        top: 70px;
+        left: -100%;
+        width: 100%;
+        height: calc(100vh - 70px);
+        background-color: var(--color-bg-card);
+        z-index: 4400;
+        transition: left 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        padding: 40px 30px;
+        border-top: 1px solid var(--color-border);
+        display: block;
+    }
+    .main-nav.active {
+        left: 0;
+    }
+    
+    .nav-list {
+        flex-direction: column;
+        gap: 24px;
+        align-items: center;
+        width: 100%;
+    }
+    .nav-link {
+        font-size: 1.25rem;
+        padding: 8px 20px;
+    }
+    
+    .connection-status {
+        display: none !important; /* Oculta indicador demo em telas pequenas */
+    }
+    .hero-title {
+        font-size: 2.3rem;
+    }
+    .hero-description {
+        font-size: 0.95rem;
+    }
+    .steps-grid {
+        grid-template-columns: 1fr;
+    }
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    .ongs-grid {
+        grid-template-columns: 1fr;
+    }
+    .section-cta .btn {
+        width: 100%;
+    }
+    .form-grid {
+        gap: 12px;
+    }
+    .col-6, .col-4 {
+        grid-column: span 12;
+    }
+    
+    /* Margens e Espaçamentos Mobile */
+    .section-padding {
+        padding: 40px 0;
+    }
+    
+    .donations-tabs {
+        gap: 8px;
+    }
+    .tab-btn {
+        padding: 8px 16px;
+        font-size: 0.88rem;
+    }
+    
+    /* Janela de Chat no Mobile: ver css/components/chat.css (lista OU conversa, tela cheia). */
+
+    .logistics-timeline-visual {
+        flex-direction: column;
+        gap: 20px;
+        padding-left: 20px;
+    }
+    .logistics-timeline-visual .timeline-step {
+        flex-direction: row;
+        text-align: left;
+        align-items: center;
+        gap: 16px;
+    }
+    .logistics-timeline-visual .step-num {
+        margin-bottom: 0;
+    }
+    .logistics-timeline-visual .step-desc {
+        max-width: 100%;
+    }
+    .timeline-line {
+        display: none; /* Oculta linhas no fluxograma vertical mobile */
+    }
+}
+/* Modo de Alto Contraste (Acessibilidade)
+   Antes: "body.high-contrast button { color: #8FF0B5 !important }" pintava o
+   texto de TODO botão de verde-menta, inclusive dos botões preenchidos
+   (.btn-primary tem fundo verde-menta no alto contraste) — texto menta sobre
+   fundo menta = botão ilegível. Agora cada botão preenchido mantém o texto
+   preto definido por --color-text-on-primary / --color-text-on-status, e só
+   links e botões "sem preenchimento" ficam menta sobre o preto. */
+body.high-contrast {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+}
+
+/* Links: menta sobre preto, sublinhados. (O .skip-link tem fundo menta e
+   mantém o texto preto do próprio estilo.) */
+body.high-contrast a:not(.btn):not(.skip-link) {
+    color: var(--color-primary-text) !important;
+    text-decoration: underline;
+}
+
+/* Botões: cor-base branca com especificidade ZERO (:where), para que qualquer
+   botão com classe própria (botão flutuante de acessibilidade, de chat, "×"
+   do modal, abas...) continue usando a cor definida pelo próprio estilo. */
+:where(body.high-contrast) button {
+    color: var(--color-text-main);
+}
+
+body.high-contrast .btn {
+    border: 2px solid #ffffff;
+}
+
+/* ------------------------------------------------------------------
+   CORREÇÃO (alto contraste: informações sumindo)
+   Antes: "body.high-contrast div { background-color: #000 !important }"
+   pintava de preto TODO <div> do site, inclusive os que têm fundo colorido
+   de propósito (quadro "Impacto em Tempo Real" da home, avatares, selos,
+   status, barras de progresso, balões do chat, cabeçalho do admin...).
+   Como o texto desses blocos é preto (--color-text-on-primary) ou escuro,
+   ficava preto sobre preto = quadro vazio. Agora a regra genérica foi
+   removida: as superfícies comuns já ficam pretas pelas próprias variáveis
+   (--color-bg-card/--color-bg-main = #000) e cada bloco com fundo próprio
+   ganha abaixo um par fundo/texto de contraste garantido
+   (menta + preto, ou preto + branco com borda branca).
+   ------------------------------------------------------------------ */
+body.high-contrast .app-section,
+body.high-contrast header,
+body.high-contrast footer {
+    background-color: #000000;
+    border-color: #ffffff;
+}
+
+/* Home: quadro de estatísticas — fundo menta, texto preto */
+body.high-contrast .statistics-dashboard {
+    background-color: #8FF0B5 !important;
+    color: #000000 !important;
+}
+body.high-contrast .statistics-dashboard .light-text h2,
+body.high-contrast .statistics-dashboard .light-text p,
+body.high-contrast .statistics-dashboard .stat-number,
+body.high-contrast .statistics-dashboard .stat-label {
+    color: #000000 !important;
+}
+body.high-contrast .stat-card {
+    background-color: #8FF0B5 !important;
+    border: 2px solid #000000 !important;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+/* Cartões e blocos com borda: contorno branco bem visível */
+body.high-contrast .step-card,
+body.high-contrast .ong-card,
+body.high-contrast .ongs-empty-state {
+    border: 2px solid #ffffff !important;
+}
+body.high-contrast .step-icon {
+    background-color: #000000 !important;
+    border: 2px solid #ffffff;
+    color: #ffffff !important;
+}
+body.high-contrast .step-1,
+body.high-contrast .step-2,
+body.high-contrast .step-3 {
+    color: #ffffff !important;
+}
+
+/* Rodapé: preto puro, texto e links brancos */
+body.high-contrast .main-footer {
+    --footer-bg: #000000;
+    --footer-text: #ffffff;
+    --footer-border: #ffffff;
+}
+body.high-contrast .footer-col h4 .highlight,
+body.high-contrast .footer-link-highlight,
+body.high-contrast .footer-links a:hover,
+body.high-contrast .footer-links a:focus-visible {
+    color: #8FF0B5 !important;
+}
+body.high-contrast .footer-bottom {
+    color: #ffffff !important;
+    border-top: 1px solid #ffffff;
+}
+
+/* Janelas (modais): fundo atrás quase opaco e cartão com contorno branco */
+body.high-contrast .modal-backdrop {
+    background: rgba(0, 0, 0, 0.92) !important;
+}
+body.high-contrast .modal-card {
+    border: 2px solid #ffffff;
+}
+
+/* Mapa de doações: fundo preto, pinos menta/branco com ícone preto */
+body.high-contrast .map-mock {
+    background: #000000 !important;
+    border: 2px solid #ffffff;
+}
+body.high-contrast .map-grid-bg {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.35) 1px, transparent 1px);
+}
+body.high-contrast .map-pin {
+    color: #000000 !important;
+    border: 2px solid #ffffff;
+}
+
+/* Painel do administrador: o degradê menta -> branco deixava o texto
+   branco ilegível. Fundo menta liso com texto preto. */
+body.high-contrast .admin-hero {
+    background: #8FF0B5 !important;
+    color: #000000 !important;
+    border: 2px solid #ffffff;
+}
+body.high-contrast .admin-hero h2,
+body.high-contrast .admin-hero p {
+    color: #000000 !important;
+}
+body.high-contrast .admin-hero-icon {
+    background: #000000 !important;
+    color: #ffffff !important;
+}
+
+/* Chat: balões com par fundo/texto garantido e diferença clara entre
+   quem enviou (menta, texto preto) e quem recebeu (preto, borda branca) */
+body.high-contrast .chat-body {
+    background-color: #000000 !important;
+}
+body.high-contrast .message.sent {
+    background-color: #8FF0B5 !important;
+    color: #000000 !important;
+    border: 2px solid #ffffff;
+}
+body.high-contrast .message.received {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    border: 2px solid #ffffff;
+}
+body.high-contrast .message.sent .message-time,
+body.high-contrast .message.sent .message-ticks {
+    color: #000000 !important;
+}
+body.high-contrast .message.sent .message-ticks.read {
+    color: #00338d !important;
+}
+body.high-contrast .message.received .message-time,
+body.high-contrast .message.received .message-ticks {
+    color: #ffffff !important;
+}
+body.high-contrast .message.received .message-ticks.read {
+    color: #00ffff !important;
+}
+body.high-contrast .message.has-image .message-meta {
+    background-color: #000000 !important;
+}
+body.high-contrast .message.has-image .message-meta .message-time,
+body.high-contrast .message.has-image .message-meta .message-ticks {
+    color: #ffffff !important;
+}
+body.high-contrast .chat-day-divider span {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    border: 1px solid #ffffff;
+}
