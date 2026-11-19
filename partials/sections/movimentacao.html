@@ -1,0 +1,73 @@
+<!-- ================= MOVIMENTAÇÃO ================= -->
+<!-- Página própria (antes era uma aba dentro de Doações e Pedidos). Os blocos
+     e ids abaixo são os mesmos de antes, então as funções de js/doacoes.js
+     (renderMyDonations, renderMyPedidos, renderCommunityPedidos,
+     renderDirectDonationsAvailable, renderOngMediationRequests e
+     renderOngPedidos) continuam preenchendo os mesmos elementos. -->
+<section id="movement-section" class="app-section section-padding container">
+    <div class="section-header text-center">
+<br><br>        <h2 id="title-movement">Movimentação</h2>
+        <p id="desc-movement">Acompanhe suas doações e pedidos de ajuda em andamento. Assim que uma doação ou pedido é concluído, ele sai desta lista.</p>
+    </div>
+
+
+        <!-- Minhas doações (como doador e/ou beneficiário) -->
+        <div class="donation-flow-block hidden" id="my-donations-block">
+            <div class="section-header" style="margin-bottom: 8px;">
+                <h3><i data-lucide="list-checks"></i> Minhas doações</h3>
+                <p>Acompanhe cada etapa. Assim que a doação for concluída ou cancelada, ela sai desta lista.</p>
+            </div>
+            <div class="flow-cards-grid" id="my-donations-grid"></div>
+        </div>
+
+        <!-- Meus pedidos (solicitante acompanha status) -->
+        <div class="donation-flow-block hidden" id="my-pedidos-block">
+            <div class="section-header" style="margin-bottom: 8px;">
+                <h3><i data-lucide="list-checks"></i> Meus pedidos</h3>
+                <p>Acompanhe seus pedidos publicados. Assim que o pedido for concluído, ele sai desta lista.</p>
+            </div>
+            <div class="flow-cards-grid" id="my-pedidos-grid"></div>
+        </div>
+
+        <!-- Doações e pedidos pendentes de outras pessoas -->
+        <div class="section-header" style="margin-bottom: 8px; margin-top: 24px;">
+            <h3><i data-lucide="users"></i> Da comunidade</h3>
+            <p>Pedidos de ajuda e doações pendentes de outras pessoas. Somem daqui assim que são finalizados.</p>
+        </div>
+
+        <!-- Doações com entrega direta disponíveis para aceite -->
+        <div class="donation-flow-block hidden" id="direct-donations-block" style="margin-top: 18px;">
+            <div class="section-header" style="margin-bottom: 8px;">
+                <h3><i data-lucide="hand-heart"></i> Doações disponíveis para retirada direta</h3>
+                <p>Itens que os doadores preferem entregar sem passar por uma ONG. Aceite para combinar a retirada pelo chat.</p>
+            </div>
+            <div class="flow-cards-grid" id="direct-donations-grid"></div>
+        </div>
+
+        <!-- Pedidos de ajuda registrados por outras pessoas, ainda disponíveis para atendimento direto -->
+        <div class="donation-flow-block hidden" id="community-pedidos-block">
+            <div class="section-header" style="margin-bottom: 8px;">
+                <h3><i data-lucide="hand-heart"></i> Pedidos de ajuda disponíveis</h3>
+                <p>Necessidades cadastradas por outras pessoas que ainda precisam de apoio da comunidade.</p>
+            </div>
+            <div class="community-items-grid" id="community-pedidos-grid" aria-live="polite"></div>
+        </div>
+
+        <!-- Solicitações de mediação (visível para contas de ONG) -->
+        <div class="donation-flow-block hidden" id="ong-mediation-block">
+            <div class="section-header" style="margin-bottom: 8px;">
+                <h3><i data-lucide="building-2"></i> Solicitações de mediação para sua ONG</h3>
+                <p>Doações que escolheram sua instituição como mediadora. Assim que concluídas ou recusadas, saem desta lista.</p>
+            </div>
+            <div class="flow-cards-grid" id="ong-mediation-grid"></div>
+        </div>
+
+        <!-- Pedidos para análise (visível para contas de ONG) -->
+        <div class="donation-flow-block hidden" id="ong-pedidos-block">
+            <div class="section-header" style="margin-bottom: 8px;">
+                <h3><i data-lucide="clipboard-list"></i> Pedidos que suas doações mediadas podem atender</h3>
+                <p>Pedidos abertos compatíveis com doações que sua ONG está mediando. Vincule a doação ao pedido para liberar o chat.</p>
+            </div>
+            <div class="flow-cards-grid" id="ong-pedidos-grid"></div>
+        </div>
+</section>
